@@ -1,0 +1,70 @@
+.preloader-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-dark);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.preloader-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.preloader-logo {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--primary-light);
+  animation: pulseGlow 1.8s ease-in-out infinite;
+  margin-bottom: 0.5rem;
+}
+
+.preloader-brand {
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -0.5px;
+  margin-bottom: 0;
+}
+
+.logo-accent {
+  color: var(--secondary);
+  margin-left: 2px;
+}
+
+.preloader-tagline {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.preloader-bar-wrap {
+  width: 200px;
+  height: 4px;
+  background: rgba(76, 175, 80, 0.15);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.preloader-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--primary-light), var(--secondary));
+  border-radius: var(--radius-full);
+  transition: width 0.2s ease;
+}
+
+.preloader-pct {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  letter-spacing: 1px;
+}

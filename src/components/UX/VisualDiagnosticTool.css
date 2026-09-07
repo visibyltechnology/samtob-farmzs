@@ -1,0 +1,131 @@
+.visual-tool-section {
+  background-color: var(--bg-dark);
+}
+
+.visual-tool-container {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+  align-items: center;
+}
+
+.car-schematic {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2 / 1;
+  background:
+    linear-gradient(rgba(100, 180, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(100, 180, 255, 0.05) 1px, transparent 1px),
+    radial-gradient(ellipse at center, rgba(30, 50, 90, 0.6) 0%, rgba(10, 12, 20, 0.95) 70%);
+  background-size: 40px 40px, 40px 40px, 100% 100%;
+  border: 1px solid rgba(100, 180, 255, 0.15);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.car-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.hotspot {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  z-index: 10;
+}
+
+.hotspot-core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 12px;
+  height: 12px;
+  background-color: var(--primary);
+  border-radius: 50%;
+  z-index: 2;
+  transition: var(--transition-fast);
+}
+
+.hotspot:hover .hotspot-core, .hotspot.active .hotspot-core {
+  transform: translate(-50%, -50%) scale(1.5);
+  background-color: #fff;
+}
+
+.hotspot-pulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 30px;
+  height: 30px;
+  background-color: rgba(211, 47, 47, 0.5);
+  border-radius: 50%;
+  z-index: 1;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: translate(-50%, -50%) scale(0.8); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
+}
+
+.hotspot.active .hotspot-pulse {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+.hotspot-details {
+  height: 100%;
+  min-height: 250px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.details-content {
+  width: 100%;
+}
+
+.details-content h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: var(--primary);
+}
+
+.service-list {
+  list-style: none;
+  margin-bottom: 1.5rem;
+}
+
+.service-list li {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--glass-border);
+  color: var(--text-main);
+  font-weight: 500;
+}
+
+.details-empty {
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.w-full {
+  width: 100%;
+}
+
+@media (max-width: 992px) {
+  .visual-tool-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .hotspot-details {
+    min-height: auto;
+  }
+}

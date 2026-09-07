@@ -1,0 +1,141 @@
+.services-section {
+  background-color: var(--bg-surface);
+  position: relative;
+}
+
+.services-container {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+.services-tabs {
+  background: rgba(15, 16, 21, 0.5);
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--glass-border);
+}
+
+.tab-btn {
+  background: transparent;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: var(--text-muted);
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: left;
+  position: relative;
+  transition: var(--transition-fast);
+}
+
+.tab-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.tab-btn.active {
+  color: #fff;
+}
+
+.tab-icon {
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tab-indicator {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background-color: var(--primary);
+  box-shadow: 0 0 10px var(--primary);
+}
+
+.services-content {
+  padding: 3rem;
+  background: rgba(25, 26, 35, 0.2);
+}
+
+.service-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+}
+
+.service-info h3 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.service-info p {
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+}
+
+.mt-4 {
+  margin-top: 1rem;
+}
+
+.service-image-wrapper {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+.service-image {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+}
+
+@media (max-width: 992px) {
+  .services-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .services-tabs {
+    flex-direction: row;
+    overflow-x: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--glass-border);
+    scrollbar-width: none;
+  }
+  
+  .services-tabs::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .tab-btn {
+    white-space: nowrap;
+    padding: 1rem 1.5rem;
+  }
+  
+  .tab-indicator {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: auto;
+    height: 4px;
+    width: 100%;
+  }
+  
+  .service-panel {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  
+  .service-image {
+    height: 250px;
+  }
+}

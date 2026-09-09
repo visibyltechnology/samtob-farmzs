@@ -540,7 +540,6 @@ export default function Checkout() {
                     </div>
                     <div style={{ height: '1px', background: 'var(--dark-border)' }} />
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                       <span style={{ fontWeight: 800, color: '#fff' }}>Total Payable Now</span>
                       <span style={{ fontWeight: 800, fontSize: '18px', color: '#F9A825' }}>{formatCurrency(grandTotal)}</span>
                     </div>

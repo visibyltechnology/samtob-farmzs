@@ -454,3 +454,113 @@
   .f3,.f4,.f5 { display: none; }
   .hero-btn-primary, .hero-btn-outline { padding: 13px 22px; font-size: 14px; }
 }
+
+/* ── EPIC TEXT ANIMATIONS ── */
+
+.txt-hidden {
+  opacity: 0 !important;
+  visibility: hidden;
+}
+
+/* Badge Reveal */
+@keyframes txtReveal {
+  0% { clip-path: inset(0 100% 0 0); opacity: 0; transform: translateX(-10px); }
+  100% { clip-path: inset(0 0 0 0); opacity: 1; transform: translateX(0); }
+}
+.txt-reveal {
+  animation: txtReveal 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Slide Up (Join the) */
+@keyframes lineSlideUp {
+  0% { opacity: 0; transform: translateY(20px); filter: blur(4px); }
+  100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+.line-slide-up {
+  animation: lineSlideUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Word Pop (December Rush) */
+@keyframes wordPop {
+  0% { opacity: 0; transform: scale(0.8) translateY(20px); filter: blur(8px); }
+  50% { opacity: 1; transform: scale(1.05) translateY(-5px); filter: blur(0); }
+  100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+}
+.hero-rush-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.word-pop {
+  animation: wordPop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  display: inline-block;
+  opacity: 0; /* starts hidden */
+}
+
+/* Slide Right & Underline (Installment Plan) */
+@keyframes lineSlideRight {
+  0% { opacity: 0; transform: translateX(-30px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+.line-slide-right {
+  animation: lineSlideRight 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes drawUnderline {
+  0% { background-size: 0% 4px; }
+  100% { background-size: 100% 4px; }
+}
+.underline-draw {
+  background-image: linear-gradient(to right, #4CAF50, #81C784);
+  background-repeat: no-repeat;
+  background-position: left bottom;
+  background-size: 0% 4px;
+  padding-bottom: 4px;
+  animation: drawUnderline 1s cubic-bezier(0.22, 1, 0.36, 1) 2s forwards; /* starts drawing after entrance */
+}
+
+/* Subtitle Words Fade In */
+@keyframes wordsFadeIn {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.sub-word {
+  display: inline-block;
+  opacity: 0;
+  animation: wordsFadeIn 0.6s ease-out forwards;
+}
+.words-fade-in {
+  /* wrapper class just ensures visibility if needed, animation is on spans */
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* CTAs Rise */
+@keyframes ctasRise {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.ctas-rise {
+  animation: ctasRise 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Trust Chips Stagger */
+@keyframes chipStagger {
+  0% { opacity: 0; transform: scale(0.9); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.trust-chip {
+  opacity: 0; /* starts hidden */
+}
+.chips-stagger .trust-chip {
+  animation: chipStagger 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Visual Panel Reveal */
+@keyframes visualReveal {
+  0% { opacity: 0; transform: translateX(40px) scale(0.95); }
+  100% { opacity: 1; transform: translateX(0) scale(1); }
+}
+.visual-reveal {
+  animation: visualReveal 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}

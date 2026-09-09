@@ -1,4 +1,4 @@
-﻿import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingBag, ChevronDown, Truck, Home, Star, ArrowRight } from 'lucide-react';
 import { useLenis } from '@studio-freight/react-lenis';
@@ -25,14 +25,6 @@ const WORDS = ['December', 'Rush'];
 export default function Hero() {
   const heroRef  = useRef(null);
   const bgRef    = useRef(null);
-  const [phase, setPhase] = useState(0); // 0=hidden,1=badge,2=tagline,3=word0,4=word1,5=subline,6=sub,7=ctas,8=trust,9=done
-
-  // stagger entrance phases
-  useEffect(() => {
-    const delays = [120, 380, 680, 900, 1120, 1350, 1600, 1850];
-    const timers = delays.map((d, i) => setTimeout(() => setPhase(i + 1), d));
-    return () => timers.forEach(clearTimeout);
-  }, []);
 
   useLenis(({ scroll }) => {
     if (bgRef.current) bgRef.current.style.transform = 'translate3d(0,' + (scroll * 0.35) + 'px,0)';
@@ -42,9 +34,6 @@ export default function Hero() {
     const s = document.getElementById('how-it-works');
     if (s) s.scrollIntoView({ behavior: 'smooth' });
   };
-
-  // helpers
-  const revealed = (n) => phase >= n;
 
   return (
     <section className="hero-section" ref={heroRef}>
@@ -72,7 +61,7 @@ export default function Hero() {
         <div className="hero-content">
 
           {/* Badge */}
-          <div className={'hero-badge' + (revealed(1) ? ' txt-reveal' : ' txt-hidden')}>
+          <div className="hero-badge txt-reveal" style={{ animationDelay: '0.1s' }}>
             <span className="badge-pulse" />
             <Star size={12} fill="currentColor" />
             <span>Limited Season Offer — Book Now!</span>
@@ -80,7 +69,7 @@ export default function Hero() {
 
           {/* Title */}
           <h1 className="hero-title">
-            <span className={'hero-tag-line' + (revealed(2) ? ' line-slide-up' : ' txt-hidden')}>
+            <span className="hero-tag-line line-slide-up" style={{ animationDelay: '0.3s' }}>
               Join the
             </span>
 
@@ -88,30 +77,30 @@ export default function Hero() {
               {WORDS.map((word, wi) => (
                 <span
                   key={word}
-                  className={'rush-word december-rush-animate' + (revealed(3 + wi) ? ' word-pop' : ' txt-hidden')}
-                  style={{ animationDelay: wi === 0 ? '0ms' : '220ms' }}
+                  className="rush-word december-rush-animate word-pop"
+                  style={{ animationDelay: wi === 0 ? '0.6s' : '0.8s' }}
                 >
                   {word}
                 </span>
               ))}
             </span>
 
-            <span className={'hero-sub-line' + (revealed(5) ? ' line-slide-right' : ' txt-hidden')}>
+            <span className="hero-sub-line line-slide-right" style={{ animationDelay: '1.0s' }}>
               <span className="underline-draw">Installment Plan</span>
             </span>
           </h1>
 
           {/* Subtitle — word-by-word */}
-          <p className={'hero-subtitle' + (revealed(6) ? ' words-fade-in' : ' txt-hidden')}>
+          <p className="hero-subtitle words-fade-in">
             {['Book your Christmas chickens early and', 'pay in small weekly installments.', 'Hormone-free birds raised on our farm —', 'delivered to your door in Ibadan.', 'Farm pickup always free.'].map((chunk, i) => (
-              <span key={i} className="sub-word" style={{ animationDelay: (i * 140) + 'ms' }}>
+              <span key={i} className="sub-word" style={{ animationDelay: `${1.2 + (i * 0.15)}s` }}>
                 {chunk}{' '}
               </span>
             ))}
           </p>
 
           {/* CTAs */}
-          <div className={'hero-ctas' + (revealed(7) ? ' ctas-rise' : ' txt-hidden')}>
+          <div className="hero-ctas ctas-rise" style={{ animationDelay: '1.6s' }}>
             <Link to="/shop" className="hero-btn-primary">
               <ShoppingBag size={20} />
               <span>Order Now</span>
@@ -123,15 +112,15 @@ export default function Hero() {
           </div>
 
           {/* Trust chips */}
-          <div className={'hero-trust' + (revealed(8) ? ' chips-stagger' : ' txt-hidden')}>
+          <div className="hero-trust chips-stagger">
             {['✅ No Hormones', '✅ Farm Raised', '✅ Same-Day Processing', '✅ Ibadan Delivery'].map((t, i) => (
-              <div key={i} className="trust-chip" style={{ animationDelay: (i * 100) + 'ms' }}>{t}</div>
+              <div key={i} className="trust-chip" style={{ animationDelay: `${1.8 + (i * 0.1)}s` }}>{t}</div>
             ))}
           </div>
         </div>
 
         {/* ─── RIGHT VISUAL ─── */}
-        <div className={'hero-visual' + (revealed(3) ? ' visual-reveal' : ' txt-hidden')}>
+        <div className="hero-visual visual-reveal" style={{ animationDelay: '0.4s' }}>
           <div className="hero-image-card">
             <img
               src="/products/live_chicken.jpg"
@@ -156,7 +145,7 @@ export default function Hero() {
               { icon: <Truck size={22} />, value: '₦2,000', label: 'Ibadan Delivery' },
               { icon: <Home size={22} />, value: 'FREE', label: 'Farm Pickup' },
             ].map((s, i) => (
-              <div key={i} className="stat-card" style={{ animationDelay: (i * 150) + 'ms' }}>
+              <div key={i} className="stat-card hero-anim-stat" style={{ animationDelay: `${1.2 + (i * 0.15)}s` }}>
                 <div className="stat-icon">{s.icon}</div>
                 <div className="stat-value">{s.value}</div>
                 <div className="stat-label">{s.label}</div>

@@ -1,4 +1,4 @@
-﻿/* =====================================================
+/* =====================================================
    SAMTOB FARMS — HERO SECTION  (full cinematic build)
    ===================================================== */
 
@@ -145,10 +145,10 @@
   from { opacity:0; transform: scale(0.7) translateY(20px); }
   to   { opacity:1; transform: scale(1) translateY(0); }
 }
-.hero-anim-stat-1,.hero-anim-stat-2,.hero-anim-stat-3 { opacity:0; }
-.hero-mounted .hero-anim-stat-1 { animation: statPop 0.6s cubic-bezier(0.34,1.56,0.64,1) 1.0s both; }
-.hero-mounted .hero-anim-stat-2 { animation: statPop 0.6s cubic-bezier(0.34,1.56,0.64,1) 1.15s both; }
-.hero-mounted .hero-anim-stat-3 { animation: statPop 0.6s cubic-bezier(0.34,1.56,0.64,1) 1.3s both; }
+
+.hero-anim-stat {
+  animation: statPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
 
 /* ── LAYOUT ── */
 .container { max-width: 1260px; margin: 0 auto; padding: 0 24px; }
@@ -468,7 +468,7 @@
   100% { clip-path: inset(0 0 0 0); opacity: 1; transform: translateX(0); }
 }
 .txt-reveal {
-  animation: txtReveal 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: txtReveal 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /* Slide Up (Join the) */
@@ -477,7 +477,7 @@
   100% { opacity: 1; transform: translateY(0); filter: blur(0); }
 }
 .line-slide-up {
-  animation: lineSlideUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: lineSlideUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /* Word Pop (December Rush) */
@@ -492,9 +492,8 @@
   flex-wrap: wrap;
 }
 .word-pop {
-  animation: wordPop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  animation: wordPop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
   display: inline-block;
-  opacity: 0; /* starts hidden */
 }
 
 /* Slide Right & Underline (Installment Plan) */
@@ -503,7 +502,7 @@
   100% { opacity: 1; transform: translateX(0); }
 }
 .line-slide-right {
-  animation: lineSlideRight 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: lineSlideRight 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @keyframes drawUnderline {
@@ -516,7 +515,7 @@
   background-position: left bottom;
   background-size: 0% 4px;
   padding-bottom: 4px;
-  animation: drawUnderline 1s cubic-bezier(0.22, 1, 0.36, 1) 2s forwards; /* starts drawing after entrance */
+  animation: drawUnderline 1s cubic-bezier(0.22, 1, 0.36, 1) 2s both; /* starts drawing after entrance */
 }
 
 /* Subtitle Words Fade In */
@@ -526,8 +525,7 @@
 }
 .sub-word {
   display: inline-block;
-  opacity: 0;
-  animation: wordsFadeIn 0.6s ease-out forwards;
+  animation: wordsFadeIn 0.6s ease-out both;
 }
 .words-fade-in {
   /* wrapper class just ensures visibility if needed, animation is on spans */
@@ -541,7 +539,7 @@
   100% { opacity: 1; transform: translateY(0); }
 }
 .ctas-rise {
-  animation: ctasRise 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: ctasRise 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /* Trust Chips Stagger */
@@ -549,11 +547,9 @@
   0% { opacity: 0; transform: scale(0.9); }
   100% { opacity: 1; transform: scale(1); }
 }
-.trust-chip {
-  opacity: 0; /* starts hidden */
 }
 .chips-stagger .trust-chip {
-  animation: chipStagger 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  animation: chipStagger 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
 /* Visual Panel Reveal */
@@ -562,5 +558,5 @@
   100% { opacity: 1; transform: translateX(0) scale(1); }
 }
 .visual-reveal {
-  animation: visualReveal 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: visualReveal 1.2s cubic-bezier(0.22, 1, 0.36, 1) both;
 }

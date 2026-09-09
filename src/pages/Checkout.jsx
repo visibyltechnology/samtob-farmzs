@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, useNavigate } from 'react-router-dom';
 import { CreditCard, MapPin, Truck, ShieldCheck, ChevronRight, CheckCircle, Zap, Upload, AlertCircle, Loader2, X } from 'lucide-react';
@@ -155,7 +155,7 @@ export default function Checkout() {
         publicKey: "klp_pk_f9a97db616144143b74882681691843154982678bc7b4e47ac9485e95a636f66",
         data: {
           amount: subTotal,
-          shipping_fee: delivery,
+          shipping_fee: deliveryFee,
           currency: "NGN",
           redirect_url: `${window.location.origin}/profile`,
           merchant_reference: `klp-${Date.now()}`,
@@ -668,7 +668,7 @@ export default function Checkout() {
 
               <div style={{ borderTop: '1px solid var(--dark-border)', paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: 'var(--gray-1)' }}><span>Subtotal</span><span style={{ color: 'var(--white)', fontWeight: 600 }}>{formatCurrency(cartTotal)}</span></div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: 'var(--gray-1)' }}><span>Delivery</span><span style={{ color: 'var(--white)', fontWeight: 600 }}>{formatCurrency(delivery)}</span></div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: 'var(--gray-1)' }}><span>Delivery</span><span style={{ color: 'var(--white)', fontWeight: 600 }}>{formatCurrency(deliveryFee)}</span></div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 800, paddingTop: '12px', borderTop: '1px solid var(--dark-border)', marginTop: '4px' }}><span>Total</span><span style={{ color: 'var(--primary)' }}>{formatCurrency(grandTotal)}</span></div>
               </div>
             </div>

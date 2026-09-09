@@ -23,6 +23,16 @@ export default function ProductDetails() {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // December Rush Installment State
+  const [paymentPlan, setPaymentPlan] = useState('full'); // 'full' or 'installment'
+  const installmentOptions = [
+    { id: 'small', label: '3.8kg–4.1kg', price: 1500, total: 18000 },
+    { id: 'medium', label: '4.2kg–4.5kg', price: 2000, total: 24000 },
+    { id: 'large', label: '4.6kg–5.0kg', price: 2500, total: 30000 },
+    { id: 'xlarge', label: '5.1kg–5.5kg', price: 3000, total: 36000 }
+  ];
+  const [selectedInstallment, setSelectedInstallment] = useState(installmentOptions[1]);
+
   useEffect(() => {
     const fetchProduct = async () => {
       setLoading(true);
@@ -167,35 +177,58 @@ export default function ProductDetails() {
             <span>({Number(product.reviews) || 0} verified ratings)</span>
           </div>
 
-          <div>
-            {product.oldPrice && (
+          <div style={{ marginTop: '16px' }}>
+            {product.oldPrice && paymentPlan === 'full' && (
               <div className="pd-discount">
                 -{Math.round((1 - product.price/product.oldPrice) * 100)}% Discount
               </div>
             )}
             <div className="pd-price-wrap">
-              <span className="pd-price">{formatCurrency(product.price)}</span>
-              {product.oldPrice && <span className="pd-old-price">{formatCurrency(product.oldPrice)}</span>}
+              <span className="pd-price">
+                {paymentPlan === 'installment' 
+                  ? `${formatCurrency(selectedInstallment.price)} / wk` 
+                  : formatCurrency(product.price)}
+              </span>
+              {product.oldPrice && paymentPlan === 'full' && <span className="pd-old-price">{formatCurrency(product.oldPrice)}</span>}
+            </div>
+            {paymentPlan === 'installment' && (
+              <div style={{ fontSize: '13px', color: 'var(--success)', marginTop: '4px', fontWeight: 600 }}>
+                Total: {formatCurrency(selectedInstallment.total)} over 12 weeks
+              </div>
+            )}
+          </div>
+
+          <div className="pd-variants" style={{ marginTop: '24px' }}>
+            <div className="variant-title">Payment Plan: <span style={{ color: 'var(--white)' }}>{paymentPlan === 'full' ? 'Pay in Full' : 'December Rush (12-Week Installment)'}</span></div>
+            <div className="variant-options">
+              <button 
+                className={`variant-btn ${paymentPlan === 'full' ? 'active' : ''}`}
+                onClick={() => setPaymentPlan('full')}
+              >
+                Pay in Full
+              </button>
+              <button 
+                className={`variant-btn ${paymentPlan === 'installment' ? 'active' : ''}`}
+                onClick={() => setPaymentPlan('installment')}
+                style={{ borderColor: paymentPlan === 'installment' ? 'var(--gold)' : 'var(--dark-border)' }}
+              >
+                12-Week Installment
+              </button>
             </div>
           </div>
 
-          {normalizedColors.length > 0 && (
-            <div className="pd-variants">
-              <div className="variant-title">Color: <span style={{ color: 'var(--white)' }}>{selectedColor}</span></div>
-              <div className="variant-options">
-                {normalizedColors.map(col => (
+          {paymentPlan === 'installment' && (
+            <div className="pd-variants" style={{ marginTop: '16px' }}>
+              <div className="variant-title">Select Chicken Weight: <span style={{ color: 'var(--white)' }}>{selectedInstallment.label}</span></div>
+              <div className="variant-options" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                {installmentOptions.map(opt => (
                   <button 
-                    key={col.name} 
-                    className={`variant-btn ${selectedColor === col.name ? 'active' : ''}`}
-                    onClick={() => {
-                      setSelectedColor(col.name);
-                      if (col.image) {
-                        const idx = productImages.indexOf(col.image);
-                        if (idx !== -1) setActiveThumb(idx);
-                      }
-                    }}
+                    key={opt.id} 
+                    className={`variant-btn ${selectedInstallment.id === opt.id ? 'active' : ''}`}
+                    onClick={() => setSelectedInstallment(opt)}
+                    style={{ justifyContent: 'center' }}
                   >
-                    {col.name}
+                    {opt.label}
                   </button>
                 ))}
               </div>
@@ -244,7 +277,15 @@ export default function ProductDetails() {
 
           <div>
             <button className="pas-add-btn" onClick={() => {
-              const productToAdd = selectedColor ? { ...product, selectedColor } : product;
+              const productToAdd = paymentPlan === 'installment' 
+                ? { 
+                    ...product, 
+                    price: selectedInstallment.price,
+                    name: `${product.name} (Installment: ${selectedInstallment.label})`,
+                    isInstallment: true,
+                    installmentDetails: selectedInstallment
+                  } 
+                : product;
               addToCart(productToAdd, qty);
             }}>
               <ShoppingCart size={20} /> Add to Cart
@@ -316,9 +357,9 @@ export default function ProductDetails() {
                   ) : !hasSpecs ? (
                     // Fallback static rows if no specs saved
                     <>
-                      <tr><th>Model Year</th><td>2025</td></tr>
-                      <tr><th>Warranty</th><td>1 Year Limited Warranty</td></tr>
-                      <tr><th>Condition</th><td>Brand New</td></tr>
+                      <tr><th>Breed</th><td>Broiler</td></tr>
+                      <tr><th>Diet</th><td>100% Natural Organic Feed</td></tr>
+                      <tr><th>Processing</th><td>Same-Day Slaughter/Dressed</td></tr>
                     </>
                   ) : null}
 

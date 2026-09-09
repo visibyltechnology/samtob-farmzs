@@ -4,24 +4,84 @@ import './FAQ.css';
 
 const faqs = [
   {
-    question: "Do you sell live or slaughtered chickens?",
-    answer: "We offer both! You can order live birds, or choose our processing options during checkout: slaughtered, dressed, or frozen according to your preference."
+    question: "What is the December Rush?",
+    answer: "The December Rush is a special plan that lets you book your Christmas chickens early and pay in small weekly installments for 12 weeks."
   },
   {
-    question: "How much does delivery cost?",
-    answer: "Delivery within Ibadan is a flat rate of ₦2,000. If you are located outside Ibadan, please contact us on WhatsApp to arrange logistics. Farm pickup is always completely free!"
+    question: "How much does the chicken reservation cost?",
+    answer: "Weekly payments are based on the chicken's weight:<br/><br/>• 3.8kg–4.1kg: <strong>₦1,500</strong><br/>• 4.2kg–4.5kg: <strong>₦2,000</strong><br/>• 4.6kg–5kg: <strong>₦2,500</strong><br/>• 5.1kg–5.5kg: <strong>₦3,000</strong>"
   },
   {
-    question: "How do I make payment?",
-    answer: "Payment is fast and secure. You can make a direct bank transfer to our corporate account (Samtob p&c Ltd, 0127186331, Wema Bank) and upload your receipt on the checkout page."
+    question: "What is the minimum order for chickens?",
+    answer: "The minimum order is <strong>5 chickens</strong>, though we can sometimes make an exception for an order of 2."
   },
   {
-    question: "How long does processing and delivery take?",
-    answer: "We pride ourselves on same-day processing. Whether you order slaughtered, dressed, or frozen, your chicken is prepared fresh that day and dispatched to you immediately."
+    question: "When can I book my Christmas chickens?",
+    answer: "Booking is open from <strong>September 15th</strong> to <strong>September 30th</strong>."
   },
   {
-    question: "Are your chickens raised with artificial hormones?",
-    answer: "Absolutely not! Our birds are 100% farm-raised with no artificial hormones, antibiotics, or unnatural additives. We believe in providing pure, healthy poultry for your family."
+    question: "Where and when do I pick up my chickens?",
+    answer: "Pick-ups are at the farm in <strong>Aderin Village, Pagun Òkè omi off olodo, Ibadan</strong>, between <strong>December 20th and 29th</strong>. We also offer park pick up and door step delivery at a fee."
+  },
+  {
+    question: "Can I pick up my chickens at a near popular bustop if I don't want to visit the farm?",
+    answer: "Yes, park pick up is available for bulk buyers where we move the chicken from the farm closer to your location."
+  },
+  {
+    question: "Do you offer delivery for chickens?",
+    answer: "Yes, we deliver within Ibadan for a flat fee of <strong>₦2,000</strong>. Delivery outside Ibadan depends on your specific location (limited to South West Nigeria for now)."
+  },
+  {
+    question: "How do I pay for my chicken booking?",
+    answer: "Please pay to: <strong>Samtob p&c Ltd</strong>, <strong>0127186331</strong>, <strong>Wema Bank</strong>, and upload proof of payment to your dashboard on our website."
+  },
+  {
+    question: "What should I do after I pay?",
+    answer: "Once you've paid, upload it on your dashboard so we can confirm your booking payment and join our farm WhatsApp group."
+  },
+  {
+    question: "Why should I book my chickens with SAMTOB Farm?",
+    answer: "Our chickens are a high-protein, cost-effective alternative to cow meat, perfect for Christmas celebrations and other events."
+  },
+  {
+    question: "Where can I find the chicken order link?",
+    answer: "You can place your order directly through our website: <strong>https://samtob-farmzs.vercel.app</strong>"
+  },
+  {
+    question: "Does SAMTOB Farm have an Instagram page?",
+    answer: "Yes! You can follow us for updates and photos at <strong>www.instagram.com/samtobfarms</strong>."
+  },
+  {
+    question: "What is the farm WhatsApp group for?",
+    answer: "The group is where we share important updates regarding your booking confirmation and farm conversation."
+  },
+  {
+    question: "Can I book my chickens after September 30th?",
+    answer: "Yes, but the promo price expires Sept 30 and normal price resumes from October 1st with a 4-8 weeks payment plan."
+  },
+  {
+    question: "Are these chickens good for large events?",
+    answer: "Yes, our chickens are specifically raised to be a high-protein, cost-effective alternative to cow meat for large gatherings. So you can confidently book ahead of your next event or book to meet your organization's needs."
+  },
+  {
+    question: "Is the ₦2,000 delivery fee the same for all of Ibadan?",
+    answer: "Yes, we charge a flat fee of ₦2,000 for any delivery within Ibadan."
+  },
+  {
+    question: "Which bank account should I use for chicken payments?",
+    answer: "Please ensure you pay into the <strong>Wema Bank</strong> account (<strong>0127186331</strong>) under the name <strong>Samtob p&c Ltd</strong>."
+  },
+  {
+    question: "Can I pick up my chickens during the Christmas week?",
+    answer: "Yes, you can pick up your chickens any day between <strong>December 20th and December 29th</strong> at the farm for the December Christmas Rush or contact us via email or WhatsApp for special bulk orders for other events."
+  },
+  {
+    question: "How do I contact the farm for help?",
+    answer: "The best way to get support is by joining our WhatsApp group or messaging us on Instagram."
+  },
+  {
+    question: "Does the payment plan cover all chickens?",
+    answer: "Yes, the 12-week installment plan applies to all four weight categories, from 3.8kg up to 5.5kg."
   }
 ];
 
@@ -36,12 +96,12 @@ export default function FAQ() {
     <section className="faq-section section-padding">
       <div className="container">
         <div className="faq-header text-center">
-          <span className="badge badge-gold">Got Questions?</span>
+          <span className="badge badge-gold">December Rush Offer</span>
           <h2 className="faq-title">
             Frequently Asked <span className="title-accent-gold">Questions</span>
           </h2>
           <p className="faq-subtitle">
-            Everything you need to know about ordering from Samtob Farmzs.
+            Everything you need to know about booking your Christmas chickens with SAMTOB Farmzs.
           </p>
         </div>
 
@@ -62,9 +122,9 @@ export default function FAQ() {
                 </div>
                 <div 
                   className="faq-answer-wrapper" 
-                  style={{ maxHeight: isOpen ? '200px' : '0' }}
+                  style={{ maxHeight: isOpen ? '400px' : '0' }}
                 >
-                  <p className="faq-answer">{faq.answer}</p>
+                  <p className="faq-answer" dangerouslySetInnerHTML={{ __html: faq.answer }}></p>
                 </div>
               </div>
             );

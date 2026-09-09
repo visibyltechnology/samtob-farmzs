@@ -33,18 +33,17 @@ export default function Hero() {
         <div className="hero-content">
           <div className="hero-badge">
             <Leaf size={14} />
-            <span>Farm Fresh · Ibadan, Nigeria</span>
+            <span>Save for your X-mas Chicken!</span>
           </div>
 
           <h1 className="hero-title">
-            Order Farm-Fresh<br />
-            <span className="hero-title-accent">Chickens</span>{' '}
-            <span className="hero-title-white">Delivered to You</span>
+            Join the <span className="hero-title-accent">December Rush</span><br />
+            <span className="hero-title-white">12-Week Installment Plan</span>
           </h1>
 
           <p className="hero-subtitle">
-            Healthy, hormone-free chickens raised on our farm — choose your weight, 
-            pick your processing option, and we deliver right to your door in Ibadan. 
+            Book your Christmas chickens early and pay in small weekly installments.
+            Healthy, hormone-free chickens raised on our farm delivered right to your door in Ibadan. 
             Farm pickup always free.
           </p>
 

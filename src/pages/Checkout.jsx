@@ -24,22 +24,7 @@ const PROCESSING_OPTIONS = [
   { id: 'frozen', label: 'Frozen', desc: 'Dressed and frozen for preservation', icon: '❄️' },
 ];
 
-const INSTALLMENT_OPTIONS = [
-  ...Array.from({ length: 11 }, (_, i) => ({
-    id: `${i + 2}_weeks`,
-    label: `${i + 2} Weeks`,
-    type: 'weekly',
-    duration: i + 2,
-    interestRate: (i + 2) * 0.015 // 1.5% per week
-  })),
-  ...Array.from({ length: 5 }, (_, i) => ({
-    id: `${i + 2}_months`,
-    label: `${i + 2} Months`,
-    type: 'monthly',
-    duration: i + 2,
-    interestRate: (i + 2) * 0.05 // 5% per month
-  }))
-];
+// December Rush Installment Options logic is now in ProductDetails.jsx
 
 let klumpScriptPromise = null;
 function loadKlumpScript() {
@@ -109,8 +94,7 @@ export default function Checkout() {
     address: '',
     city: '',
     state: 'Oyo',
-    payMethod: 'bank_transfer',
-    installmentPlan: '4_weeks'
+    payMethod: 'bank_transfer'
   });
 
   const [receiptFile, setReceiptFile] = useState(null);
@@ -122,9 +106,7 @@ export default function Checkout() {
   const deliveryFee = selectedDelivery.fee || 0;
   const subTotal = cartTotal + deliveryFee;
   const grandTotal = subTotal;
-  const depositAmount = grandTotal;
-  const recurringAmount = 0;
-  const installmentInterest = 0;
+  const hasInstallmentItems = cart.some(item => item.isInstallment);
 
   useEffect(() => {
     if (!authLoading) {
@@ -558,9 +540,15 @@ export default function Checkout() {
                     </div>
                     <div style={{ height: '1px', background: 'var(--dark-border)' }} />
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ fontWeight: 800, color: '#fff' }}>Total Payable</span>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ fontWeight: 800, color: '#fff' }}>Total Payable Now</span>
                       <span style={{ fontWeight: 800, fontSize: '18px', color: '#F9A825' }}>{formatCurrency(grandTotal)}</span>
                     </div>
+                    {hasInstallmentItems && (
+                      <div style={{ padding: '8px', background: 'rgba(249,168,37,0.1)', border: '1px solid rgba(249,168,37,0.3)', borderRadius: 'var(--radius-sm)', marginTop: '8px', color: '#F9A825', fontSize: '12px', fontWeight: 600 }}>
+                        Includes 1st week payment for December Rush installment(s). Subsequent payments will be collected weekly.
+                      </div>
+                    )}
                   </div>
 
                   {formData.payMethod === 'bank_transfer' && (
@@ -605,112 +593,7 @@ export default function Checkout() {
                     </div>
                   )}
 
-                  {formData.payMethod === 'installment' && (
-                    <div style={{ background: 'var(--dark)', border: '1px solid var(--primary)', borderRadius: 'var(--radius-md)', padding: '20px', marginBottom: '8px' }}>
-                      <h4 style={{ fontSize: '15px', fontWeight: 800, color: 'var(--primary)', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <Truck size={18} /> Installment Plan Details
-                      </h4>
-                      <p style={{ fontSize: '13px', color: 'var(--gray-1)', marginBottom: '16px' }}>
-                        Choose a payment plan that works for you. A 30% upfront deposit is required before shipping.
-                      </p>
 
-                      <div style={{ marginBottom: '20px' }}>
-                        <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: 'var(--white)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Select Duration</label>
-                        <select 
-                          value={formData.installmentPlan}
-                          onChange={(e) => setFormData(p => ({ ...p, installmentPlan: e.target.value }))}
-                          style={{ width: '100%', background: 'var(--black)', border: '1px solid var(--dark-border)', borderRadius: 'var(--radius-sm)', padding: '12px 14px', fontSize: '14px', color: 'var(--white)', outline: 'none' }}
-                        >
-                          <optgroup label="Weekly Plans (2% interest/week)">
-                            {INSTALLMENT_OPTIONS.filter(o => o.type === 'weekly').map(opt => (
-                              <option key={opt.id} value={opt.id}>{opt.label} ({(opt.interestRate * 100).toFixed(0)}% Interest)</option>
-                            ))}
-                          </optgroup>
-                          <optgroup label="Monthly Plans (5% interest/month)">
-                            {INSTALLMENT_OPTIONS.filter(o => o.type === 'monthly').map(opt => (
-                              <option key={opt.id} value={opt.id}>{opt.label} ({(opt.interestRate * 100).toFixed(0)}% Interest)</option>
-                            ))}
-                          </optgroup>
-                        </select>
-                      </div>
-                      
-                      <div style={{ background: 'var(--black)', padding: '16px', borderRadius: 'var(--radius-sm)', display: 'grid', gap: '12px', border: '1px solid var(--dark-border)', marginBottom: '20px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                          <span style={{ color: 'var(--gray-1)', fontSize: '13px' }}>Subtotal (inc. Delivery)</span>
-                          <span style={{ fontWeight: 700, fontSize: '14px' }}>{formatCurrency(subTotal)}</span>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                          <span style={{ color: 'var(--warning)', fontSize: '13px' }}>Interest ({(activePlan.interestRate * 100).toFixed(0)}%)</span>
-                          <span style={{ fontWeight: 700, fontSize: '14px', color: 'var(--warning)' }}>+{formatCurrency(installmentInterest)}</span>
-                        </div>
-                        <div style={{ height: '1px', background: 'var(--dark-border)', margin: '4px 0' }}></div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                          <span style={{ color: 'var(--white)', fontSize: '14px', fontWeight: 800 }}>Total Payable</span>
-                          <span style={{ fontWeight: 800, fontSize: '16px', color: 'var(--primary)' }}>{formatCurrency(grandTotal)}</span>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px' }}>
-                          <span style={{ color: 'var(--success)', fontSize: '13px', fontWeight: 700 }}>Upfront Deposit (30%)</span>
-                          <span style={{ fontWeight: 800, fontSize: '14px', color: 'var(--success)' }}>{formatCurrency(depositAmount)}</span>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                          <span style={{ color: 'var(--gray-1)', fontSize: '13px' }}>Remaining ({activePlan.duration} payments)</span>
-                          <span style={{ fontWeight: 700, fontSize: '14px' }}>{formatCurrency(recurringAmount)} / {activePlan.type === 'weekly' ? 'week' : 'month'}</span>
-                        </div>
-                      </div>
-
-                      <div>
-                        <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: 'var(--white)', marginBottom: '8px' }}>Upload Initial Deposit Receipt <span style={{ color: 'var(--danger)' }}>*</span></label>
-                        <p style={{ fontSize: '12px', color: 'var(--gray-1)', marginBottom: '12px' }}>Please transfer your deposit of <strong>{formatCurrency(depositAmount)}</strong> to the account below.</p>
-                        
-                        <div style={{ background: 'var(--black)', padding: '16px', borderRadius: 'var(--radius-sm)', display: 'grid', gap: '12px', border: '1px solid var(--dark-border)', marginBottom: '20px' }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ color: 'var(--gray-1)', fontSize: '13px' }}>Bank Name</span>
-                            <span style={{ fontWeight: 700, fontSize: '14px' }}>JaizBank</span>
-                          </div>
-                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ color: 'var(--gray-1)', fontSize: '13px' }}>Account Name</span>
-                            <span style={{ fontWeight: 700, fontSize: '14px' }}>Akilapa &amp; Sons Auto Workshop</span>
-                          </div>
-                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ color: 'var(--gray-1)', fontSize: '13px' }}>Account Number</span>
-                            <span style={{ fontWeight: 800, fontSize: '18px', color: 'var(--white)', letterSpacing: '1px' }}>0005998212</span>
-                          </div>
-                        </div>
-
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                          <label style={{ flex: 1, background: 'var(--dark-card)', border: '1.5px dashed var(--dark-border)', padding: '16px', borderRadius: 'var(--radius-sm)', textAlign: 'center', cursor: 'pointer', transition: 'var(--transition)' }}>
-                            <Upload size={20} color="var(--primary)" style={{ margin: '0 auto 8px' }} />
-                            <span style={{ fontSize: '13px', color: 'var(--gray-1)' }}>Click to upload screenshot</span>
-                            <input type="file" accept="image/*" onChange={handleReceiptChange} style={{ display: 'none' }} />
-                          </label>
-                          {receiptPreview && (
-                            <div style={{ width: '80px', height: '80px', borderRadius: 'var(--radius-sm)', overflow: 'hidden', border: '1px solid var(--dark-border)' }}>
-                              <img src={receiptPreview} alt="Receipt preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {formData.payMethod === 'klump_bnpl' && (
-                    <div style={{ background: 'var(--dark)', border: '1px solid var(--primary)', borderRadius: 'var(--radius-md)', padding: '20px', marginBottom: '8px' }}>
-                      <h4 style={{ fontSize: '15px', fontWeight: 800, color: 'var(--primary)', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <ShieldCheck size={18} /> Buy Now, Pay Later with Klump
-                      </h4>
-                      <p style={{ fontSize: '13px', color: 'var(--gray-1)', marginBottom: '16px' }}>
-                        Pay for your order in easy installments. Klump will handle your repayment schedule, and your order will be processed immediately upon successful initial payment.
-                      </p>
-                      
-                      <div style={{ background: 'var(--black)', padding: '16px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--dark-border)', marginBottom: '16px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                          <span style={{ color: 'var(--gray-1)', fontSize: '13px' }}>Order Total</span>
-                          <span style={{ fontWeight: 800, fontSize: '16px', color: 'var(--primary)' }}>{formatCurrency(subTotal)}</span>
-                        </div>
-                      </div>
-                      <p style={{ fontSize: '12px', color: 'var(--gray-2)' }}>No manual receipt upload is required. You will be redirected to Klump to complete your payment.</p>
-                    </div>
-                  )}
 
                   {/* Terms Checkboxes */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '24px', marginBottom: '16px' }}>

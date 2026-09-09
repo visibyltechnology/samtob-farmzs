@@ -25,9 +25,9 @@ export default function Cart() {
           <div style={{ textAlign: 'center', padding: '60px 20px', background: 'var(--dark-card)', border: '1px solid var(--dark-border)', borderRadius: 'var(--radius-lg)' }}>
             <ShoppingCart size={72} color="var(--gray-2)" strokeWidth={1} style={{ margin: '0 auto 20px' }} />
             <h2 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '8px' }}>Your cart is empty</h2>
-            <p style={{ color: 'var(--gray-1)', marginBottom: '24px' }}>Browse our car parts and add items to get started!</p>
-            <Link to="/parts" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'var(--primary)', color: '#fff', padding: '14px 28px', borderRadius: 'var(--radius-md)', fontWeight: 800, textDecoration: 'none' }}>
-              Shop Parts <ArrowRight size={18} />
+            <p style={{ color: 'var(--gray-1)', marginBottom: '24px' }}>Browse our farm products and add items to get started!</p>
+            <Link to="/shop" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'var(--primary)', color: '#fff', padding: '14px 28px', borderRadius: 'var(--radius-md)', fontWeight: 800, textDecoration: 'none' }}>
+              Shop Farm <ArrowRight size={18} />
             </Link>
           </div>
         ) : (
@@ -49,7 +49,13 @@ export default function Cart() {
                   {/* Details */}
                   <div className="item-details">
                     <div style={{ fontSize: '10px', color: 'var(--gray-1)', textTransform: 'uppercase', fontWeight: 600, letterSpacing: '0.5px', marginBottom: '2px' }}>{item.brand}</div>
-                    <Link to={`/product/${item.id}`} className="item-name" style={{ color: 'var(--white)', marginBottom: '10px' }}>{item.name}</Link>
+                    <Link to={`/product/${item.id}`} className="item-name" style={{ color: 'var(--white)', marginBottom: '4px' }}>{item.name}</Link>
+                    
+                    {item.isInstallment && (
+                      <div style={{ fontSize: '12px', color: 'var(--gold)', fontWeight: 600, marginBottom: '6px' }}>
+                        ⏱ 12-Week Installment: {formatCurrency(item.price)} / wk
+                      </div>
+                    )}
 
                     {/* Qty + Remove row */}
                     <div className="cart-row-actions" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '8px', flexWrap: 'wrap' }}>

@@ -44,8 +44,8 @@ export default function ProductGrid() {
   }, []);
 
   const featuredProducts = products.filter(p => p.featured);
-  const tyres = featuredProducts.filter(p => p.featuredSection === 'Fresh Farm Chickens');
-  const otherParts = featuredProducts.filter(p => p.featuredSection === 'Processed Chickens');
+  const liveBirds = featuredProducts.filter(p => p.featuredSection === 'Fresh Farm Chickens');
+  const processed = featuredProducts.filter(p => p.featuredSection === 'Processed Chickens');
 
   return (
     <section className="section-padding product-section">
@@ -62,7 +62,7 @@ export default function ProductGrid() {
             </div>
             <Link to="/shop?category=Chicken" className="deal-see-all">See All &gt;</Link>
           </div>
-          <ScrollableProductSlider products={tyres} />
+          <ScrollableProductSlider products={liveBirds} />
         </div>
 
         {/* Row 2: Other Parts */}
@@ -76,7 +76,7 @@ export default function ProductGrid() {
             </div>
             <Link to="/shop" className="deal-see-all">See All &gt;</Link>
           </div>
-          <ScrollableProductSlider products={otherParts} />
+          <ScrollableProductSlider products={processed} />
         </div>
         
       </div>

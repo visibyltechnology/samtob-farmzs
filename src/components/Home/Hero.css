@@ -106,6 +106,27 @@
   -webkit-text-stroke: 0;
 }
 
+/* December Rush animated title */
+@keyframes decemberRushShimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes decemberRushPulse {
+  0%, 100% { text-shadow: 0 0 20px rgba(249, 168, 37, 0.4), 0 0 40px rgba(249, 168, 37, 0.2); transform: scale(1); }
+  50% { text-shadow: 0 0 30px rgba(249, 168, 37, 0.8), 0 0 60px rgba(249, 168, 37, 0.4); transform: scale(1.02); }
+}
+
+.december-rush-animate {
+  display: inline-block;
+  background: linear-gradient(90deg, #F9A825 0%, #fff700 25%, #F9A825 50%, #ff8f00 75%, #F9A825 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: decemberRushShimmer 2.5s linear infinite, decemberRushPulse 2.5s ease-in-out infinite;
+}
+
 .hero-title-white {
   color: #fff;
 }

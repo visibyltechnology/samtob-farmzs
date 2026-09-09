@@ -1,4 +1,4 @@
-// Full taxonomy — Samtob Farmzs
+﻿// Full taxonomy — Samtob Farms
 // Department > Category > Subcategory hierarchy
 export const categoryTaxonomy = {
   'Poultry': {
@@ -52,7 +52,7 @@ export const categorySpecs = {
   // Generic fallback for any other category
   'default': [
     { id: 'weight',       label: 'Weight / Quantity',     type: 'text',   placeholder: 'e.g. 5kg', optional: true },
-    { id: 'origin',       label: 'Source',                type: 'text',   placeholder: 'e.g. Samtob Farmzs' },
+    { id: 'origin',       label: 'Source',                type: 'text',   placeholder: 'e.g. Samtob Farms' },
     { id: 'quality',      label: 'Quality Grade',         type: 'select', options: ['Premium (Grade A)', 'Standard (Grade B)'] },
   ],
 };

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useSearchParams, useParams } from 'react-router-dom';
 
 import { getProducts } from '../utils/productService';
@@ -190,9 +190,9 @@ export default function Shop() {
   return (
     <main className="main-content" id="main">
       <SEO
-        title={activeCategory ? `Buy ${activeCategory} Chickens | Samtob Farmzs` : searchQuery ? `"${searchQuery}" - Farm Chickens | Samtob Farmzs` : 'Shop Fresh Farm Chickens | Samtob Farmzs — Ibadan'}
+        title={activeCategory ? `Buy ${activeCategory} Chickens | Samtob Farms` : searchQuery ? `"${searchQuery}" - Farm Chickens | Samtob Farms` : 'Shop Fresh Farm Chickens | Samtob Farms — Ibadan'}
         description={activeCategory
-          ? `Shop ${activeCategory} farm-raised chickens at Samtob Farmzs. Fresh, hormone-free, delivered in Ibadan.`
+          ? `Shop ${activeCategory} farm-raised chickens at Samtob Farms. Fresh, hormone-free, delivered in Ibadan.`
           : 'Browse our selection of fresh farm chickens. Choose your weight range, processing option and delivery. Ibadan, Nigeria.'}
         url="/shop"
       />

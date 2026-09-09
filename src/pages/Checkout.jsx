@@ -18,10 +18,9 @@ const DELIVERY_OPTIONS = [
 ];
 
 const PROCESSING_OPTIONS = [
-  { id: 'live', label: 'Live Chicken', desc: 'Bird as-is, no processing', icon: '🐔' },
-  { id: 'slaughtered', label: 'Slaughtered', desc: 'Slaughtered and blood-drained', icon: '🔪' },
-  { id: 'dressed', label: 'Dressed (Plucked)', desc: 'Slaughtered, plucked and cleaned', icon: '🍗' },
-  { id: 'frozen', label: 'Frozen', desc: 'Dressed and frozen for preservation', icon: '❄️' },
+  { id: 'live', label: 'Live Chicken', desc: 'Bird as-is, no processing', icon: '🐔', fee: 0 },
+  { id: 'slaughtered_dressed', label: 'Slaughter + Dressing', desc: 'Slaughtered, plucked & cleaned — ₦500 per bird', icon: '🍗', fee: 500 },
+  { id: 'frozen', label: 'Frozen', desc: 'Dressed & frozen — ₦1,000 per bird (requires 24hrs pre-notice)', icon: '❄️', fee: 1000 },
 ];
 
 // December Rush Installment Options logic is now in ProductDetails.jsx
@@ -104,7 +103,10 @@ export default function Checkout() {
 
   const selectedDelivery = DELIVERY_OPTIONS.find(d => d.id === deliveryOption) || DELIVERY_OPTIONS[0];
   const deliveryFee = selectedDelivery.fee || 0;
-  const subTotal = cartTotal + deliveryFee;
+  const totalQty = cart.reduce((sum, item) => sum + (item.qty || 1), 0);
+  const selectedProcessing = PROCESSING_OPTIONS.find(p => p.id === processingOption) || PROCESSING_OPTIONS[0];
+  const processingFee = (selectedProcessing.fee || 0) * totalQty;
+  const subTotal = cartTotal + deliveryFee + processingFee;
   const grandTotal = subTotal;
   const hasInstallmentItems = cart.some(item => item.isInstallment);
 
@@ -463,8 +465,8 @@ export default function Checkout() {
 
               {step === 1 && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                  <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '10px' }}>🍗 Processing Option</h3>
-                  <p style={{ fontSize: '13px', color: 'var(--gray-1)', marginTop: '-10px' }}>How would you like your chicken prepared?</p>
+                  <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '10px' }}>🍗 Select Processing</h3>
+                  <p style={{ fontSize: '13px', color: 'var(--gray-1)', marginTop: '-10px' }}>Tell us how you want your chicken — Live, Slaughtered & Dressed, or Frozen.</p>
                   {PROCESSING_OPTIONS.map(opt => (
                     <div key={opt.id} onClick={() => setProcessingOption(opt.id)}
                       style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 16px', border: `2px solid ${processingOption === opt.id ? '#4CAF50' : 'var(--dark-border)'}`, borderRadius: 'var(--radius-md)', cursor: 'pointer', background: processingOption === opt.id ? 'rgba(76,175,80,0.07)' : 'var(--dark)', transition: 'all 0.2s' }}
@@ -538,6 +540,12 @@ export default function Checkout() {
                       <span style={{ color: 'var(--gray-1)' }}>Delivery Fee</span>
                       <span style={{ fontWeight: 700, color: deliveryFee === 0 ? '#4CAF50' : 'inherit' }}>{deliveryFee === 0 ? 'FREE' : formatCurrency(deliveryFee)}</span>
                     </div>
+                    {processingFee > 0 && (
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ color: 'var(--gray-1)' }}>Processing Fee ({totalQty} birds)</span>
+                        <span style={{ fontWeight: 700 }}>{formatCurrency(processingFee)}</span>
+                      </div>
+                    )}
                     <div style={{ height: '1px', background: 'var(--dark-border)' }} />
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                       <span style={{ fontWeight: 800, color: '#fff' }}>Total Payable Now</span>

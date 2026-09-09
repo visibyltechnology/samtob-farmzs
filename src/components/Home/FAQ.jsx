@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import './FAQ.css';
 
@@ -45,7 +45,7 @@ const faqs = [
   },
   {
     question: "Where can I find the chicken order link?",
-    answer: "You can place your order directly through our website: <strong>https://samtob-farmzs.vercel.app</strong>"
+    answer: "You can place your order directly through our website: <strong>https://samtob-Farms.vercel.app</strong>"
   },
   {
     question: "Does SAMTOB Farm have an Instagram page?",
@@ -101,7 +101,7 @@ export default function FAQ() {
             Frequently Asked <span className="title-accent-gold">Questions</span>
           </h2>
           <p className="faq-subtitle">
-            Everything you need to know about booking your Christmas chickens with SAMTOB Farmzs.
+            Everything you need to know about booking your Christmas chickens with SAMTOB Farms.
           </p>
         </div>
 

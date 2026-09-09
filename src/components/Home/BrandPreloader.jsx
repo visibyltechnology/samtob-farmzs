@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import './BrandPreloader.css';
 
 export default function BrandPreloader({ onComplete }) {
@@ -24,9 +24,9 @@ export default function BrandPreloader({ onComplete }) {
   return (
     <div className="preloader-overlay">
       <div className="preloader-content">
-        <img src="/logo.jpeg" alt="Samtob Farmzs" className="preloader-logo" />
+        <img src="/logo.jpeg" alt="Samtob Farms" className="preloader-logo" />
         <h1 className="preloader-brand">
-          Samtob<span className="logo-accent">Farmzs</span>
+          Samtob<span className="logo-accent">Farms</span>
         </h1>
         <p className="preloader-tagline">Healthy Chickens • Fresh Future</p>
         <div className="preloader-bar-wrap">

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Menu, X, Search, User, LogIn, Heart, ShieldCheck, LogOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -41,9 +41,9 @@ export default function Navbar() {
 
         {/* ── Logo + Brand Name ── */}
         <Link to="/" className="navbar-logo">
-          <img src="/logo.jpeg" alt="Samtob Farmzs Logo" className="nav-logo-img" />
+          <img src="/logo.jpeg" alt="Samtob Farms Logo" className="nav-logo-img" />
           <span className="logo-text">
-            Samtob<span className="logo-accent">Farmzs</span>
+            Samtob<span className="logo-accent">Farms</span>
           </span>
         </Link>
 

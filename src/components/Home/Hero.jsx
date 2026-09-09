@@ -37,8 +37,8 @@ export default function Hero() {
           </div>
 
           <h1 className="hero-title">
-            Join the <span className="hero-title-accent">December Rush</span><br />
-            <span className="hero-title-white">12-Week Installment Plan</span>
+            Join the <span className="hero-title-accent december-rush-animate">December Rush</span><br />
+            <span className="hero-title-white">Installment Plan</span>
           </h1>
 
           <p className="hero-subtitle">

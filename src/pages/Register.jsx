@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, UserPlus, ShieldCheck, Lock, CheckCircle, Zap, Loader2, X } from 'lucide-react';
 import { sendOTPEmail } from '../utils/emailService';
@@ -75,9 +75,9 @@ export default function Register() {
 
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
           <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', textDecoration: 'none' }}>
-            <img src="/logo.jpeg" alt="Samtob Farmzs" style={{ width: '54px', height: '54px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary)' }} />
+            <img src="/logo.jpeg" alt="Samtob Farms" style={{ width: '54px', height: '54px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary)' }} />
             <div style={{ fontFamily: 'var(--font-heading)', fontSize: '22px', fontWeight: 900, color: 'var(--text-main)', lineHeight: 1.1 }}>
-              Samtob <span style={{ color: 'var(--primary)' }}>Farmzs</span>
+              Samtob <span style={{ color: 'var(--primary)' }}>Farms</span>
             </div>
           </Link>
           <p style={{ color: 'var(--text-muted)', fontSize: '13px', marginTop: '10px' }}>Fresh Farm Chickens from Ibadan</p>
@@ -88,7 +88,7 @@ export default function Register() {
             <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '26px', fontWeight: 800, color: 'var(--white)', display: 'flex', alignItems: 'center', gap: '10px' }}>
               <UserPlus size={24} color="var(--primary)" /> Create Account
             </h1>
-            <p style={{ color: 'var(--text-muted)', fontSize: '14px', marginTop: '4px' }}>Join Samtob Farmzs to start ordering fresh chickens</p>
+            <p style={{ color: 'var(--text-muted)', fontSize: '14px', marginTop: '4px' }}>Join Samtob Farms to start ordering fresh chickens</p>
           </div>
 
           <div style={{ padding: '32px' }}>
@@ -194,7 +194,7 @@ export default function Register() {
             <div style={{ color: 'var(--gray-1)', fontSize: '14px', lineHeight: 1.6, marginBottom: '32px' }}>
               {showModal === 'terms' ? (
                 <>
-                  <p style={{ marginBottom: '16px' }}>By registering, you agree to Samtob Farmzs' terms of service. All orders are confirmed once payment receipt is uploaded and verified.</p>
+                  <p style={{ marginBottom: '16px' }}>By registering, you agree to Samtob Farms' terms of service. All orders are confirmed once payment receipt is uploaded and verified.</p>
                   <h4 style={{ color: 'var(--white)', fontWeight: 700, marginBottom: '8px' }}>Order Policy</h4>
                   <p style={{ marginBottom: '16px' }}>Once an order is confirmed and payment verified, it will be processed same day. Cancellations must be made before processing begins. Contact us on WhatsApp (+234 705 531 0766) for urgent changes.</p>
                   <h4 style={{ color: 'var(--white)', fontWeight: 700, marginBottom: '8px' }}>Account Security</h4>

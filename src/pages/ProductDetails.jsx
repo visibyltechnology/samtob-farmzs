@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { getProduct } from '../utils/productService';
 import { getProductIcon, formatCurrency } from '../utils/helpers';
@@ -16,7 +16,7 @@ export default function ProductDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(0);
-  const [qty, setQty] = useState(1);
+  const [qty, setQty] = useState(2);
   const [activeThumb, setActiveThumb] = useState(0);
   const [selectedColor, setSelectedColor] = useState('');
   
@@ -25,13 +25,19 @@ export default function ProductDetails() {
 
   // December Rush Installment State
   const [paymentPlan, setPaymentPlan] = useState('full'); // 'full' or 'installment'
-  const installmentOptions = [
-    { id: 'small', label: '3.8kg–4.1kg', price: 1500, total: 18000 },
-    { id: 'medium', label: '4.2kg–4.5kg', price: 2000, total: 24000 },
-    { id: 'large', label: '4.6kg–5.0kg', price: 2500, total: 30000 },
-    { id: 'xlarge', label: '5.1kg–5.5kg', price: 3000, total: 36000 }
+  const [installmentDuration, setInstallmentDuration] = useState(12);
+  const baseInstallmentOptions = [
+    { id: 'small', label: '3.8kg–4.1kg', total: 18000 },
+    { id: 'medium', label: '4.2kg–4.5kg', total: 24000 },
+    { id: 'large', label: '4.6kg–5.0kg', total: 30000 },
+    { id: 'xlarge', label: '5.1kg–5.5kg', total: 36000 }
   ];
-  const [selectedInstallment, setSelectedInstallment] = useState(installmentOptions[1]);
+  const installmentOptions = baseInstallmentOptions.map(opt => ({
+    ...opt,
+    price: Math.round(opt.total / installmentDuration)
+  }));
+  const [selectedInstallmentId, setSelectedInstallmentId] = useState('medium');
+  const selectedInstallment = installmentOptions.find(opt => opt.id === selectedInstallmentId) || installmentOptions[1];
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -100,8 +106,8 @@ export default function ProductDetails() {
   return (
     <main className="main-content" id="main">
       <SEO
-        title={`${product.name} | Samtob Farmzs`}
-        description={`Buy ${product.name} in Ibadan, Nigeria at Samtob Farmzs. ₦${Math.ceil(product.price || 0).toLocaleString('en-NG')}. Fresh farm chickens, fast delivery.`}
+        title={`${product.name} | Samtob Farms`}
+        description={`Buy ${product.name} in Ibadan, Nigeria at Samtob Farms. ₦${Math.ceil(product.price || 0).toLocaleString('en-NG')}. Fresh farm chickens, fast delivery.`}
         image={product.images?.[0] || product.imgUrl || '/logo.jpeg'}
         url={`/product/${product.id}`}
         type="product"
@@ -193,13 +199,13 @@ export default function ProductDetails() {
             </div>
             {paymentPlan === 'installment' && (
               <div style={{ fontSize: '13px', color: 'var(--success)', marginTop: '4px', fontWeight: 600 }}>
-                Total: {formatCurrency(selectedInstallment.total)} over 12 weeks
+                Total: {formatCurrency(selectedInstallment.total)} over {installmentDuration} weeks
               </div>
             )}
           </div>
 
           <div className="pd-variants" style={{ marginTop: '24px' }}>
-            <div className="variant-title">Payment Plan: <span style={{ color: 'var(--white)' }}>{paymentPlan === 'full' ? 'Pay in Full' : 'December Rush (12-Week Installment)'}</span></div>
+            <div className="variant-title">Payment Plan: <span style={{ color: 'var(--white)' }}>{paymentPlan === 'full' ? 'Pay in Full' : 'December Rush Installment'}</span></div>
             <div className="variant-options">
               <button 
                 className={`variant-btn ${paymentPlan === 'full' ? 'active' : ''}`}
@@ -219,13 +225,39 @@ export default function ProductDetails() {
 
           {paymentPlan === 'installment' && (
             <div className="pd-variants" style={{ marginTop: '16px' }}>
+              <div className="variant-title">Installment Duration: <span style={{ color: 'var(--white)' }}>{installmentDuration} Weeks</span></div>
+              <div className="variant-options">
+                <button 
+                  className={`variant-btn ${installmentDuration === 12 ? 'active' : ''}`}
+                  onClick={() => setInstallmentDuration(12)}
+                >
+                  12 Weeks
+                </button>
+                <button 
+                  className={`variant-btn ${installmentDuration === 8 ? 'active' : ''}`}
+                  onClick={() => setInstallmentDuration(8)}
+                >
+                  8 Weeks
+                </button>
+                <button 
+                  className={`variant-btn ${installmentDuration === 4 ? 'active' : ''}`}
+                  onClick={() => setInstallmentDuration(4)}
+                >
+                  4 Weeks
+                </button>
+              </div>
+            </div>
+          )}
+
+          {paymentPlan === 'installment' && (
+            <div className="pd-variants" style={{ marginTop: '16px' }}>
               <div className="variant-title">Select Chicken Weight: <span style={{ color: 'var(--white)' }}>{selectedInstallment.label}</span></div>
               <div className="variant-options" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                 {installmentOptions.map(opt => (
                   <button 
                     key={opt.id} 
                     className={`variant-btn ${selectedInstallment.id === opt.id ? 'active' : ''}`}
-                    onClick={() => setSelectedInstallment(opt)}
+                    onClick={() => setSelectedInstallmentId(opt.id)}
                     style={{ justifyContent: 'center' }}
                   >
                     {opt.label}
@@ -267,11 +299,11 @@ export default function ProductDetails() {
           <hr style={{ border: 'none', borderTop: '1px solid var(--dark-border)', margin: 0 }} />
 
           <div className="pas-qty">
-            <span>Quantity</span>
+            <span>Quantity (Min: 2)</span>
             <div className="qty-selector">
-              <button onClick={() => setQty(q => Math.max(1, q - 1))}>-</button>
+              <button onClick={() => setQty(q => Math.max(2, q - 1))} disabled={qty <= 2} style={{ cursor: qty <= 2 ? 'not-allowed' : 'pointer', opacity: qty <= 2 ? 0.5 : 1 }}>-</button>
               <input type="number" value={qty} readOnly />
-              <button onClick={() => setQty(q => Math.min(10, q + 1))}>+</button>
+              <button onClick={() => setQty(q => Math.min(100, q + 1))}>+</button>
             </div>
           </div>
 
@@ -283,7 +315,7 @@ export default function ProductDetails() {
                     price: selectedInstallment.price,
                     name: `${product.name} (Installment: ${selectedInstallment.label})`,
                     isInstallment: true,
-                    installmentDetails: selectedInstallment
+                    installmentDetails: { ...selectedInstallment, duration: installmentDuration }
                   } 
                 : product;
               addToCart(productToAdd, qty);

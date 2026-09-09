@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Helmet } from 'react-helmet-async';
 
 /**
@@ -13,19 +13,19 @@ export default function SEO({
   type = 'website',
   product, // optional: pass a product object {name, price, image} for product pages
 }) {
-  const siteName = 'Samtob Farmzs';
+  const siteName = 'Samtob Farms';
   const defaultTitle = `${siteName} | Fresh Farm Chickens — Ibadan, Nigeria`;
   const defaultDesc =
-    'Order fresh, farm-raised chickens from Samtob Farmzs in Ibadan, Nigeria. Choose your weight, processing option (live, dressed, frozen), and get delivery within Ibadan for just ₦2,000. Farm pickup always free.';
+    'Order fresh, farm-raised chickens from Samtob Farms in Ibadan, Nigeria. Choose your weight, processing option (live, dressed, frozen), and get delivery within Ibadan for just ₦2,000. Farm pickup always free.';
 
   const resolvedTitle = title ? `${title} | ${siteName}` : defaultTitle;
   const resolvedDesc = description || defaultDesc;
   const resolvedUrl = url
-    ? `https://samtobfarmzs2.netlify.app${url}`
-    : 'https://samtobfarmzs2.netlify.app/';
+    ? `https://samtobFarms2.netlify.app${url}`
+    : 'https://samtobFarms2.netlify.app/';
   const resolvedImage = image?.startsWith('http')
     ? image
-    : `https://samtobfarmzs2.netlify.app${image}`;
+    : `https://samtobFarms2.netlify.app${image}`;
 
   // Build Product structured data if a product object is passed
   const productSchema = product
@@ -34,8 +34,8 @@ export default function SEO({
         '@type': 'Product',
         name: product.name,
         image: [product.image || product.imgUrl],
-        description: product.description || `Buy ${product.name} at Samtob Farmzs Nigeria`,
-        brand: { '@type': 'Brand', name: product.brand || 'Samtob Farmzs' },
+        description: product.description || `Buy ${product.name} at Samtob Farms Nigeria`,
+        brand: { '@type': 'Brand', name: product.brand || 'Samtob Farms' },
         offers: {
           '@type': 'Offer',
           url: resolvedUrl,

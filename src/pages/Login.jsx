@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Eye, EyeOff, LogIn, ShieldCheck, Lock, Zap, Loader2 } from 'lucide-react';
 import { auth } from '../firebase';
@@ -58,9 +58,9 @@ export default function Login() {
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
           <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', textDecoration: 'none' }}>
-            <img src="/logo.jpeg" alt="Samtob Farmzs" style={{ width: '54px', height: '54px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary)' }} />
+            <img src="/logo.jpeg" alt="Samtob Farms" style={{ width: '54px', height: '54px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary)' }} />
             <div style={{ fontFamily: 'var(--font-heading)', fontSize: '22px', fontWeight: 900, color: 'var(--text-main)', lineHeight: 1.1 }}>
-              Samtob <span style={{ color: 'var(--primary)' }}>Farmzs</span>
+              Samtob <span style={{ color: 'var(--primary)' }}>Farms</span>
             </div>
           </Link>
           <p style={{ color: 'var(--text-muted)', fontSize: '13px', marginTop: '10px' }}>Fresh Farm Chickens from Ibadan</p>
@@ -74,7 +74,7 @@ export default function Login() {
             <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '26px', fontWeight: 800, color: 'var(--white)', display: 'flex', alignItems: 'center', gap: '10px' }}>
               <LogIn size={24} color="var(--primary)" /> Welcome Back
             </h1>
-            <p style={{ color: 'var(--gray-1)', fontSize: '14px', marginTop: '4px' }}>Sign in to your Samtob Farmzs account</p>
+            <p style={{ color: 'var(--gray-1)', fontSize: '14px', marginTop: '4px' }}>Sign in to your Samtob Farms account</p>
           </div>
 
           {/* Card Body */}

@@ -10,7 +10,7 @@ export default function Cart() {
   const [coupon, setCoupon] = useState('');
 
   const subtotal = items.reduce((sum, item) => sum + item.price * item.qty, 0);
-  const shipping = subtotal > 50000 ? 0 : 5000;
+  const shipping = subtotal > 300000 ? 0 : 5000;
   const total = subtotal + shipping;
 
   return (
@@ -53,7 +53,7 @@ export default function Cart() {
                     
                     {item.isInstallment && (
                       <div style={{ fontSize: '12px', color: 'var(--gold)', fontWeight: 600, marginBottom: '6px' }}>
-                        ⏱ 12-Week Installment: {formatCurrency(item.price)} / wk
+                        ⏱ {item.installmentDetails?.duration || 12}-Week Installment: {formatCurrency(item.price)} / wk
                       </div>
                     )}
 
@@ -100,7 +100,7 @@ export default function Cart() {
 
               {shipping > 0 && (
                 <div style={{ background: 'rgba(0,230,118,0.08)', border: '1px solid rgba(0,230,118,0.2)', borderRadius: 'var(--radius-sm)', padding: '10px 14px', marginBottom: '16px', fontSize: '12px', color: 'var(--success)', display: 'flex', gap: '8px', alignItems: 'center' }}>
-                  <Truck size={14} /> Add {formatCurrency(50000 - subtotal)} more for FREE delivery!
+                  <Truck size={14} /> Add {formatCurrency(300000 - subtotal)} more for FREE delivery!
                 </div>
               )}
 

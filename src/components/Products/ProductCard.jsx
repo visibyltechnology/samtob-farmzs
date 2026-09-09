@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingCart, Heart } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
@@ -56,7 +56,7 @@ export function ProductCard({ product }) {
         </div>
         
         <div className="product-info">
-          <div className="product-brand">{product.brand || product.department || 'Samtob Farmzs'}</div>
+          <div className="product-brand">{product.brand || product.department || 'Samtob Farms'}</div>
           <h3 className="product-name" title={product.name}>{product.name}</h3>
           <div className="product-rating">
             <span className="stars" style={{ color: 'var(--primary-light)', fontSize: '12px', letterSpacing: '2px' }}>{'★'.repeat(Math.max(0, Math.min(5, Math.floor(Number(product.rating) || 0))))}{'☆'.repeat(Math.max(0, 5 - Math.min(5, Math.floor(Number(product.rating) || 0))))}</span>

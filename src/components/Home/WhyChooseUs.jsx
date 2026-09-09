@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Leaf, Zap, Shield, MapPin, Heart, Clock } from 'lucide-react';
 import './WhyChooseUs.css';
 
@@ -46,7 +46,7 @@ export default function WhyChooseUs() {
     <section className="why-section section-padding">
       <div className="container">
         <div className="why-header text-center">
-          <span className="badge badge-gold">Why Samtob Farmzs</span>
+          <span className="badge badge-gold">Why Samtob Farms</span>
           <h2 className="why-title">
             Fresh From the <span className="title-accent-gold">Farm</span> to Your Table
           </h2>

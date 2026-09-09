@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Phone, CreditCard } from 'lucide-react';
 import './Footer.css';
@@ -12,9 +12,9 @@ export default function Footer() {
           {/* Brand & Contact */}
           <div className="footer-brand">
             <div className="footer-logo-wrap">
-              <img src="/logo.jpeg" alt="Samtob Farmzs" className="footer-logo-img" />
+              <img src="/logo.jpeg" alt="Samtob Farms" className="footer-logo-img" />
               <div>
-                <h2 className="footer-logo-text">Samtob<span className="footer-accent">Farmzs</span></h2>
+                <h2 className="footer-logo-text">Samtob<span className="footer-accent">Farms</span></h2>
                 <p className="footer-tagline">Healthy Chickens • Fresh Future</p>
               </div>
             </div>
@@ -109,7 +109,7 @@ export default function Footer() {
             <a href="#" aria-label="Instagram" className="social-btn social-btn--ig">Instagram</a>
           </div>
           <div className="footer-bottom-copy">
-            <p>© {new Date().getFullYear()} Samtob p&c Ltd (Samtob Farmzs). All Rights Reserved.</p>
+            <p>© {new Date().getFullYear()} Samtob p&c Ltd (Samtob Farms). All Rights Reserved.</p>
             <p className="footer-sub-copy">Quality Chicken ★ Happy Families ★ A Healthier Tomorrow</p>
           </div>
         </div>

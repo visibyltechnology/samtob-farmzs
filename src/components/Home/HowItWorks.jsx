@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Link } from 'react-router-dom';
 import { MousePointerClick, Weight, ShoppingCart, Truck, CheckCircle } from 'lucide-react';
 import './HowItWorks.css';
@@ -46,7 +46,7 @@ export default function HowItWorks() {
             How It <span className="title-accent">Works</span>
           </h2>
           <p className="how-subtitle">
-            Ordering fresh farm chickens from Samtob Farmzs is quick, transparent, and easy — just 5 steps.
+            Ordering fresh farm chickens from Samtob Farms is quick, transparent, and easy — just 5 steps.
           </p>
         </div>
 

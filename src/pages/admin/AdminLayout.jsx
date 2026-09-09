@@ -3,7 +3,7 @@ import { Navigate, Outlet, NavLink, useNavigate, Link } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import {
   Package, PlusCircle, LogOut, Users, ClipboardList,
-  LayoutDashboard, Menu, X, Loader2, Tag, Briefcase, Settings, MapPin, Home, CreditCard
+  LayoutDashboard, Menu, X, Loader2, Tag, Briefcase, Settings, MapPin, Home, CreditCard, CalendarClock
 } from 'lucide-react';
 
 export default function AdminLayout() {
@@ -28,6 +28,7 @@ export default function AdminLayout() {
     { to: '/admin/products', icon: <Package size={18} />, label: 'Products' },
     { to: '/admin/products/add', icon: <PlusCircle size={18} />, label: 'Add Product' },
     { to: '/admin/orders', icon: <ClipboardList size={18} />, label: 'Orders' },
+    { to: '/admin/december-rush', icon: <CalendarClock size={18} />, label: 'December Rush' },
     { to: '/admin/users', icon: <Users size={18} />, label: 'Users' },
     { to: '/admin/categories', icon: <Tag size={18} />, label: 'Categories' },
     { to: '/admin/brands', icon: <Briefcase size={18} />, label: 'Brands' },
@@ -45,10 +46,10 @@ export default function AdminLayout() {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Sidebar Brand */}
       <div style={{ padding: '20px 16px', borderBottom: '1px solid var(--dark-border)', display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
-        <img src="/logo.jpeg" alt="Akilapa & Sons" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary)', flexShrink: 0 }} />
+        <img src="/logo.jpeg" alt="Samtob Farms" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary)', flexShrink: 0 }} />
         <div style={{ minWidth: 0 }}>
           <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '13px', color: 'var(--text-main)', lineHeight: 1.1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-            Akilapa <span style={{ color: 'var(--primary)' }}>& Sons</span>
+            Samtob <span style={{ color: 'var(--primary)' }}>Farms</span>
           </div>
           <div style={{ fontSize: '10px', fontWeight: 800, color: 'var(--primary)', letterSpacing: '0.1em', textTransform: 'uppercase', marginTop: '3px' }}>Admin Panel</div>
           <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.email}</div>

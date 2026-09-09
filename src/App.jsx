@@ -33,6 +33,7 @@ import AdminCategories from './pages/admin/AdminCategories';
 import AdminBrands from './pages/admin/AdminBrands';
 import AdminLocations from './pages/admin/AdminLocations';
 import AdminSettings from './pages/admin/AdminSettings';
+import AdminDecemberRush from './pages/admin/AdminDecemberRush';
 
 // Subscription Admin
 import AdminDashboard from './pages/AdminDashboard';
@@ -66,6 +67,7 @@ export default function App() {
                 <Route path="brands" element={<AdminBrands />} />
                 <Route path="locations" element={<AdminLocations />} />
                 <Route path="settings" element={<AdminSettings />} />
+                <Route path="december-rush" element={<AdminDecemberRush />} />
                 <Route path="subscriptions" element={<AdminDashboard />} />
               </Route>
 

@@ -41,7 +41,7 @@ export default function Cart() {
                     <img
                       src={item.imgUrl || item.image || (item.images && item.images[0]) || '/placeholder.jpg'}
                       alt={item.name}
-                      style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '6px' }}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                       onError={e => { e.target.style.display = 'none'; }}
                     />
                   </Link>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, useNavigate } from 'react-router-dom';
 import { CreditCard, MapPin, Truck, ShieldCheck, ChevronRight, CheckCircle, Zap, Upload, AlertCircle, Loader2, X } from 'lucide-react';
@@ -403,15 +403,15 @@ export default function Checkout() {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     {DELIVERY_OPTIONS.map(opt => (
                       <div key={opt.id} onClick={() => setDeliveryOption(opt.id)}
-                        style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 16px', border: `2px solid ${deliveryOption === opt.id ? '#4CAF50' : 'var(--dark-border)'}`, borderRadius: 'var(--radius-md)', cursor: 'pointer', background: deliveryOption === opt.id ? 'rgba(76,175,80,0.07)' : 'var(--dark)', transition: 'all 0.2s' }}
+                        style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 16px', border: `2px solid ${deliveryOption === opt.id ? 'var(--primary)' : 'var(--dark-border)'}`, borderRadius: 'var(--radius-md)', cursor: 'pointer', background: deliveryOption === opt.id ? 'var(--primary-light)' : 'var(--dark)', transition: 'all 0.2s' }}
                       >
                         <div style={{ flex: 1 }}>
                           <div style={{ fontWeight: 700, fontSize: '14px' }}>{opt.label}</div>
                           <div style={{ fontSize: '12px', color: 'var(--gray-1)', marginTop: '2px' }}>{opt.desc}</div>
                         </div>
-                        <span style={{ padding: '4px 12px', borderRadius: '999px', fontSize: '12px', fontWeight: 800, background: opt.fee === 0 ? 'rgba(76,175,80,0.15)' : opt.fee === null ? 'rgba(249,168,37,0.15)' : 'rgba(76,175,80,0.1)', color: opt.fee === 0 ? '#4CAF50' : opt.fee === null ? '#F9A825' : '#4CAF50', border: `1px solid ${opt.fee === 0 ? 'rgba(76,175,80,0.3)' : opt.fee === null ? 'rgba(249,168,37,0.3)' : 'rgba(76,175,80,0.3)'}` }}>{opt.badge}</span>
-                        <div style={{ width: '20px', height: '20px', borderRadius: '50%', border: `2px solid ${deliveryOption === opt.id ? '#4CAF50' : 'var(--dark-border)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          {deliveryOption === opt.id && <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#4CAF50' }} />}
+                        <span style={{ padding: '4px 12px', borderRadius: '999px', fontSize: '12px', fontWeight: 800, background: opt.fee === 0 ? 'rgba(76,175,80,0.15)' : opt.fee === null ? 'rgba(249,168,37,0.15)' : 'var(--primary-light)', color: opt.fee === 0 ? 'var(--primary)' : opt.fee === null ? '#F9A825' : 'var(--primary)', border: `1px solid ${opt.fee === 0 ? 'rgba(76,175,80,0.3)' : opt.fee === null ? 'rgba(249,168,37,0.3)' : 'rgba(76,175,80,0.3)'}` }}>{opt.badge}</span>
+                        <div style={{ width: '20px', height: '20px', borderRadius: '50%', border: `2px solid ${deliveryOption === opt.id ? 'var(--primary)' : 'var(--dark-border)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          {deliveryOption === opt.id && <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: 'var(--primary)' }} />}
                         </div>
                       </div>
                     ))}
@@ -426,7 +426,7 @@ export default function Checkout() {
                           {[['Full Name', 'fullName', 'text', 'e.g., Hassan Doe'], ['Email', 'email', 'email', 'e.g., mail@example.com'], ['Phone', 'phone', 'tel', 'e.g., +234 705 531 0766'], ['Street Address', 'address', 'text', 'e.g., 5 Ring Road, Ibadan'], ['City / Area', 'city', 'text', 'e.g., Ibadan']].map(([label, key, type, placeholder]) => (
                             <div key={key}>
                               <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: 'var(--gray-1)', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '8px' }}>{label}</label>
-                              <input type={type} placeholder={placeholder} value={formData[key]} onChange={e => setFormData(p => ({ ...p, [key]: e.target.value }))} style={inputStyle} onFocus={e => e.target.style.borderColor='#4CAF50'} onBlur={e => e.target.style.borderColor='var(--dark-border)'} />
+                              <input type={type} placeholder={placeholder} value={formData[key]} onChange={e => setFormData(p => ({ ...p, [key]: e.target.value }))} style={inputStyle} onFocus={e => e.target.style.borderColor='var(--primary)'} onBlur={e => e.target.style.borderColor='var(--dark-border)'} />
                             </div>
                           ))}
                         </div>
@@ -439,7 +439,7 @@ export default function Checkout() {
                       {[['Full Name', 'fullName', 'text', 'e.g., Hassan Doe'], ['Email', 'email', 'email', 'e.g., mail@example.com'], ['Phone', 'phone', 'tel', 'e.g., +234 705 531 0766']].map(([label, key, type, placeholder]) => (
                         <div key={key}>
                           <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: 'var(--gray-1)', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '8px' }}>{label}</label>
-                          <input type={type} placeholder={placeholder} value={formData[key]} onChange={e => setFormData(p => ({ ...p, [key]: e.target.value }))} style={inputStyle} onFocus={e => e.target.style.borderColor='#4CAF50'} onBlur={e => e.target.style.borderColor='var(--dark-border)'} />
+                          <input type={type} placeholder={placeholder} value={formData[key]} onChange={e => setFormData(p => ({ ...p, [key]: e.target.value }))} style={inputStyle} onFocus={e => e.target.style.borderColor='var(--primary)'} onBlur={e => e.target.style.borderColor='var(--dark-border)'} />
                         </div>
                       ))}
                     </div>
@@ -458,7 +458,7 @@ export default function Checkout() {
                     }
                     setError('');
                     setStep(1);
-                  }} style={{ background: 'linear-gradient(135deg,#2E7D32,#4CAF50)', color: '#fff', padding: '14px', borderRadius: 'var(--radius-md)', fontWeight: 800, fontSize: '15px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginTop: '8px' }}>Continue <ChevronRight size={18} /></button>
+                  }} style={{ background: 'var(--primary)', color: '#fff', padding: '14px', borderRadius: 'var(--radius-md)', fontWeight: 800, fontSize: '15px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginTop: '8px' }}>Continue <ChevronRight size={18} /></button>
                   {error && <p style={{ color: 'var(--danger)', fontSize: '13px', textAlign: 'center' }}>{error}</p>}
                 </div>
               )}
@@ -469,50 +469,50 @@ export default function Checkout() {
                   <p style={{ fontSize: '13px', color: 'var(--gray-1)', marginTop: '-10px' }}>Tell us how you want your chicken — Live, Slaughtered & Dressed, or Frozen.</p>
                   {PROCESSING_OPTIONS.map(opt => (
                     <div key={opt.id} onClick={() => setProcessingOption(opt.id)}
-                      style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 16px', border: `2px solid ${processingOption === opt.id ? '#4CAF50' : 'var(--dark-border)'}`, borderRadius: 'var(--radius-md)', cursor: 'pointer', background: processingOption === opt.id ? 'rgba(76,175,80,0.07)' : 'var(--dark)', transition: 'all 0.2s' }}
+                      style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 16px', border: `2px solid ${processingOption === opt.id ? 'var(--primary)' : 'var(--dark-border)'}`, borderRadius: 'var(--radius-md)', cursor: 'pointer', background: processingOption === opt.id ? 'var(--primary-light)' : 'var(--dark)', transition: 'all 0.2s' }}
                     >
                       <div style={{ fontSize: '28px', lineHeight: 1 }}>{opt.icon}</div>
                       <div style={{ flex: 1 }}>
                         <div style={{ fontWeight: 700, fontSize: '14px' }}>{opt.label}</div>
                         <div style={{ fontSize: '12px', color: 'var(--gray-1)', marginTop: '2px' }}>{opt.desc}</div>
                       </div>
-                      <div style={{ width: '20px', height: '20px', borderRadius: '50%', border: `2px solid ${processingOption === opt.id ? '#4CAF50' : 'var(--dark-border)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        {processingOption === opt.id && <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#4CAF50' }} />}
+                      <div style={{ width: '20px', height: '20px', borderRadius: '50%', border: `2px solid ${processingOption === opt.id ? 'var(--primary)' : 'var(--dark-border)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        {processingOption === opt.id && <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: 'var(--primary)' }} />}
                       </div>
                     </div>
                   ))}
                   <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
                     <button onClick={() => setStep(0)} style={{ flex: 1, background: 'var(--dark)', border: '1px solid var(--dark-border)', color: 'var(--white)', padding: '14px', borderRadius: 'var(--radius-md)', fontWeight: 700, cursor: 'pointer' }}>Back</button>
-                    <button onClick={() => setStep(2)} style={{ flex: 2, background: 'linear-gradient(135deg,#2E7D32,#4CAF50)', color: '#fff', padding: '14px', borderRadius: 'var(--radius-md)', fontWeight: 800, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>Continue <ChevronRight size={18} /></button>
+                    <button onClick={() => setStep(2)} style={{ flex: 2, background: 'var(--primary)', color: '#fff', padding: '14px', borderRadius: 'var(--radius-md)', fontWeight: 800, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>Continue <ChevronRight size={18} /></button>
                   </div>
                 </div>
               )}
 
               {step === 2 && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                  <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '10px' }}><CreditCard size={20} color="#4CAF50" /> Payment Method</h3>
+                  <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '10px' }}><CreditCard size={20} color="var(--primary)" /> Payment Method</h3>
                   {[
                     { id: 'bank_transfer', label: 'Direct Bank Transfer', icon: CreditCard, desc: 'Transfer to Samtob p&c Ltd · Wema Bank' },
                     ...(user?.isAdmin ? [{ id: 'admin_cash', label: 'Admin POS / Cash', icon: Zap, desc: 'Direct order placement (Admin only)' }] : []),
                   ].map(method => (
                     <div key={method.id} onClick={() => setFormData(p => ({ ...p, payMethod: method.id }))}
-                      style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 14px', border: `2px solid ${formData.payMethod === method.id ? '#4CAF50' : 'var(--dark-border)'}`, borderRadius: 'var(--radius-md)', cursor: 'pointer', background: formData.payMethod === method.id ? 'rgba(76,175,80,0.06)' : 'var(--dark)', transition: 'all 0.2s' }}
+                      style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 14px', border: `2px solid ${formData.payMethod === method.id ? 'var(--primary)' : 'var(--dark-border)'}`, borderRadius: 'var(--radius-md)', cursor: 'pointer', background: formData.payMethod === method.id ? 'rgba(76,175,80,0.06)' : 'var(--dark)', transition: 'all 0.2s' }}
                     >
-                      <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'rgba(76,175,80,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <method.icon size={20} color="#4CAF50" />
+                      <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <method.icon size={20} color="var(--primary)" />
                       </div>
                       <div>
                         <div style={{ fontWeight: 700, fontSize: '14px' }}>{method.label}</div>
                         <div style={{ fontSize: '12px', color: 'var(--gray-1)' }}>{method.desc}</div>
                       </div>
-                      <div style={{ marginLeft: 'auto', width: '20px', height: '20px', borderRadius: '50%', border: `2px solid ${formData.payMethod === method.id ? '#4CAF50' : 'var(--dark-border)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        {formData.payMethod === method.id && <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#4CAF50' }} />}
+                      <div style={{ marginLeft: 'auto', width: '20px', height: '20px', borderRadius: '50%', border: `2px solid ${formData.payMethod === method.id ? 'var(--primary)' : 'var(--dark-border)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        {formData.payMethod === method.id && <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: 'var(--primary)' }} />}
                       </div>
                     </div>
                   ))}
                   <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
                     <button onClick={() => setStep(1)} style={{ flex: 1, background: 'var(--dark)', border: '1px solid var(--dark-border)', color: 'var(--white)', padding: '14px', borderRadius: 'var(--radius-md)', fontWeight: 700, cursor: 'pointer' }}>Back</button>
-                    <button onClick={() => setStep(3)} style={{ flex: 2, background: 'linear-gradient(135deg,#2E7D32,#4CAF50)', color: '#fff', padding: '14px', borderRadius: 'var(--radius-md)', fontWeight: 800, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>Review Order <ChevronRight size={18} /></button>
+                    <button onClick={() => setStep(3)} style={{ flex: 2, background: 'var(--primary)', color: '#fff', padding: '14px', borderRadius: 'var(--radius-md)', fontWeight: 800, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>Review Order <ChevronRight size={18} /></button>
                   </div>
                 </div>
               )}
@@ -538,7 +538,7 @@ export default function Checkout() {
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                       <span style={{ color: 'var(--gray-1)' }}>Delivery Fee</span>
-                      <span style={{ fontWeight: 700, color: deliveryFee === 0 ? '#4CAF50' : 'inherit' }}>{deliveryFee === 0 ? 'FREE' : formatCurrency(deliveryFee)}</span>
+                      <span style={{ fontWeight: 700, color: deliveryFee === 0 ? 'var(--primary)' : 'inherit' }}>{deliveryFee === 0 ? 'FREE' : formatCurrency(deliveryFee)}</span>
                     </div>
                     {processingFee > 0 && (
                       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -560,7 +560,7 @@ export default function Checkout() {
 
                   {formData.payMethod === 'bank_transfer' && (
                     <div style={{ background: 'var(--dark)', border: '1px solid rgba(76,175,80,0.3)', borderRadius: 'var(--radius-md)', padding: '20px', marginBottom: '8px' }}>
-                      <h4 style={{ fontSize: '15px', fontWeight: 800, color: '#4CAF50', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <h4 style={{ fontSize: '15px', fontWeight: 800, color: 'var(--primary)', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <CreditCard size={18} /> Transfer to This Account
                       </h4>
                       <p style={{ fontSize: '13px', color: 'var(--gray-1)', marginBottom: '16px' }}>
@@ -586,7 +586,7 @@ export default function Checkout() {
                         <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: 'var(--white)', marginBottom: '8px' }}>Upload Payment Receipt <span style={{ color: 'var(--danger)' }}>*</span></label>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                           <label style={{ flex: 1, background: 'var(--dark-card)', border: '1.5px dashed rgba(76,175,80,0.3)', padding: '16px', borderRadius: 'var(--radius-sm)', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s' }}>
-                            <Upload size={20} color="#4CAF50" style={{ margin: '0 auto 8px' }} />
+                            <Upload size={20} color="var(--primary)" style={{ margin: '0 auto 8px' }} />
                             <span style={{ fontSize: '13px', color: 'var(--gray-1)' }}>Click to upload transfer screenshot</span>
                             <input type="file" accept="image/*" onChange={handleReceiptChange} style={{ display: 'none' }} />
                           </label>

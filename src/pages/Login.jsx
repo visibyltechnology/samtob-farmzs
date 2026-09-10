@@ -1,8 +1,9 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Eye, EyeOff, LogIn, ShieldCheck, Lock, Zap, Loader2 } from 'lucide-react';
-import { auth } from '../firebase';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { Eye, EyeOff, LogIn, ShieldCheck, Loader2, MailCheck } from 'lucide-react';
+import { auth, db } from '../firebase';
+import { signInWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 import { useApp } from '../context/AppContext';
 
 export default function Login() {
@@ -16,6 +17,7 @@ export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const justRegistered = new URLSearchParams(location.search).get('verify') === '1';
 
   // Navigate only after the user context is fully populated (including isAdmin)
   React.useEffect(() => {
@@ -36,12 +38,19 @@ export default function Login() {
     setLoading(true);
     
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      // Set flag to trigger navigation once AppContext has fetched user document
+      const cred = await signInWithEmailAndPassword(auth, email, password);
+
+      // Enforce email verification
+      if (!cred.user.emailVerified) {
+        setError('Please verify your email before logging in. Check your inbox for the verification link.');
+        setLoading(false);
+        return;
+      }
+
       setIsLoggingIn(true);
     } catch (err) {
       console.error(err);
-      if (err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
+      if (['auth/invalid-credential','auth/user-not-found','auth/wrong-password'].includes(err.code)) {
         setError('Invalid email or password. Please try again.');
       } else {
         setError(err.message || 'Failed to sign in.');
@@ -49,6 +58,14 @@ export default function Login() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleResendVerification = async () => {
+    try {
+      const cred = await signInWithEmailAndPassword(auth, email, password).catch(() => null);
+      if (cred?.user) await sendEmailVerification(cred.user);
+      setError('Verification email resent! Check your inbox.');
+    } catch { setError('Could not resend. Check your email/password first.'); }
   };
 
   return (
@@ -79,9 +96,22 @@ export default function Login() {
 
           {/* Card Body */}
           <div style={{ padding: '32px' }}>
+            {/* Just-registered banner */}
+            {justRegistered && (
+              <div style={{ background: 'rgba(76,175,80,0.1)', border: '1px solid var(--primary)', color: 'var(--primary)', fontSize: '13px', padding: '12px 16px', borderRadius: 'var(--radius-sm)', marginBottom: '20px', display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+                <MailCheck size={18} style={{ flexShrink: 0, marginTop: '1px' }} />
+                <span>Account created! Check your email for a verification link, then come back to log in.</span>
+              </div>
+            )}
+
             {error && (
-              <div style={{ background: 'rgba(255, 61, 0, 0.1)', border: '1px solid var(--danger)', color: '#ff8066', fontSize: '13px', padding: '12px 16px', borderRadius: 'var(--radius-sm)', marginBottom: '24px' }}>
-                {error}
+              <div style={{ background: 'rgba(255, 61, 0, 0.1)', border: '1px solid var(--danger)', color: '#ff8066', fontSize: '13px', padding: '12px 16px', borderRadius: 'var(--radius-sm)', marginBottom: '24px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <span>{error}</span>
+                {error.includes('verify your email') && (
+                  <button type="button" onClick={handleResendVerification} style={{ background: 'none', border: 'none', color: '#F9A825', cursor: 'pointer', padding: 0, fontSize: '13px', fontWeight: 700, textAlign: 'left', textDecoration: 'underline' }}>
+                    Resend verification email
+                  </button>
+                )}
               </div>
             )}
 

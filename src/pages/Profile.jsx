@@ -250,7 +250,9 @@ export default function Profile() {
         <aside>
           <div style={{ background: 'var(--dark-card)', border: '1px solid var(--dark-border)', borderRadius: 'var(--radius-lg)', overflow: 'hidden' }}>
             {/* Profile Header */}
-            <div style={{ background: 'linear-gradient(135deg, #1a0a00, #2d1200)', padding: '28px 24px', textAlign: 'center' }}>
+            <div style={{ background: 'linear-gradient(135deg, #071a07, #0d2e0d, #112b11)', padding: '28px 24px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+              {/* ambient glow */}
+              <div style={{ position: 'absolute', top: '-30px', left: '50%', transform: 'translateX(-50%)', width: '120px', height: '120px', borderRadius: '50%', background: 'rgba(76,175,80,0.15)', filter: 'blur(24px)', pointerEvents: 'none' }} />
               <div 
                 style={{ position: 'relative', width: '90px', height: '90px', margin: '0 auto 12px', cursor: isUploading ? 'not-allowed' : 'pointer' }}
                 onClick={() => !isUploading && fileInputRef.current?.click()}
@@ -285,7 +287,7 @@ export default function Profile() {
               <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 800, color: 'var(--white)' }}>{displayName}</h2>
               <p style={{ fontSize: '13px', color: 'var(--gray-1)', marginTop: '4px' }}>{user.email}</p>
               {user.isAdmin && (
-                <span style={{ display: 'inline-block', marginTop: '8px', background: 'rgba(255,61,0,0.15)', border: '1px solid var(--danger)', color: 'var(--danger)', fontSize: '11px', fontWeight: 700, padding: '2px 10px', borderRadius: '20px' }}>
+                <span style={{ display: 'inline-block', marginTop: '8px', background: 'rgba(249,168,37,0.15)', border: '1px solid #F9A825', color: '#F9A825', fontSize: '11px', fontWeight: 700, padding: '2px 10px', borderRadius: '20px' }}>
                   Admin
                 </span>
               )}
@@ -305,7 +307,7 @@ export default function Profile() {
             {/* Nav links */}
             <nav style={{ padding: '12px 0' }}>
               {tabs.map(tab => (
-                <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 24px', background: activeTab === tab.id ? 'rgba(255,94,0,0.1)' : 'transparent', color: activeTab === tab.id ? 'var(--primary)' : 'var(--gray-1)', borderLeft: `3px solid ${activeTab === tab.id ? 'var(--primary)' : 'transparent'}`, transition: 'var(--transition)', fontSize: '14px', fontWeight: 600, cursor: 'pointer', border: 'none' }}>
+                <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 24px', background: activeTab === tab.id ? 'rgba(46,125,50,0.12)' : 'transparent', color: activeTab === tab.id ? 'var(--primary)' : 'var(--gray-1)', borderLeft: `3px solid ${activeTab === tab.id ? 'var(--primary)' : 'transparent'}`, transition: 'var(--transition)', fontSize: '14px', fontWeight: 600, cursor: 'pointer', border: 'none' }}>
                   <tab.icon size={18} />
                   {tab.label}
                   <ChevronRight size={16} style={{ marginLeft: 'auto', opacity: activeTab === tab.id ? 1 : 0.4 }} />

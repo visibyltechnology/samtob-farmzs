@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Eye, EyeOff, LogIn, ShieldCheck, Loader2, MailCheck, Lock } from 'lucide-react';
 import { auth, db } from '../firebase';
 import { signInWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useApp } from '../context/AppContext';
 
 export default function Login() {
@@ -45,6 +45,15 @@ export default function Login() {
         setError('Please verify your email before logging in. Check your inbox for the verification link.');
         setLoading(false);
         return;
+      }
+
+      // Sync the verification status to Firestore
+      try {
+        await updateDoc(doc(db, 'users', cred.user.uid), {
+          emailVerified: true
+        });
+      } catch (e) {
+        console.error("Failed to sync emailVerified status to database", e);
       }
 
       setIsLoggingIn(true);

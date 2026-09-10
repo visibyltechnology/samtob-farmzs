@@ -552,8 +552,23 @@ export default function Checkout() {
                       <span style={{ fontWeight: 800, fontSize: '18px', color: '#F9A825' }}>{formatCurrency(grandTotal)}</span>
                     </div>
                     {hasInstallmentItems && (
-                      <div style={{ padding: '8px', background: 'rgba(249,168,37,0.1)', border: '1px solid rgba(249,168,37,0.3)', borderRadius: 'var(--radius-sm)', marginTop: '8px', color: '#F9A825', fontSize: '12px', fontWeight: 600 }}>
-                        Includes 1st week payment for December Rush installment(s). Subsequent payments will be collected weekly.
+                      <div style={{ padding: '12px', background: 'rgba(249,168,37,0.08)', border: '1px solid rgba(249,168,37,0.3)', borderRadius: 'var(--radius-sm)', marginTop: '8px' }}>
+                        <div style={{ color: '#F9A825', fontSize: '12px', fontWeight: 800, marginBottom: '8px' }}>🗓️ December Rush Installment Schedule</div>
+                        {cart.filter(i => i.isInstallment).map((item, idx) => (
+                          <div key={idx} style={{ fontSize: '12px', lineHeight: 1.8, marginBottom: '6px', paddingBottom: '6px', borderBottom: '1px solid rgba(249,168,37,0.15)' }}>
+                            <div style={{ fontWeight: 700, color: 'var(--white)' }}>{item.name}</div>
+                            <div style={{ color: 'var(--gray-1)' }}>Today: <strong style={{ color: '#F9A825' }}>{formatCurrency(item.installmentDetails?.firstPayment ?? item.price)}</strong></div>
+                            {item.installmentDetails?.weeklyPayment && (
+                              <div style={{ color: 'var(--gray-1)' }}>Then: <strong style={{ color: 'var(--white)' }}>{formatCurrency(item.installmentDetails.weeklyPayment)}/wk × {item.installmentDetails.duration - 1} wks</strong></div>
+                            )}
+                            {item.installmentDetails?.total && (
+                              <div style={{ color: 'var(--gray-1)' }}>Total: {formatCurrency(item.installmentDetails.total)}</div>
+                            )}
+                          </div>
+                        ))}
+                        <div style={{ fontSize: '11px', color: 'var(--gray-2)', marginTop: '4px' }}>
+                          Weekly payments will be collected automatically. Farm pickup on final payment.
+                        </div>
                       </div>
                     )}
                   </div>

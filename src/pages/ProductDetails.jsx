@@ -1,11 +1,14 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { getProduct } from '../utils/productService';
 import { getProductIcon, formatCurrency } from '../utils/helpers';
 import { categorySpecs } from '../data/taxonomy';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../firebase';
 import { 
   ShoppingCart, Heart, Truck, ShieldCheck, 
-  BatteryCharging, MicOff, Package, Speaker, Cable, Loader2, CheckCircle2
+  BatteryCharging, MicOff, Package, Speaker, Cable, Loader2, CheckCircle2,
+  CalendarClock, Info
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import SEO from '../components/SEO';
@@ -26,18 +29,58 @@ export default function ProductDetails() {
   // December Rush Installment State
   const [paymentPlan, setPaymentPlan] = useState('full'); // 'full' or 'installment'
   const [installmentDuration, setInstallmentDuration] = useState(12);
-  const baseInstallmentOptions = [
-    { id: 'small', label: '3.8kg–4.1kg', total: 18000 },
-    { id: 'medium', label: '4.2kg–4.5kg', total: 24000 },
-    { id: 'large', label: '4.6kg–5.0kg', total: 30000 },
-    { id: 'xlarge', label: '5.1kg–5.5kg', total: 36000 }
-  ];
-  const installmentOptions = baseInstallmentOptions.map(opt => ({
-    ...opt,
-    price: Math.round(opt.total / installmentDuration)
-  }));
-  const [selectedInstallmentId, setSelectedInstallmentId] = useState('medium');
-  const selectedInstallment = installmentOptions.find(opt => opt.id === selectedInstallmentId) || installmentOptions[1];
+  const [rushSettings, setRushSettings] = useState(null); // loaded from Firestore
+  const [rushLoading, setRushLoading] = useState(true);
+
+  // Fetch December Rush settings from Firestore
+  useEffect(() => {
+    (async () => {
+      try {
+        const snap = await getDoc(doc(db, 'settings', 'december_rush'));
+        if (snap.exists()) setRushSettings(snap.data());
+      } catch { /* silently ignore — feature just won't show */ }
+      finally { setRushLoading(false); }
+    })();
+  }, []);
+
+  // Derived installment data from Firestore settings (with sensible fallbacks)
+  const rushEnabled = rushSettings?.enabled === true;
+  const fp = ((rushSettings?.firstPaymentPercent ?? 30)) / 100; // e.g. 0.30
+  const availableDurations = rushSettings?.availableDurations?.length
+    ? rushSettings.availableDurations
+    : [12];
+  const pricingTiers = rushSettings?.pricingTiers?.length
+    ? rushSettings.pricingTiers
+    : [
+        { id: 'small',  label: '3.8kg–4.1kg', total: 18000 },
+        { id: 'medium', label: '4.2kg–4.5kg', total: 24000 },
+        { id: 'large',  label: '4.6kg–5.0kg', total: 30000 },
+        { id: 'xlarge', label: '5.1kg–5.5kg', total: 36000 },
+      ];
+
+  // Ensure selected duration is valid
+  const validDuration = availableDurations.includes(installmentDuration)
+    ? installmentDuration
+    : availableDurations[availableDurations.length - 1];
+
+  // Calculate per-tier first payment + weekly amount
+  const installmentOptions = pricingTiers.map(tier => {
+    const firstPayment = Math.round(tier.total * fp);
+    const remaining = tier.total - firstPayment;
+    const weeklyPayment = Math.round(remaining / (validDuration - 1));
+    return { ...tier, firstPayment, remaining, weeklyPayment };
+  });
+
+  const [selectedInstallmentId, setSelectedInstallmentId] = useState('');
+  // Auto-select first tier once settings load
+  useEffect(() => {
+    if (installmentOptions.length > 0 && !selectedInstallmentId) {
+      setSelectedInstallmentId(installmentOptions[0].id);
+    }
+  }, [rushSettings]);
+
+  const selectedInstallment = installmentOptions.find(o => o.id === selectedInstallmentId)
+    || installmentOptions[0];
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -191,79 +234,102 @@ export default function ProductDetails() {
             )}
             <div className="pd-price-wrap">
               <span className="pd-price">
-                {paymentPlan === 'installment' 
-                  ? `${formatCurrency(selectedInstallment.price)} / wk` 
+                {paymentPlan === 'installment' && selectedInstallment
+                  ? <>{formatCurrency(selectedInstallment.firstPayment)} <span style={{ fontSize: '15px', fontWeight: 600, color: 'var(--gray-1)' }}>1st payment</span></>
                   : formatCurrency(product.price)}
               </span>
               {product.oldPrice && paymentPlan === 'full' && <span className="pd-old-price">{formatCurrency(product.oldPrice)}</span>}
             </div>
-            {paymentPlan === 'installment' && (
-              <div style={{ fontSize: '13px', color: 'var(--success)', marginTop: '4px', fontWeight: 600 }}>
-                Total: {formatCurrency(selectedInstallment.total)} over {installmentDuration} weeks
+            {paymentPlan === 'installment' && selectedInstallment && (
+              <div style={{ fontSize: '13px', color: 'var(--success)', marginTop: '4px', fontWeight: 600, lineHeight: 1.7 }}>
+                Then {formatCurrency(selectedInstallment.weeklyPayment)}/wk × {validDuration - 1} weeks
+                <span style={{ color: 'var(--gray-1)', fontWeight: 400, display: 'block' }}>Total: {formatCurrency(selectedInstallment.total)} ({rushSettings?.firstPaymentPercent ?? 30}% upfront)</span>
               </div>
             )}
           </div>
 
-          <div className="pd-variants" style={{ marginTop: '24px' }}>
-            <div className="variant-title">Payment Plan: <span style={{ color: 'var(--white)' }}>{paymentPlan === 'full' ? 'Pay in Full' : 'December Rush Installment'}</span></div>
-            <div className="variant-options">
-              <button 
-                className={`variant-btn ${paymentPlan === 'full' ? 'active' : ''}`}
-                onClick={() => setPaymentPlan('full')}
-              >
-                Pay in Full
-              </button>
-              <button 
-                className={`variant-btn ${paymentPlan === 'installment' ? 'active' : ''}`}
-                onClick={() => setPaymentPlan('installment')}
-                style={{ borderColor: paymentPlan === 'installment' ? 'var(--gold)' : 'var(--dark-border)' }}
-              >
-                12-Week Installment
-              </button>
-            </div>
-          </div>
-
-          {paymentPlan === 'installment' && (
-            <div className="pd-variants" style={{ marginTop: '16px' }}>
-              <div className="variant-title">Installment Duration: <span style={{ color: 'var(--white)' }}>{installmentDuration} Weeks</span></div>
+          {/* ─── PAYMENT PLAN SELECTOR ─── */}
+          {!rushLoading && (
+            <div className="pd-variants" style={{ marginTop: '24px' }}>
+              <div className="variant-title">
+                Payment Plan: <span style={{ color: 'var(--white)' }}>{paymentPlan === 'full' ? 'Pay in Full' : `December Rush — ${validDuration} Weeks`}</span>
+              </div>
               <div className="variant-options">
-                <button 
-                  className={`variant-btn ${installmentDuration === 12 ? 'active' : ''}`}
-                  onClick={() => setInstallmentDuration(12)}
+                <button
+                  className={`variant-btn ${paymentPlan === 'full' ? 'active' : ''}`}
+                  onClick={() => setPaymentPlan('full')}
                 >
-                  12 Weeks
+                  Pay in Full
                 </button>
-                <button 
-                  className={`variant-btn ${installmentDuration === 8 ? 'active' : ''}`}
-                  onClick={() => setInstallmentDuration(8)}
-                >
-                  8 Weeks
-                </button>
-                <button 
-                  className={`variant-btn ${installmentDuration === 4 ? 'active' : ''}`}
-                  onClick={() => setInstallmentDuration(4)}
-                >
-                  4 Weeks
-                </button>
+                {rushEnabled && (
+                  <button
+                    className={`variant-btn ${paymentPlan === 'installment' ? 'active' : ''}`}
+                    onClick={() => setPaymentPlan('installment')}
+                    style={{
+                      borderColor: paymentPlan === 'installment' ? '#F9A825' : 'var(--dark-border)',
+                      color: paymentPlan === 'installment' ? '#F9A825' : 'inherit',
+                      background: paymentPlan === 'installment' ? 'rgba(249,168,37,0.08)' : 'var(--dark)',
+                      display: 'flex', alignItems: 'center', gap: '6px'
+                    }}
+                  >
+                    <CalendarClock size={14} />
+                    December Rush Installment
+                  </button>
+                )}
+              </div>
+              {!rushEnabled && (
+                <p style={{ fontSize: '12px', color: 'var(--gray-2)', marginTop: '8px', display: 'flex', gap: '6px', alignItems: 'center' }}>
+                  <Info size={13} /> Installment plan is currently closed. Check back soon!
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Duration selector — only if installment selected */}
+          {paymentPlan === 'installment' && availableDurations.length > 1 && (
+            <div className="pd-variants" style={{ marginTop: '16px' }}>
+              <div className="variant-title">Duration: <span style={{ color: 'var(--white)' }}>{validDuration} Weeks</span></div>
+              <div className="variant-options">
+                {availableDurations.map(w => (
+                  <button
+                    key={w}
+                    className={`variant-btn ${validDuration === w ? 'active' : ''}`}
+                    onClick={() => setInstallmentDuration(w)}
+                  >
+                    {w} Wks
+                  </button>
+                ))}
               </div>
             </div>
           )}
 
+          {/* Chicken Weight / Tier selector */}
           {paymentPlan === 'installment' && (
             <div className="pd-variants" style={{ marginTop: '16px' }}>
-              <div className="variant-title">Select Chicken Weight: <span style={{ color: 'var(--white)' }}>{selectedInstallment.label}</span></div>
+              <div className="variant-title">Chicken Weight: <span style={{ color: 'var(--white)' }}>{selectedInstallment?.label}</span></div>
               <div className="variant-options" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                 {installmentOptions.map(opt => (
-                  <button 
-                    key={opt.id} 
-                    className={`variant-btn ${selectedInstallment.id === opt.id ? 'active' : ''}`}
+                  <button
+                    key={opt.id}
+                    className={`variant-btn ${selectedInstallment?.id === opt.id ? 'active' : ''}`}
                     onClick={() => setSelectedInstallmentId(opt.id)}
-                    style={{ justifyContent: 'center' }}
+                    style={{ flexDirection: 'column', alignItems: 'flex-start', padding: '10px 12px', gap: '2px' }}
                   >
-                    {opt.label}
+                    <span style={{ fontWeight: 700 }}>{opt.label}</span>
+                    <span style={{ fontSize: '11px', color: 'var(--success)', fontWeight: 600 }}>1st: {formatCurrency(opt.firstPayment)}</span>
+                    <span style={{ fontSize: '11px', color: 'var(--gray-1)' }}>{formatCurrency(opt.weeklyPayment)}/wk × {validDuration - 1}</span>
                   </button>
                 ))}
               </div>
+              {/* Summary box */}
+              {selectedInstallment && (
+                <div style={{ marginTop: '12px', background: 'rgba(249,168,37,0.06)', border: '1px solid rgba(249,168,37,0.25)', borderRadius: 'var(--radius-sm)', padding: '12px 14px', fontSize: '13px', lineHeight: 1.8 }}>
+                  <div style={{ fontWeight: 800, color: '#F9A825', marginBottom: '4px' }}>Payment Schedule</div>
+                  <div><span style={{ color: 'var(--gray-1)' }}>Today (1st payment):</span> <strong style={{ color: 'var(--white)' }}>{formatCurrency(selectedInstallment.firstPayment)}</strong></div>
+                  <div><span style={{ color: 'var(--gray-1)' }}>Then weekly:</span> <strong style={{ color: 'var(--white)' }}>{formatCurrency(selectedInstallment.weeklyPayment)} × {validDuration - 1} wks</strong></div>
+                  <div><span style={{ color: 'var(--gray-1)' }}>Total price:</span> <strong style={{ color: 'var(--white)' }}>{formatCurrency(selectedInstallment.total)}</strong></div>
+                </div>
+              )}
             </div>
           )}
 
@@ -309,18 +375,27 @@ export default function ProductDetails() {
 
           <div>
             <button className="pas-add-btn" onClick={() => {
-              const productToAdd = paymentPlan === 'installment' 
-                ? { 
-                    ...product, 
-                    price: selectedInstallment.price,
-                    name: `${product.name} (Installment: ${selectedInstallment.label})`,
+              const productToAdd = paymentPlan === 'installment' && selectedInstallment
+                ? {
+                    ...product,
+                    price: selectedInstallment.firstPayment,
+                    name: `${product.name} — Installment (${selectedInstallment.label})`,
                     isInstallment: true,
-                    installmentDetails: { ...selectedInstallment, duration: installmentDuration }
-                  } 
+                    installmentDetails: {
+                      tierId: selectedInstallment.id,
+                      label: selectedInstallment.label,
+                      total: selectedInstallment.total,
+                      firstPayment: selectedInstallment.firstPayment,
+                      weeklyPayment: selectedInstallment.weeklyPayment,
+                      remaining: selectedInstallment.remaining,
+                      duration: validDuration,
+                      firstPaymentPercent: rushSettings?.firstPaymentPercent ?? 30,
+                    }
+                  }
                 : product;
-              addToCart(productToAdd, qty);
+              addToCart(productToAdd, paymentPlan === 'installment' ? 1 : qty);
             }}>
-              <ShoppingCart size={20} /> Add to Cart
+              <ShoppingCart size={20} /> {paymentPlan === 'installment' ? `Book — Pay ${formatCurrency(selectedInstallment?.firstPayment ?? 0)} Today` : 'Add to Cart'}
             </button>
             <button 
               className={`pas-wish-btn ${isInWishlist(product.id) ? 'active' : ''}`} 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Eye, EyeOff, LogIn, ShieldCheck, Loader2, MailCheck } from 'lucide-react';
+import { Eye, EyeOff, LogIn, ShieldCheck, Loader2, MailCheck, Lock } from 'lucide-react';
 import { auth, db } from '../firebase';
 import { signInWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
@@ -146,8 +146,25 @@ export default function Login() {
                 </div>
               </div>
 
-              <button type="submit" disabled style={{ width: '100%', background: 'var(--dark-border)', color: 'var(--gray-2)', padding: '14px', borderRadius: 'var(--radius-md)', fontWeight: 800, fontSize: '15px', fontFamily: 'var(--font-display)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'var(--transition)', opacity: 0.5, border: 'none', cursor: 'not-allowed', pointerEvents: 'none', position: 'sticky', bottom: 0, zIndex: 10 }}>
-                <LogIn size={16} /> Sign In to Account
+              <button
+                type="submit"
+                disabled={loading}
+                style={{
+                  width: '100%',
+                  background: loading ? 'var(--dark-border)' : 'linear-gradient(135deg, var(--primary), var(--primary-light))',
+                  color: loading ? 'var(--gray-2)' : 'var(--white)',
+                  padding: '14px',
+                  borderRadius: 'var(--radius-md)',
+                  fontWeight: 800, fontSize: '15px',
+                  fontFamily: 'var(--font-display)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                  transition: 'var(--transition)',
+                  border: 'none',
+                  cursor: loading ? 'not-allowed' : 'pointer',
+                  boxShadow: loading ? 'none' : '0 4px 20px var(--primary-glow)'
+                }}
+              >
+                {loading ? <><Loader2 className="spinner" size={18} /> Signing in...</> : <><LogIn size={16} /> Sign In to Account</>}
               </button>
             </form>
 

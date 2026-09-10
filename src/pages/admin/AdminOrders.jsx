@@ -114,7 +114,16 @@ function OrderCard({ order }) {
     try {
       const updatedReceipts = [...(order.installmentReceipts || [])];
       updatedReceipts[rIdx] = { ...updatedReceipts[rIdx], status: 'Approved', rejectReason: null };
-      const newPaid = (order.installmentsPaid || 0) + 1;
+      
+      // Calculate how many weeks this payment covers (for advance/monthly payments)
+      let covered = 1;
+      const recAmt = Number(updatedReceipts[rIdx].amount) || 0;
+      if (order.recurringAmount && order.recurringAmount > 0 && recAmt > 0) {
+        const ratio = recAmt / order.recurringAmount;
+        if (ratio >= 1.5) covered = Math.round(ratio);
+      }
+      
+      const newPaid = (order.installmentsPaid || 0) + covered;
       await updateDoc(doc(db, 'orders', order.id), {
         installmentReceipts: updatedReceipts,
         installmentsPaid: newPaid
@@ -159,7 +168,14 @@ function OrderCard({ order }) {
         uploadedAt: new Date().toISOString(),
         status: 'Approved' // auto-approved since admin is adding it manually
       }];
-      const newPaid = (order.installmentsPaid || 0) + 1;
+      
+      let covered = 1;
+      if (order.recurringAmount && order.recurringAmount > 0 && amount > 0) {
+        const ratio = amount / order.recurringAmount;
+        if (ratio >= 1.5) covered = Math.round(ratio);
+      }
+      
+      const newPaid = (order.installmentsPaid || 0) + covered;
       
       await updateDoc(doc(db, 'orders', order.id), { 
         installmentReceipts: updatedReceipts,

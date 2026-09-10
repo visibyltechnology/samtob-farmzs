@@ -449,8 +449,8 @@ export default function Profile() {
                                               <span style={{ color: 'var(--gray-1)' }}>Account Number</span>
                                               <span style={{ fontWeight: 900, fontSize: '15px', color: 'var(--warning)', letterSpacing: '1.5px', fontFamily: 'monospace' }}>0005998212</span>
                                             </div>
-                                            <div style={{ marginTop: '4px', fontSize: '11px', color: 'var(--gray-1)', textAlign: 'center', borderTop: '1px solid var(--dark-border)', paddingTop: '6px' }}>
-                                              Transfer exactly <strong style={{ color: 'var(--white)' }}>{formatCurrency(order.recurringAmount)}</strong> or your agreed amount, then upload your receipt below.
+                                            <div style={{ marginTop: '4px', fontSize: '11px', color: 'var(--gray-1)', textAlign: 'center', borderTop: '1px solid var(--dark-border)', paddingTop: '6px', lineHeight: '1.5' }}>
+                                              Transfer your weekly amount of <strong style={{ color: 'var(--white)' }}>{formatCurrency(order.recurringAmount)}</strong>, or pay in advance for multiple weeks (e.g. monthly). Enter the exact amount paid and upload your receipt below.
                                             </div>
                                           </div>
                                         </div>

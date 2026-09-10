@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { collection, getCountFromServer } from 'firebase/firestore';
 import { db } from '../../firebase';
@@ -42,9 +42,7 @@ export default function AdminHome() {
     { label: 'View All Orders', icon: <ClipboardList size={20} />, link: '/admin/orders', desc: 'Review and update customer orders', accent: '#F9A825' },
     { label: 'December Rush', icon: <CalendarClock size={20} />, link: '/admin/december-rush', desc: 'Manage installment plan settings', accent: '#FF7043' },
     { label: 'Customer Accounts', icon: <Users size={20} />, link: '/admin/users', desc: 'See all registered customers', accent: '#00B0FF' },
-    { label: 'Site Settings', icon: <Settings size={20} />, link: '/admin/settings', desc: 'Ticker messages, hero slides, bank details', accent: 'var(--primary)' },
     { label: 'Visitor Locations', icon: <MapPin size={20} />, link: '/admin/locations', desc: 'Track where visitors browse from', accent: '#AB47BC' },
-    { label: 'Subscriptions', icon: <TrendingUp size={20} />, link: '/admin/subscriptions', desc: 'Manage subscription plans', accent: '#26C6DA' },
   ];
 
   const fname = user?.firstName || 'Admin';

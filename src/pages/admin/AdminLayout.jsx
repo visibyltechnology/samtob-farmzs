@@ -36,8 +36,6 @@ const NAV_GROUPS = [
     links: [
       { to: '/admin/users', icon: <Users size={17} />, label: 'Customers' },
       { to: '/admin/locations', icon: <MapPin size={17} />, label: 'Locations' },
-      { to: '/admin/subscriptions', icon: <CreditCard size={17} />, label: 'Subscriptions' },
-      { to: '/admin/settings', icon: <Settings size={17} />, label: 'Site Settings' },
     ]
   },
 ];

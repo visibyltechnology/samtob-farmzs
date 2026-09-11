@@ -122,8 +122,7 @@ export default function Navbar() {
 
           {/* Notification Bell — only shown when logged in */}
           {user && (
-            <Link to="/profile#notifications" className="icon-btn" aria-label="Notifications"
-              onClick={() => navigate('/profile', { state: { tab: 'notifications' } })}
+            <Link to="/profile" state={{ tab: 'notifications' }} className="icon-btn" aria-label="Notifications"
               style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >
               <Bell size={22} />

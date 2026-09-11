@@ -39,6 +39,13 @@ export default function Profile() {
   const navigate = useNavigate();
   const location = useLocation();
   const [activeTab, setActiveTab] = useState(location.state?.tab || 'orders');
+
+  useEffect(() => {
+    if (location.state?.tab) {
+      setActiveTab(location.state.tab);
+    }
+  }, [location.state]);
+
   const [profileImage, setProfileImage] = useState(user?.avatar || null);
   const [isUploading, setIsUploading] = useState(false);
   const [activePaymentModal, setActivePaymentModal] = useState(null);

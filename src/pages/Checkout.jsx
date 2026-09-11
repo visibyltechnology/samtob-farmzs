@@ -70,7 +70,7 @@ export default function Checkout() {
   const INSTALLMENT_DEPOSIT_PCT = 0.30;
   const [deliveryOptions, setDeliveryOptions] = useState([
     { id: 'farm_pickup', label: 'Farm Pickup', desc: 'Come pick up at the farm — always FREE', fee: 0, badge: 'FREE' },
-    { id: 'ibadan', label: 'Within Ibadan Delivery', desc: 'We deliver to your doorstep in Ibadan', fee: 2000, badge: '₦2,000' },
+    { id: 'ibadan', label: 'Within Ibadan Delivery', desc: 'We deliver to your doorstep in Ibadan', fee: 5000, badge: '₦5,000' },
     { id: 'outside_ibadan', label: 'Outside Ibadan', desc: 'Contact us on WhatsApp for delivery arrangement', fee: null, badge: 'Contact Us' },
   ]);
 
@@ -117,7 +117,7 @@ export default function Checkout() {
         const data = snap.data();
         setDeliveryOptions([
           { id: 'farm_pickup', label: 'Farm Pickup', desc: 'Come pick up at the farm — always FREE', fee: 0, badge: 'FREE' },
-          { id: 'ibadan', label: 'Within Ibadan Delivery', desc: 'We deliver to your doorstep in Ibadan', fee: data.ibadan ?? 2000, badge: `₦${(data.ibadan ?? 2000).toLocaleString('en-NG')}` },
+          { id: 'ibadan', label: 'Within Ibadan Delivery', desc: 'We deliver to your doorstep in Ibadan', fee: data.ibadan ?? 5000, badge: `₦${(data.ibadan ?? 5000).toLocaleString('en-NG')}` },
           { id: 'outside_ibadan', label: 'Outside Ibadan', desc: data.outsideIbadanDesc || 'Contact us on WhatsApp for delivery arrangement', fee: null, badge: 'Contact Us' },
         ]);
       }

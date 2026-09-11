@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { User, Package, Heart, MapPin, Bell, Settings, LogOut, ChevronRight, ShoppingCart, Star, ShieldCheck, Camera, Loader2, Upload, Clock, CheckCircle } from 'lucide-react';
 import { uploadImage } from '../utils/cloudinaryService';
 import { useApp } from '../context/AppContext';
@@ -37,7 +37,8 @@ const getNextDueDateInfo = (order) => {
 export default function Profile() {
   const { user, authLoading, logout, wishlist, showToast } = useApp();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('orders');
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState(location.state?.tab || 'orders');
   const [profileImage, setProfileImage] = useState(user?.avatar || null);
   const [isUploading, setIsUploading] = useState(false);
   const [activePaymentModal, setActivePaymentModal] = useState(null);
@@ -390,9 +391,9 @@ export default function Profile() {
                             <span style={{ fontSize: '12px', fontWeight: 700, color: s.color, background: s.bg, padding: '3px 10px', borderRadius: '20px' }}>{order.status || 'Pending'}</span>
                           </div>
                           
-                          {order.payMethod === 'installment' && (
+                          {(order.payMethod === 'installment' || order.isInstallmentOrder) && (
                             <div style={{ marginTop: '12px', background: 'rgba(255,152,0,0.05)', border: '1px solid var(--warning)', borderRadius: 'var(--radius-sm)', padding: '12px' }}>
-                              <div style={{ fontSize: '11px', fontWeight: 800, color: 'var(--warning)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>Installment Plan ({order.installmentPlan?.replace('_', ' ').toUpperCase()})</div>
+                              <div style={{ fontSize: '11px', fontWeight: 800, color: 'var(--warning)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>Installment Plan — {order.installmentsTotal || '?'} Weeks</div>
                               
                               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '12px', color: 'var(--gray-1)', marginBottom: '12px' }}>
                                 <span>Deposit: <strong style={{ color: 'var(--white)' }}>{formatCurrency(order.depositAmount)}</strong></span>

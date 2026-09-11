@@ -15,7 +15,7 @@ const steps = ['Delivery', 'Processing', 'Payment', 'Review'];
 
 const DELIVERY_OPTIONS = [
   { id: 'farm_pickup', label: 'Farm Pickup', desc: 'Come pick up at the farm — always FREE', fee: 0, badge: 'FREE' },
-  { id: 'ibadan', label: 'Within Ibadan Delivery', desc: 'We deliver to your doorstep in Ibadan', fee: 5000, badge: '₦2,000' },
+  { id: 'ibadan', label: 'Within Ibadan Delivery', desc: 'We deliver to your doorstep in Ibadan', fee: 5000, badge: '₦5,000' },
   { id: 'outside_ibadan', label: 'Outside Ibadan', desc: 'Contact us on WhatsApp for delivery arrangement', fee: null, badge: 'Contact Us' },
 ];
 

@@ -24,7 +24,7 @@ const features = [
   {
     icon: <MapPin size={14} />,
     title: 'Ibadan Delivery',
-    desc: 'We deliver within Ibadan for just ₦2,000. Outside Ibadan? Reach us on WhatsApp and we\'ll sort out the logistics.',
+    desc: 'We deliver within Ibadan for just ₦5,000. Outside Ibadan? Reach us on WhatsApp and we\'ll sort out the logistics.',
     color: 'gold',
   },
   {

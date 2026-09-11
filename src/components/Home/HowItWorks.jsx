@@ -20,7 +20,7 @@ const steps = [
     icon: <Truck size={32} />,
     number: '03',
     title: 'Choose Delivery Option',
-    desc: 'Farm Pickup is always FREE. Delivery within Ibadan is ₦2,000. Outside Ibadan? Contact us for rates.',
+    desc: 'Farm Pickup is always FREE. Delivery within Ibadan is ₦5,000. Outside Ibadan? Contact us for rates.',
   },
   {
     icon: <ShoppingCart size={32} />,

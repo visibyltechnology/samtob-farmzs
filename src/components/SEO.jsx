@@ -16,7 +16,7 @@ export default function SEO({
   const siteName = 'Samtob Farms';
   const defaultTitle = `${siteName} | Fresh Farm Chickens — Ibadan, Nigeria`;
   const defaultDesc =
-    'Order fresh, farm-raised chickens from Samtob Farms in Ibadan, Nigeria. Choose your weight, processing option (live, dressed, frozen), and get delivery within Ibadan for just ₦2,000. Farm pickup always free.';
+    'Order fresh, farm-raised chickens from Samtob Farms in Ibadan, Nigeria. Choose your weight, processing option (live, dressed, frozen), and get delivery within Ibadan for just ₦5,000. Farm pickup always free.';
 
   const resolvedTitle = title ? `${title} | ${siteName}` : defaultTitle;
   const resolvedDesc = description || defaultDesc;
@@ -30,21 +30,21 @@ export default function SEO({
   // Build Product structured data if a product object is passed
   const productSchema = product
     ? JSON.stringify({
-        '@context': 'https://schema.org/',
-        '@type': 'Product',
-        name: product.name,
-        image: [product.image || product.imgUrl],
-        description: product.description || `Buy ${product.name} at Samtob Farms Nigeria`,
-        brand: { '@type': 'Brand', name: product.brand || 'Samtob Farms' },
-        offers: {
-          '@type': 'Offer',
-          url: resolvedUrl,
-          priceCurrency: 'NGN',
-          price: product.price,
-          availability: 'https://schema.org/InStock',
-          seller: { '@type': 'Organization', name: siteName },
-        },
-      })
+      '@context': 'https://schema.org/',
+      '@type': 'Product',
+      name: product.name,
+      image: [product.image || product.imgUrl],
+      description: product.description || `Buy ${product.name} at Samtob Farms Nigeria`,
+      brand: { '@type': 'Brand', name: product.brand || 'Samtob Farms' },
+      offers: {
+        '@type': 'Offer',
+        url: resolvedUrl,
+        priceCurrency: 'NGN',
+        price: product.price,
+        availability: 'https://schema.org/InStock',
+        seller: { '@type': 'Organization', name: siteName },
+      },
+    })
     : null;
 
   return (

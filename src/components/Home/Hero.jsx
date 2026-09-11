@@ -23,8 +23,8 @@ function useCountUp(target, duration = 1500, start = false) {
 const WORDS = ['December', 'Rush'];
 
 export default function Hero() {
-  const heroRef  = useRef(null);
-  const bgRef    = useRef(null);
+  const heroRef = useRef(null);
+  const bgRef = useRef(null);
 
   useLenis(({ scroll }) => {
     if (bgRef.current) bgRef.current.style.transform = 'translate3d(0,' + (scroll * 0.35) + 'px,0)';
@@ -142,7 +142,7 @@ export default function Hero() {
           <div className="hero-stats">
             {[
               { icon: '🐔', value: '100%', label: 'Farm Raised' },
-              { icon: <Truck size={22} />, value: '₦2,000', label: 'Ibadan Delivery' },
+              { icon: <Truck size={22} />, value: '₦5,000', label: 'Ibadan Delivery' },
               { icon: <Home size={22} />, value: 'FREE', label: 'Farm Pickup' },
             ].map((s, i) => (
               <div key={i} className="stat-card hero-anim-stat" style={{ animationDelay: `${1.2 + (i * 0.15)}s` }}>

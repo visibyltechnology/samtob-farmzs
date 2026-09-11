@@ -9,7 +9,7 @@ const faqs = [
   },
   {
     question: "How much does the chicken reservation cost?",
-    answer: "Weekly payments are based on the chicken's weight:<br/><br/>• 3.8kg–4.1kg: <strong>₦1,500</strong><br/>• 4.2kg–4.5kg: <strong>₦2,000</strong><br/>• 4.6kg–5kg: <strong>₦2,500</strong><br/>• 5.1kg–5.5kg: <strong>₦3,000</strong>"
+    answer: "Weekly payments are based on the chicken's weight:<br/><br/>• 3.8kg–4.1kg: <strong>₦1,500</strong><br/>• 4.2kg–4.5kg: <strong>₦5,000</strong><br/>• 4.6kg–5kg: <strong>₦2,500</strong><br/>• 5.1kg–5.5kg: <strong>₦3,000</strong>"
   },
   {
     question: "What is the minimum order for chickens?",
@@ -29,7 +29,7 @@ const faqs = [
   },
   {
     question: "Do you offer delivery for chickens?",
-    answer: "Yes, we deliver within Ibadan for a flat fee of <strong>₦2,000</strong>. Delivery outside Ibadan depends on your specific location (limited to South West Nigeria for now)."
+    answer: "Yes, we deliver within Ibadan for a flat fee of <strong>₦5,000</strong>. Delivery outside Ibadan depends on your specific location (limited to South West Nigeria for now)."
   },
   {
     question: "How do I pay for my chicken booking?",
@@ -64,8 +64,8 @@ const faqs = [
     answer: "Yes, our chickens are specifically raised to be a high-protein, cost-effective alternative to cow meat for large gatherings. So you can confidently book ahead of your next event or book to meet your organization's needs."
   },
   {
-    question: "Is the ₦2,000 delivery fee the same for all of Ibadan?",
-    answer: "Yes, we charge a flat fee of ₦2,000 for any delivery within Ibadan."
+    question: "Is the ₦5,000 delivery fee the same for all of Ibadan?",
+    answer: "Yes, we charge a flat fee of ₦5,000 for any delivery within Ibadan."
   },
   {
     question: "Which bank account should I use for chicken payments?",
@@ -109,8 +109,8 @@ export default function FAQ() {
           {faqs.map((faq, index) => {
             const isOpen = openIndex === index;
             return (
-              <div 
-                key={index} 
+              <div
+                key={index}
                 className={`faq-item ${isOpen ? 'open' : ''}`}
                 onClick={() => toggleFAQ(index)}
               >
@@ -120,8 +120,8 @@ export default function FAQ() {
                     <ChevronDown size={20} />
                   </div>
                 </div>
-                <div 
-                  className="faq-answer-wrapper" 
+                <div
+                  className="faq-answer-wrapper"
                   style={{ maxHeight: isOpen ? '400px' : '0' }}
                 >
                   <p className="faq-answer" dangerouslySetInnerHTML={{ __html: faq.answer }}></p>

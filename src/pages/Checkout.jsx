@@ -135,9 +135,9 @@ export default function Checkout() {
   const processingFee = (selectedProcessing.fee || 0) * totalQty;
   const subTotal = cartTotal + deliveryFee + processingFee;
   const isInstallmentPayment = formData.payMethod === 'installment';
-  const installmentFirstDeposit = Math.ceil(subTotal * INSTALLMENT_DEPOSIT_PCT);
+  const installmentWeeklyAmt = Math.floor(subTotal / installmentDuration);
+  const installmentFirstDeposit = subTotal - (installmentWeeklyAmt * (installmentDuration - 1));
   const installmentRemaining = subTotal - installmentFirstDeposit;
-  const installmentWeeklyAmt = installmentDuration > 1 ? Math.ceil(installmentRemaining / (installmentDuration - 1)) : installmentRemaining;
   const grandTotal = isInstallmentPayment ? installmentFirstDeposit : subTotal;
   const hasInstallmentItems = cart.some(item => item.isInstallment);
 
@@ -561,7 +561,7 @@ export default function Checkout() {
                   <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '10px' }}><CreditCard size={20} color="var(--primary)" /> Payment Method</h3>
                   {[
                     { id: 'bank_transfer', label: 'Direct Bank Transfer', icon: CreditCard, desc: 'Transfer to Samtob p&c Ltd · Wema Bank' },
-                    { id: 'installment', label: 'Installment Payment', icon: CalendarDays, desc: 'Pay 30% deposit now, rest weekly or monthly' },
+                    { id: 'installment', label: 'Installment Payment', icon: CalendarDays, desc: 'Payments split evenly, delivery after full payment' },
                     ...(user?.isAdmin ? [{ id: 'admin_cash', label: 'Admin POS / Cash', icon: Zap, desc: 'Direct order placement (Admin only)' }] : []),
                   ].map(method => (
                     <div key={method.id} onClick={() => setFormData(p => ({ ...p, payMethod: method.id }))}
@@ -594,11 +594,11 @@ export default function Checkout() {
                       </div>
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', fontSize: '13px' }}>
                         <div style={{ background: 'var(--dark)', borderRadius: 'var(--radius-sm)', padding: '12px' }}>
-                          <div style={{ color: 'var(--gray-1)', marginBottom: '4px', fontSize: '11px', textTransform: 'uppercase', fontWeight: 700 }}>Pay Today (30%)</div>
+                          <div style={{ color: 'var(--gray-1)', marginBottom: '4px', fontSize: '11px', textTransform: 'uppercase', fontWeight: 700 }}>Pay Today (Part 1 of {installmentDuration})</div>
                           <div style={{ fontWeight: 900, fontSize: '18px', color: '#F9A825' }}>{formatCurrency(installmentFirstDeposit)}</div>
                         </div>
                         <div style={{ background: 'var(--dark)', borderRadius: 'var(--radius-sm)', padding: '12px' }}>
-                          <div style={{ color: 'var(--gray-1)', marginBottom: '4px', fontSize: '11px', textTransform: 'uppercase', fontWeight: 700 }}>Then Weekly</div>
+                          <div style={{ color: 'var(--gray-1)', marginBottom: '4px', fontSize: '11px', textTransform: 'uppercase', fontWeight: 700 }}>Then Recurring</div>
                           <div style={{ fontWeight: 900, fontSize: '18px', color: 'var(--primary)' }}>{formatCurrency(installmentWeeklyAmt)}<span style={{ fontSize: '12px', fontWeight: 400 }}>/wk × {installmentDuration - 1}</span></div>
                         </div>
                       </div>
@@ -672,10 +672,10 @@ export default function Checkout() {
                   {(formData.payMethod === 'bank_transfer' || formData.payMethod === 'installment') && (
                     <div style={{ background: 'var(--dark)', border: '1px solid rgba(76,175,80,0.3)', borderRadius: 'var(--radius-md)', padding: '20px', marginBottom: '8px' }}>
                       <h4 style={{ fontSize: '15px', fontWeight: 800, color: 'var(--primary)', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <CreditCard size={18} /> {isInstallmentPayment ? 'Pay First Deposit' : 'Transfer to This Account'}
+                        <CreditCard size={18} /> {isInstallmentPayment ? 'Pay Initial Installment' : 'Transfer to This Account'}
                       </h4>
                       <p style={{ fontSize: '13px', color: 'var(--gray-1)', marginBottom: '16px' }}>
-                        Transfer <strong style={{ color: '#F9A825' }}>{formatCurrency(grandTotal)}</strong> {isInstallmentPayment ? '(30% deposit)' : ''} to the account below, then upload your receipt.
+                        Transfer <strong style={{ color: '#F9A825' }}>{formatCurrency(grandTotal)}</strong> {isInstallmentPayment ? `(Payment 1 of ${installmentDuration})` : ''} to the account below, then upload your receipt.
                       </p>
 
                       <div style={{ background: 'var(--black)', padding: '16px', borderRadius: 'var(--radius-sm)', display: 'grid', gap: '12px', border: '1px solid rgba(249,168,37,0.2)', marginBottom: '20px' }}>

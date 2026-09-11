@@ -58,7 +58,7 @@ function getKlump() {
 }
 
 export default function Checkout() {
-  const { user, authLoading, cart, cartTotal, clearCart, showToast } = useApp();
+  const { user, authLoading, cart, cartTotal, clearCart, showToast, siteSettings } = useApp();
   const navigate = useNavigate();
 
   const [step, setStep] = useState(0);
@@ -68,11 +68,12 @@ export default function Checkout() {
   const [error, setError] = useState('');
   const [installmentDuration, setInstallmentDuration] = useState(4); // weeks
   const INSTALLMENT_DEPOSIT_PCT = 0.30;
-  const [deliveryOptions, setDeliveryOptions] = useState([
+  
+  const deliveryOptions = [
     { id: 'farm_pickup', label: 'Farm Pickup', desc: 'Come pick up at the farm — always FREE', fee: 0, badge: 'FREE' },
-    { id: 'ibadan', label: 'Within Ibadan Delivery', desc: 'We deliver to your doorstep in Ibadan', fee: 5000, badge: '₦5,000' },
-    { id: 'outside_ibadan', label: 'Outside Ibadan', desc: 'Contact us on WhatsApp for delivery arrangement', fee: null, badge: 'Contact Us' },
-  ]);
+    { id: 'ibadan', label: 'Within Ibadan Delivery', desc: 'We deliver to your doorstep in Ibadan', fee: siteSettings.ibadan, badge: `₦${Number(siteSettings.ibadan).toLocaleString('en-NG')}` },
+    { id: 'outside_ibadan', label: 'Outside Ibadan', desc: siteSettings.outsideIbadanDesc || 'Contact us on WhatsApp for delivery arrangement', fee: null, badge: 'Contact Us' },
+  ];
 
   const [klumpOpen, setKlumpOpen] = useState(false);
 
@@ -110,23 +111,6 @@ export default function Checkout() {
   const [activeLegal, setActiveLegal] = useState(null);
   const [termsAccepted, setTermsAccepted] = useState({ terms: false, privacy: false });
 
-  // Load delivery fees dynamically from Firestore using live listener
-  useEffect(() => {
-    const unsub = onSnapshot(doc(db, 'settings', 'delivery_fees'), (snap) => {
-      if (snap.exists()) {
-        const data = snap.data();
-        setDeliveryOptions([
-          { id: 'farm_pickup', label: 'Farm Pickup', desc: 'Come pick up at the farm — always FREE', fee: 0, badge: 'FREE' },
-          { id: 'ibadan', label: 'Within Ibadan Delivery', desc: 'We deliver to your doorstep in Ibadan', fee: data.ibadan ?? 5000, badge: `₦${(data.ibadan ?? 5000).toLocaleString('en-NG')}` },
-          { id: 'outside_ibadan', label: 'Outside Ibadan', desc: data.outsideIbadanDesc || 'Contact us on WhatsApp for delivery arrangement', fee: null, badge: 'Contact Us' },
-        ]);
-      }
-    }, (error) => {
-      console.error("Failed to load delivery fees live:", error);
-    });
-
-    return () => unsub();
-  }, []);
 
   const selectedDelivery = deliveryOptions.find(d => d.id === deliveryOption) || deliveryOptions[0];
   const deliveryFee = selectedDelivery?.fee || 0;
@@ -165,7 +149,7 @@ export default function Checkout() {
   };
 
   const handlePlaceOrderClick = () => {
-    if (formData.payMethod === 'bank_transfer' && !receiptFile) {
+    if ((formData.payMethod === 'bank_transfer' || formData.payMethod === 'installment') && !receiptFile) {
       setError('Please upload your payment receipt before placing the order.');
       return;
     }

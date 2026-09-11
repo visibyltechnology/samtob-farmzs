@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { auth, db } from '../firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, onSnapshot } from 'firebase/firestore';
 import { CheckCircle2, AlertCircle } from 'lucide-react';
 
 const AppContext = createContext();
@@ -11,6 +11,11 @@ export const useApp = () => useContext(AppContext);
 export const AppProvider = ({ children }) => {
   const [user, setUser] = useState(null); // null means not logged in
   const [authLoading, setAuthLoading] = useState(true);
+  
+  const [siteSettings, setSiteSettings] = useState({
+    ibadan: 5000,
+    outsideIbadanDesc: 'Contact us on WhatsApp for delivery arrangement'
+  });
   
   // Toast State
   const [toast, setToast] = useState({ show: false, msg: '', type: 'success' });
@@ -43,6 +48,16 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem('wishlist', JSON.stringify(wishlist));
   }, [wishlist]);
+
+  // Site Settings Listener
+  useEffect(() => {
+    const unsub = onSnapshot(doc(db, 'settings', 'delivery_fees'), (docSnap) => {
+      if (docSnap.exists()) {
+        setSiteSettings(prev => ({ ...prev, ...docSnap.data() }));
+      }
+    });
+    return () => unsub();
+  }, []);
 
   // Auth Listener
   useEffect(() => {
@@ -132,6 +147,7 @@ export const AppProvider = ({ children }) => {
   const contextValue = {
     user,
     authLoading,
+    siteSettings,
     logout,
     cart,
     addToCart,

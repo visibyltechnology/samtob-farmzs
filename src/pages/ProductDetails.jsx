@@ -374,7 +374,7 @@ export default function ProductDetails() {
           </div>
 
           <div>
-            <button className="pas-add-btn" onClick={() => {
+            <button           className="pas-add-btn" onClick={() => {
               const productToAdd = paymentPlan === 'installment' && selectedInstallment
                 ? {
                     ...product,
@@ -394,6 +394,8 @@ export default function ProductDetails() {
                   }
                 : product;
               addToCart(productToAdd, paymentPlan === 'installment' ? 1 : qty);
+              // Navigate to cart immediately for both book and regular add
+              navigate('/cart');
             }}>
               <ShoppingCart size={20} /> {paymentPlan === 'installment' ? `Book — Pay ${formatCurrency(selectedInstallment?.firstPayment ?? 0)} Today` : 'Add to Cart'}
             </button>

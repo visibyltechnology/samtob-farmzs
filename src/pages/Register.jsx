@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, UserPlus, ShieldCheck, Lock, CheckCircle, Loader2, X } from 'lucide-react';
 import { auth, db } from '../firebase';
@@ -42,8 +42,12 @@ export default function Register() {
       // 1. Create Firebase Auth account
       const cred = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
 
-      // 2. Send Firebase verification email
-      await sendEmailVerification(cred.user);
+      // 2. Send Firebase verification email with proper redirect
+      const actionCodeSettings = {
+        url: `${window.location.origin}/login?verify=1`,
+        handleCodeInApp: false,
+      };
+      await sendEmailVerification(cred.user, actionCodeSettings);
 
       // 3. Save profile to Firestore
       await setDoc(doc(db, 'users', cred.user.uid), {

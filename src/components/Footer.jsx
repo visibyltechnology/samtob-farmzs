@@ -1,9 +1,11 @@
-﻿import React from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Phone, CreditCard } from 'lucide-react';
+import { useApp } from '../context/AppContext';
 import './Footer.css';
 
 export default function Footer() {
+  const { siteSettings } = useApp();
   return (
     <footer className="footer-section">
       <div className="container">
@@ -76,7 +78,7 @@ export default function Footer() {
               <h4>Delivery Options</h4>
               <div className="delivery-item">
                 <span>🚚 Within Ibadan</span>
-                <span className="delivery-price">₦5,000</span>
+                <span className="delivery-price">₦{(siteSettings?.ibadan ?? 5000).toLocaleString('en-NG')}</span>
               </div>
               <div className="delivery-item">
                 <span>📍 Outside Ibadan</span>

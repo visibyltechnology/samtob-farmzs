@@ -1,9 +1,13 @@
-﻿import React from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { MousePointerClick, Weight, ShoppingCart, Truck, CheckCircle } from 'lucide-react';
+import { useApp } from '../../context/AppContext';
 import './HowItWorks.css';
 
-const steps = [
+export default function HowItWorks() {
+  const { siteSettings } = useApp();
+  
+  const steps = [
   {
     icon: <MousePointerClick size={32} />,
     number: '01',
@@ -20,7 +24,7 @@ const steps = [
     icon: <Truck size={32} />,
     number: '03',
     title: 'Choose Delivery Option',
-    desc: 'Farm Pickup is always FREE. Delivery within Ibadan is ₦5,000. Outside Ibadan? Contact us for rates.',
+    desc: `Farm Pickup is always FREE. Delivery within Ibadan is ₦${Number(siteSettings?.ibadan ?? 5000).toLocaleString('en-NG')}. Outside Ibadan? Contact us for rates.`,
   },
   {
     icon: <ShoppingCart size={32} />,
@@ -36,7 +40,6 @@ const steps = [
   },
 ];
 
-export default function HowItWorks() {
   return (
     <section className="how-section section-padding" id="how-it-works">
       <div className="container">

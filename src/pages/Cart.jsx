@@ -6,11 +6,11 @@ import { useApp } from '../context/AppContext';
 import './Cart.css';
 
 export default function Cart() {
-  const { cart: items, updateCartQty: updateQty, removeFromCart: removeItem } = useApp();
+  const { cart: items, updateCartQty: updateQty, removeFromCart: removeItem, siteSettings } = useApp();
   const [coupon, setCoupon] = useState('');
 
   const subtotal = items.reduce((sum, item) => sum + item.price * item.qty, 0);
-  const shipping = subtotal > 300000 ? 0 : 5000;
+  const shipping = subtotal > 300000 ? 0 : Number(siteSettings?.ibadan ?? 5000);
   const total = subtotal + shipping;
 
   return (
@@ -99,9 +99,12 @@ export default function Cart() {
               </div>
 
               {shipping > 0 && (
-                <div style={{ background: 'rgba(0,230,118,0.08)', border: '1px solid rgba(0,230,118,0.2)', borderRadius: 'var(--radius-sm)', padding: '10px 14px', marginBottom: '16px', fontSize: '12px', color: 'var(--success)', display: 'flex', gap: '8px', alignItems: 'center' }}>
-                  <Truck size={14} /> Add {formatCurrency(300000 - subtotal)} more for FREE delivery!
-                </div>
+                <Link to="/shop" style={{ textDecoration: 'none' }}>
+                  <div style={{ background: 'rgba(0,230,118,0.08)', border: '1px solid rgba(0,230,118,0.2)', borderRadius: 'var(--radius-sm)', padding: '10px 14px', marginBottom: '16px', fontSize: '12px', color: 'var(--success)', display: 'flex', gap: '8px', alignItems: 'center', cursor: 'pointer', transition: 'opacity 0.2s' }}
+                    onMouseOver={e => e.currentTarget.style.opacity = '0.8'} onMouseOut={e => e.currentTarget.style.opacity = '1'}>
+                    <Truck size={14} /> Add {formatCurrency(300000 - subtotal)} more for FREE delivery! <span style={{ marginLeft: 'auto', fontWeight: 700 }}>Shop →</span>
+                  </div>
+                </Link>
               )}
 
               {/* Coupon */}

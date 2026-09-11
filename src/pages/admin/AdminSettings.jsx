@@ -20,6 +20,7 @@ export default function AdminSettings() {
     words: 'December Rush',
     titleSuffix: 'Installment Plan',
     subtitle: 'Book your Christmas chickens early and pay in small weekly installments. Hormone-free birds raised on our farm — delivered to your door in Ibadan. Farm pickup always free.',
+    priceRibbonLabel: 'Starting from',
     priceRibbon: '₦1,500/wk',
     enabled: true,
     image: '/products/live_chicken.jpg',
@@ -193,6 +194,9 @@ export default function AdminSettings() {
 
         <label style={lbl}>Subtitle / Description</label>
         <textarea rows="3" value={heroSettings.subtitle} onChange={e => setHeroSettings(h => ({ ...h, subtitle: e.target.value }))} style={{ ...inp, marginBottom: '16px', resize: 'vertical' }} />
+
+        <label style={lbl}>Price Ribbon Label</label>
+        <input type="text" value={heroSettings.priceRibbonLabel} onChange={e => setHeroSettings(h => ({ ...h, priceRibbonLabel: e.target.value }))} placeholder="Starting from" style={{ ...inp, marginBottom: '16px' }} />
 
         <label style={lbl}>Starting Price Ribbon Text</label>
         <input type="text" value={heroSettings.priceRibbon} onChange={e => setHeroSettings(h => ({ ...h, priceRibbon: e.target.value }))} style={{ ...inp, marginBottom: '24px' }} />

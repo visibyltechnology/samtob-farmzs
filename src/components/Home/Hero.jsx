@@ -35,6 +35,7 @@ export default function Hero() {
     words: 'December Rush',
     titleSuffix: 'Installment Plan',
     subtitle: 'Book your Christmas chickens early and pay in small weekly installments. Hormone-free birds raised on our farm — delivered to your door in Ibadan. Farm pickup always free.',
+    priceRibbonLabel: 'Starting from',
     priceRibbon: '₦1,500/wk',
     enabled: true,
     image: '/products/live_chicken.jpg',
@@ -165,7 +166,7 @@ export default function Hero() {
               <span>{heroSettings.imgTag}</span>
             </div>
             <div className="hero-price-ribbon">
-              <div className="ribbon-label">Starting from</div>
+              <div className="ribbon-label">{heroSettings.priceRibbonLabel || 'Starting from'}</div>
               <div className="ribbon-price">
                 {heroSettings.priceRibbon.split('/')[0]}
                 {heroSettings.priceRibbon.includes('/') && <span>/{heroSettings.priceRibbon.split('/')[1]}</span>}

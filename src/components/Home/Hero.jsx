@@ -36,7 +36,11 @@ export default function Hero() {
     titleSuffix: 'Installment Plan',
     subtitle: 'Book your Christmas chickens early and pay in small weekly installments. Hormone-free birds raised on our farm — delivered to your door in Ibadan. Farm pickup always free.',
     priceRibbon: '₦1,500/wk',
-    enabled: true
+    enabled: true,
+    image: '/products/live_chicken.jpg',
+    emojis: '🐔,🌿,🍗,🌾,🥚',
+    trustChips: '✅ No Hormones,✅ Farm Raised,✅ Same-Day Processing,✅ Ibadan Delivery',
+    imgTag: 'Farm Fresh • Hormone-Free'
   });
 
   useEffect(() => {
@@ -73,11 +77,9 @@ export default function Hero() {
       <div className="hero-ring ring-3" />
 
       {/* Floating emojis */}
-      <div className="hero-float f1">🐔</div>
-      <div className="hero-float f2">🌿</div>
-      <div className="hero-float f3">🍗</div>
-      <div className="hero-float f4">🌾</div>
-      <div className="hero-float f5">🥚</div>
+      {heroSettings.emojis.split(',').map((emoji, i) => (
+        <div key={i} className={`hero-float f${i + 1}`}>{emoji.trim()}</div>
+      ))}
 
       <div className="container hero-container">
 
@@ -137,8 +139,8 @@ export default function Hero() {
 
           {/* Trust chips */}
           <div className="hero-trust chips-stagger">
-            {['✅ No Hormones', '✅ Farm Raised', '✅ Same-Day Processing', '✅ Ibadan Delivery'].map((t, i) => (
-              <div key={i} className="trust-chip" style={{ animationDelay: `${1.8 + (i * 0.1)}s` }}>{t}</div>
+            {heroSettings.trustChips.split(',').map((t, i) => (
+              <div key={i} className="trust-chip" style={{ animationDelay: `${1.8 + (i * 0.1)}s` }}>{t.trim()}</div>
             ))}
           </div>
         </div>
@@ -147,7 +149,7 @@ export default function Hero() {
         <div className="hero-visual visual-reveal" style={{ animationDelay: '0.4s' }}>
           <div className="hero-image-card">
             <img
-              src="/products/live_chicken.jpg"
+              src={heroSettings.image || '/products/live_chicken.jpg'}
               alt="Fresh farm chickens ready for Christmas"
               className="hero-img"
               onError={e => { e.target.src = 'https://images.unsplash.com/photo-1548550023-2bf3c49b338c?w=800&q=80'; }}
@@ -155,7 +157,7 @@ export default function Hero() {
             <div className="hero-img-overlay" />
             <div className="hero-img-tag">
               <span className="img-tag-dot" />
-              <span>Farm Fresh • Hormone-Free</span>
+              <span>{heroSettings.imgTag}</span>
             </div>
             <div className="hero-price-ribbon">
               <div className="ribbon-label">Starting from</div>

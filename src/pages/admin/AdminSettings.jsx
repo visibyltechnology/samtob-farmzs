@@ -18,7 +18,11 @@ export default function AdminSettings() {
     titleSuffix: 'Installment Plan',
     subtitle: 'Book your Christmas chickens early and pay in small weekly installments. Hormone-free birds raised on our farm — delivered to your door in Ibadan. Farm pickup always free.',
     priceRibbon: '₦1,500/wk',
-    enabled: true
+    enabled: true,
+    image: '/products/live_chicken.jpg',
+    emojis: '🐔,🌿,🍗,🌾,🥚',
+    trustChips: '✅ No Hormones,✅ Farm Raised,✅ Same-Day Processing,✅ Ibadan Delivery',
+    imgTag: 'Farm Fresh • Hormone-Free'
   });
 
   const showToast = (msg, type = 'success') => {
@@ -166,6 +170,18 @@ export default function AdminSettings() {
 
         <label style={lbl}>Starting Price Ribbon Text</label>
         <input type="text" value={heroSettings.priceRibbon} onChange={e => setHeroSettings(h => ({ ...h, priceRibbon: e.target.value }))} style={{ ...inp, marginBottom: '16px' }} />
+
+        <label style={lbl}>Hero Image URL</label>
+        <input type="text" value={heroSettings.image} onChange={e => setHeroSettings(h => ({ ...h, image: e.target.value }))} placeholder="/products/live_chicken.jpg or https://..." style={{ ...inp, marginBottom: '16px' }} />
+
+        <label style={lbl}>Floating Emojis (Comma Separated)</label>
+        <input type="text" value={heroSettings.emojis} onChange={e => setHeroSettings(h => ({ ...h, emojis: e.target.value }))} placeholder="🐔,🌿,🍗,🌾,🥚" style={{ ...inp, marginBottom: '16px' }} />
+
+        <label style={lbl}>Trust Chips (Comma Separated)</label>
+        <textarea rows="2" value={heroSettings.trustChips} onChange={e => setHeroSettings(h => ({ ...h, trustChips: e.target.value }))} placeholder="✅ No Hormones,✅ Farm Raised..." style={{ ...inp, marginBottom: '16px', resize: 'vertical' }} />
+
+        <label style={lbl}>Image Tag Text</label>
+        <input type="text" value={heroSettings.imgTag} onChange={e => setHeroSettings(h => ({ ...h, imgTag: e.target.value }))} placeholder="Farm Fresh • Hormone-Free" style={{ ...inp, marginBottom: '16px' }} />
       </div>
     </div>
   );

@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, useNavigate } from 'react-router-dom';
-import { CreditCard, MapPin, Truck, ShieldCheck, ChevronRight, CheckCircle, Zap, Upload, AlertCircle, Loader2, X } from 'lucide-react';
+import { CreditCard, MapPin, Truck, ShieldCheck, ChevronRight, CheckCircle, Zap, Upload, AlertCircle, Loader2, X, CalendarDays, LogIn } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { formatCurrency } from '../utils/helpers';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { uploadImage } from '../utils/cloudinaryService';
 import { sendOrderConfirmation } from '../utils/emailService';
+import { createNotification } from '../utils/notificationService';
 import './Cart.css';
 
 const steps = ['Delivery', 'Processing', 'Payment', 'Review'];
@@ -65,6 +66,13 @@ export default function Checkout() {
   const [finalTotal, setFinalTotal] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [installmentDuration, setInstallmentDuration] = useState(4); // weeks
+  const INSTALLMENT_DEPOSIT_PCT = 0.30;
+  const [deliveryOptions, setDeliveryOptions] = useState([
+    { id: 'farm_pickup', label: 'Farm Pickup', desc: 'Come pick up at the farm — always FREE', fee: 0, badge: 'FREE' },
+    { id: 'ibadan', label: 'Within Ibadan Delivery', desc: 'We deliver to your doorstep in Ibadan', fee: 2000, badge: '₦2,000' },
+    { id: 'outside_ibadan', label: 'Outside Ibadan', desc: 'Contact us on WhatsApp for delivery arrangement', fee: null, badge: 'Contact Us' },
+  ]);
 
   const [klumpOpen, setKlumpOpen] = useState(false);
 
@@ -102,26 +110,49 @@ export default function Checkout() {
   const [activeLegal, setActiveLegal] = useState(null);
   const [termsAccepted, setTermsAccepted] = useState({ terms: false, privacy: false });
 
-  const selectedDelivery = DELIVERY_OPTIONS.find(d => d.id === deliveryOption) || DELIVERY_OPTIONS[0];
-  const deliveryFee = selectedDelivery.fee || 0;
+  // Load delivery fees dynamically from Firestore
+  useEffect(() => {
+    const loadDeliveryFees = async () => {
+      try {
+        const snap = await getDoc(doc(db, 'settings', 'delivery_fees'));
+        if (snap.exists()) {
+          const data = snap.data();
+          setDeliveryOptions([
+            { id: 'farm_pickup', label: 'Farm Pickup', desc: 'Come pick up at the farm — always FREE', fee: 0, badge: 'FREE' },
+            { id: 'ibadan', label: 'Within Ibadan Delivery', desc: 'We deliver to your doorstep in Ibadan', fee: data.ibadan ?? 2000, badge: `₦${(data.ibadan ?? 2000).toLocaleString('en-NG')}` },
+            { id: 'outside_ibadan', label: 'Outside Ibadan', desc: data.outsideIbadanDesc || 'Contact us on WhatsApp for delivery arrangement', fee: null, badge: 'Contact Us' },
+          ]);
+        }
+      } catch (e) { /* use defaults */ }
+    };
+    loadDeliveryFees();
+  }, []);
+
+  const selectedDelivery = deliveryOptions.find(d => d.id === deliveryOption) || deliveryOptions[0];
+  const deliveryFee = selectedDelivery?.fee || 0;
   const totalQty = cart.reduce((sum, item) => sum + (item.qty || 1), 0);
   const selectedProcessing = PROCESSING_OPTIONS.find(p => p.id === processingOption) || PROCESSING_OPTIONS[0];
   const processingFee = (selectedProcessing.fee || 0) * totalQty;
   const subTotal = cartTotal + deliveryFee + processingFee;
-  const grandTotal = subTotal;
+  const isInstallmentPayment = formData.payMethod === 'installment';
+  const installmentFirstDeposit = Math.ceil(subTotal * INSTALLMENT_DEPOSIT_PCT);
+  const installmentRemaining = subTotal - installmentFirstDeposit;
+  const installmentWeeklyAmt = installmentDuration > 1 ? Math.ceil(installmentRemaining / (installmentDuration - 1)) : installmentRemaining;
+  const grandTotal = isInstallmentPayment ? installmentFirstDeposit : subTotal;
   const hasInstallmentItems = cart.some(item => item.isInstallment);
 
   useEffect(() => {
     if (!authLoading) {
       if (cart.length === 0 && !placed) {
         navigate('/cart');
-      } else if (hasInstallmentItems && !user && !placed) {
-        showToast('Installment plans require an account to track your progress. Please log in or sign up.', 'error');
+      } else if (!user && !placed) {
+        // ALL orders require login
+        showToast('Please log in or create an account to place an order.', 'error');
         navigate('/login');
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authLoading, cart, navigate, placed, hasInstallmentItems, user]);
+  }, [authLoading, cart, navigate, placed, user]);
 
   const handleReceiptChange = (e) => {
     const file = e.target.files?.[0];
@@ -220,18 +251,36 @@ export default function Checkout() {
         deliveryFee: deliveryFee,
         processingOption,
         items: cart,
-        total: grandTotal,
+        total: subTotal,           // full order total
         subTotal: subTotal,
         payMethod: formData.payMethod,
         status: 'Pending Verification',
         receiptUrl: receiptUrl,
         createdAt: new Date(),
+        // Installment fields (only set when payMethod === 'installment')
+        ...(isInstallmentPayment ? {
+          isInstallmentOrder: true,
+          depositAmount: installmentFirstDeposit,
+          recurringAmount: installmentWeeklyAmt,
+          installmentsTotal: installmentDuration,
+          installmentsPaid: 0,
+          initialPaymentStatus: 'Pending',
+          installmentReceipts: [],
+        } : {}),
       };
 
       const docRef = await addDoc(collection(db, 'orders'), orderData);
       
-      // Fire and forget email notification
+      // Fire and forget: email + in-app notification
       sendOrderConfirmation({ id: docRef.id, ...orderData, hasInstallmentItems });
+      if (user?.uid) {
+        createNotification(user.uid, {
+          type: 'order_confirmed',
+          title: '🎉 Order Confirmed!',
+          message: `Your order #${docRef.id.slice(0, 8).toUpperCase()} has been placed and is pending payment verification.`,
+          orderId: docRef.id,
+        });
+      }
 
       setFinalTotal(grandTotal);
       clearCart();
@@ -512,6 +561,7 @@ export default function Checkout() {
                   <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '10px' }}><CreditCard size={20} color="var(--primary)" /> Payment Method</h3>
                   {[
                     { id: 'bank_transfer', label: 'Direct Bank Transfer', icon: CreditCard, desc: 'Transfer to Samtob p&c Ltd · Wema Bank' },
+                    { id: 'installment', label: 'Installment Payment', icon: CalendarDays, desc: 'Pay 30% deposit now, rest weekly or monthly' },
                     ...(user?.isAdmin ? [{ id: 'admin_cash', label: 'Admin POS / Cash', icon: Zap, desc: 'Direct order placement (Admin only)' }] : []),
                   ].map(method => (
                     <div key={method.id} onClick={() => setFormData(p => ({ ...p, payMethod: method.id }))}
@@ -529,6 +579,33 @@ export default function Checkout() {
                       </div>
                     </div>
                   ))}
+
+                  {/* Installment duration selector */}
+                  {formData.payMethod === 'installment' && (
+                    <div style={{ background: 'rgba(249,168,37,0.08)', border: '1px solid rgba(249,168,37,0.4)', borderRadius: 'var(--radius-md)', padding: '16px', marginTop: '4px' }}>
+                      <div style={{ fontWeight: 800, color: '#F9A825', fontSize: '14px', marginBottom: '12px' }}>📅 Choose Your Payment Duration</div>
+                      <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '16px' }}>
+                        {[2, 3, 4, 8, 12].map(w => (
+                          <button key={w} onClick={() => setInstallmentDuration(w)}
+                            style={{ padding: '8px 18px', borderRadius: 'var(--radius-sm)', border: `2px solid ${installmentDuration === w ? '#F9A825' : 'var(--dark-border)'}`, background: installmentDuration === w ? 'rgba(249,168,37,0.15)' : 'var(--dark)', color: installmentDuration === w ? '#F9A825' : 'var(--gray-1)', fontWeight: 800, cursor: 'pointer', fontSize: '13px' }}>
+                            {w === 4 ? '4 Wks' : w === 8 ? '8 Wks' : w === 12 ? '12 Wks (Monthly)' : `${w} Wks`}
+                          </button>
+                        ))}
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', fontSize: '13px' }}>
+                        <div style={{ background: 'var(--dark)', borderRadius: 'var(--radius-sm)', padding: '12px' }}>
+                          <div style={{ color: 'var(--gray-1)', marginBottom: '4px', fontSize: '11px', textTransform: 'uppercase', fontWeight: 700 }}>Pay Today (30%)</div>
+                          <div style={{ fontWeight: 900, fontSize: '18px', color: '#F9A825' }}>{formatCurrency(installmentFirstDeposit)}</div>
+                        </div>
+                        <div style={{ background: 'var(--dark)', borderRadius: 'var(--radius-sm)', padding: '12px' }}>
+                          <div style={{ color: 'var(--gray-1)', marginBottom: '4px', fontSize: '11px', textTransform: 'uppercase', fontWeight: 700 }}>Then Weekly</div>
+                          <div style={{ fontWeight: 900, fontSize: '18px', color: 'var(--primary)' }}>{formatCurrency(installmentWeeklyAmt)}<span style={{ fontSize: '12px', fontWeight: 400 }}>/wk × {installmentDuration - 1}</span></div>
+                        </div>
+                      </div>
+                      <div style={{ fontSize: '12px', color: 'var(--gray-2)', marginTop: '10px' }}>Full order total: {formatCurrency(subTotal)} — Log in to your dashboard to make future payments.</div>
+                    </div>
+                  )}
+
                   <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
                     <button onClick={() => setStep(1)} style={{ flex: 1, background: 'var(--dark)', border: '1px solid var(--dark-border)', color: 'var(--white)', padding: '14px', borderRadius: 'var(--radius-md)', fontWeight: 700, cursor: 'pointer' }}>Back</button>
                     <button onClick={() => setStep(3)} style={{ flex: 2, background: 'var(--primary)', color: '#fff', padding: '14px', borderRadius: 'var(--radius-md)', fontWeight: 800, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>Review Order <ChevronRight size={18} /></button>
@@ -592,13 +669,13 @@ export default function Checkout() {
                     )}
                   </div>
 
-                  {formData.payMethod === 'bank_transfer' && (
+                  {(formData.payMethod === 'bank_transfer' || formData.payMethod === 'installment') && (
                     <div style={{ background: 'var(--dark)', border: '1px solid rgba(76,175,80,0.3)', borderRadius: 'var(--radius-md)', padding: '20px', marginBottom: '8px' }}>
                       <h4 style={{ fontSize: '15px', fontWeight: 800, color: 'var(--primary)', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <CreditCard size={18} /> Transfer to This Account
+                        <CreditCard size={18} /> {isInstallmentPayment ? 'Pay First Deposit' : 'Transfer to This Account'}
                       </h4>
                       <p style={{ fontSize: '13px', color: 'var(--gray-1)', marginBottom: '16px' }}>
-                        Transfer exactly <strong style={{ color: '#F9A825' }}>{formatCurrency(grandTotal)}</strong> to the account below, then upload your receipt.
+                        Transfer <strong style={{ color: '#F9A825' }}>{formatCurrency(grandTotal)}</strong> {isInstallmentPayment ? '(30% deposit)' : ''} to the account below, then upload your receipt.
                       </p>
 
                       <div style={{ background: 'var(--black)', padding: '16px', borderRadius: 'var(--radius-sm)', display: 'grid', gap: '12px', border: '1px solid rgba(249,168,37,0.2)', marginBottom: '20px' }}>

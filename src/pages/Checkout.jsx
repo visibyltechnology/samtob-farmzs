@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { CreditCard, MapPin, Truck, ShieldCheck, ChevronRight, CheckCircle, Zap, Upload, AlertCircle, Loader2, X, CalendarDays, LogIn } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { formatCurrency } from '../utils/helpers';
-import { collection, addDoc, doc, getDoc } from 'firebase/firestore';
+import { collection, addDoc, doc, getDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase';
 import { uploadImage } from '../utils/cloudinaryService';
 import { sendOrderConfirmation } from '../utils/emailService';
@@ -110,22 +110,22 @@ export default function Checkout() {
   const [activeLegal, setActiveLegal] = useState(null);
   const [termsAccepted, setTermsAccepted] = useState({ terms: false, privacy: false });
 
-  // Load delivery fees dynamically from Firestore
+  // Load delivery fees dynamically from Firestore using live listener
   useEffect(() => {
-    const loadDeliveryFees = async () => {
-      try {
-        const snap = await getDoc(doc(db, 'settings', 'delivery_fees'));
-        if (snap.exists()) {
-          const data = snap.data();
-          setDeliveryOptions([
-            { id: 'farm_pickup', label: 'Farm Pickup', desc: 'Come pick up at the farm — always FREE', fee: 0, badge: 'FREE' },
-            { id: 'ibadan', label: 'Within Ibadan Delivery', desc: 'We deliver to your doorstep in Ibadan', fee: data.ibadan ?? 2000, badge: `₦${(data.ibadan ?? 2000).toLocaleString('en-NG')}` },
-            { id: 'outside_ibadan', label: 'Outside Ibadan', desc: data.outsideIbadanDesc || 'Contact us on WhatsApp for delivery arrangement', fee: null, badge: 'Contact Us' },
-          ]);
-        }
-      } catch (e) { /* use defaults */ }
-    };
-    loadDeliveryFees();
+    const unsub = onSnapshot(doc(db, 'settings', 'delivery_fees'), (snap) => {
+      if (snap.exists()) {
+        const data = snap.data();
+        setDeliveryOptions([
+          { id: 'farm_pickup', label: 'Farm Pickup', desc: 'Come pick up at the farm — always FREE', fee: 0, badge: 'FREE' },
+          { id: 'ibadan', label: 'Within Ibadan Delivery', desc: 'We deliver to your doorstep in Ibadan', fee: data.ibadan ?? 2000, badge: `₦${(data.ibadan ?? 2000).toLocaleString('en-NG')}` },
+          { id: 'outside_ibadan', label: 'Outside Ibadan', desc: data.outsideIbadanDesc || 'Contact us on WhatsApp for delivery arrangement', fee: null, badge: 'Contact Us' },
+        ]);
+      }
+    }, (error) => {
+      console.error("Failed to load delivery fees live:", error);
+    });
+    
+    return () => unsub();
   }, []);
 
   const selectedDelivery = deliveryOptions.find(d => d.id === deliveryOption) || deliveryOptions[0];

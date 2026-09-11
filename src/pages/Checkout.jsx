@@ -15,7 +15,7 @@ const steps = ['Delivery', 'Processing', 'Payment', 'Review'];
 
 const DELIVERY_OPTIONS = [
   { id: 'farm_pickup', label: 'Farm Pickup', desc: 'Come pick up at the farm — always FREE', fee: 0, badge: 'FREE' },
-  { id: 'ibadan', label: 'Within Ibadan Delivery', desc: 'We deliver to your doorstep in Ibadan', fee: 2000, badge: '₦2,000' },
+  { id: 'ibadan', label: 'Within Ibadan Delivery', desc: 'We deliver to your doorstep in Ibadan', fee: 5000, badge: '₦2,000' },
   { id: 'outside_ibadan', label: 'Outside Ibadan', desc: 'Contact us on WhatsApp for delivery arrangement', fee: null, badge: 'Contact Us' },
 ];
 
@@ -124,7 +124,7 @@ export default function Checkout() {
     }, (error) => {
       console.error("Failed to load delivery fees live:", error);
     });
-    
+
     return () => unsub();
   }, []);
 
@@ -216,7 +216,7 @@ export default function Checkout() {
           setLoading(false);
           setKlumpOpen(false);
         },
-        onLoad: () => {},
+        onLoad: () => { },
         onClose: () => {
           setLoading(false);
           setKlumpOpen(false);
@@ -270,7 +270,7 @@ export default function Checkout() {
       };
 
       const docRef = await addDoc(collection(db, 'orders'), orderData);
-      
+
       // Fire and forget: email + in-app notification
       sendOrderConfirmation({ id: docRef.id, ...orderData, hasInstallmentItems });
       if (user?.uid) {
@@ -334,7 +334,7 @@ export default function Checkout() {
                   setKlumpOpen(false);
                   setLoading(false);
                   setError('Klump payment cancelled. Please choose another payment method or try again.');
-                } catch(e) {
+                } catch (e) {
                   window.location.reload();
                 }
               }}
@@ -385,7 +385,7 @@ export default function Checkout() {
                   setKlumpOpen(false);
                   setLoading(false);
                   setError('Klump payment cancelled. Please choose another payment method or try again.');
-                } catch(e) {
+                } catch (e) {
                   window.location.reload();
                 }
               }}
@@ -425,7 +425,7 @@ export default function Checkout() {
           <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '32px', fontWeight: 900, color: 'var(--success)', marginBottom: '12px' }}>Order Placed!</h1>
           <p style={{ color: 'var(--gray-1)', fontSize: '16px', marginBottom: '8px' }}>Thank you for your purchase. We are currently verifying your payment receipt.</p>
           <p style={{ color: 'var(--gray-1)', fontSize: '14px', marginBottom: '24px' }}>You will receive an email notification once your order is confirmed and processing.</p>
-          
+
           {hasInstallmentItems && (
             <div style={{ background: 'rgba(255,152,0,0.1)', border: '1px solid var(--warning)', borderRadius: 'var(--radius-md)', padding: '20px', marginBottom: '24px', textAlign: 'left' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--warning)', fontWeight: 800, marginBottom: '8px' }}>
@@ -436,7 +436,7 @@ export default function Checkout() {
               </p>
             </div>
           )}
-          
+
           <p style={{ color: 'var(--primary)', fontWeight: 700, fontSize: '20px', marginBottom: '32px' }}>Order Total: {formatCurrency(finalTotal)}</p>
           <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
             <Link to="/profile" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'var(--primary)', color: 'var(--black)', padding: '14px 28px', borderRadius: 'var(--radius-md)', fontWeight: 800 }}>Track Order <ChevronRight size={16} /></Link>
@@ -494,7 +494,7 @@ export default function Checkout() {
                           {[['Full Name', 'fullName', 'text', 'e.g., Hassan Doe'], ['Email', 'email', 'email', 'e.g., mail@example.com'], ['Phone', 'phone', 'tel', 'e.g., +234 705 531 0766'], ['Street Address', 'address', 'text', 'e.g., 5 Ring Road, Ibadan'], ['City / Area', 'city', 'text', 'e.g., Ibadan']].map(([label, key, type, placeholder]) => (
                             <div key={key}>
                               <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: 'var(--gray-1)', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '8px' }}>{label}</label>
-                              <input type={type} placeholder={placeholder} value={formData[key]} onChange={e => setFormData(p => ({ ...p, [key]: e.target.value }))} style={inputStyle} onFocus={e => e.target.style.borderColor='var(--primary)'} onBlur={e => e.target.style.borderColor='var(--dark-border)'} />
+                              <input type={type} placeholder={placeholder} value={formData[key]} onChange={e => setFormData(p => ({ ...p, [key]: e.target.value }))} style={inputStyle} onFocus={e => e.target.style.borderColor = 'var(--primary)'} onBlur={e => e.target.style.borderColor = 'var(--dark-border)'} />
                             </div>
                           ))}
                         </div>
@@ -507,7 +507,7 @@ export default function Checkout() {
                       {[['Full Name', 'fullName', 'text', 'e.g., Hassan Doe'], ['Email', 'email', 'email', 'e.g., mail@example.com'], ['Phone', 'phone', 'tel', 'e.g., +234 705 531 0766']].map(([label, key, type, placeholder]) => (
                         <div key={key}>
                           <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: 'var(--gray-1)', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '8px' }}>{label}</label>
-                          <input type={type} placeholder={placeholder} value={formData[key]} onChange={e => setFormData(p => ({ ...p, [key]: e.target.value }))} style={inputStyle} onFocus={e => e.target.style.borderColor='var(--primary)'} onBlur={e => e.target.style.borderColor='var(--dark-border)'} />
+                          <input type={type} placeholder={placeholder} value={formData[key]} onChange={e => setFormData(p => ({ ...p, [key]: e.target.value }))} style={inputStyle} onFocus={e => e.target.style.borderColor = 'var(--primary)'} onBlur={e => e.target.style.borderColor = 'var(--dark-border)'} />
                         </div>
                       ))}
                     </div>
@@ -761,12 +761,12 @@ export default function Checkout() {
             {/* Order Summary Sidebar */}
             <div style={{ background: 'var(--dark-card)', border: '1px solid var(--dark-border)', borderRadius: 'var(--radius-lg)', padding: '24px', position: 'sticky', top: '90px' }}>
               <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '16px', fontWeight: 800, marginBottom: '16px', paddingBottom: '12px', borderBottom: '1px solid var(--dark-border)' }}>Order Summary</h3>
-              
+
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '300px', overflowY: 'auto', marginBottom: '16px' }}>
                 {cart.map((item, idx) => (
                   <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '13px' }}>
                     <div style={{ width: '48px', height: '48px', background: 'var(--dark)', borderRadius: 'var(--radius-sm)', overflow: 'hidden', flexShrink: 0 }}>
-                      <img src={item.imgUrl || item.image || item.img} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => e.target.style.display='none'} />
+                      <img src={item.imgUrl || item.image || item.img} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => e.target.style.display = 'none'} />
                     </div>
                     <div style={{ flex: 1 }}>
                       <div style={{ fontWeight: 600, color: 'var(--white)', marginBottom: '2px', lineHeight: 1.3 }}>{item.name}</div>
@@ -812,14 +812,14 @@ export default function Checkout() {
                 </>
               )}
             </div>
-            
+
             <div style={{ display: 'flex', gap: '12px' }}>
-              <button 
+              <button
                 onClick={() => {
-                  if (activeLegal === 'terms') setTermsAccepted(p => ({...p, terms: true}));
-                  if (activeLegal === 'privacy') setTermsAccepted(p => ({...p, privacy: true}));
+                  if (activeLegal === 'terms') setTermsAccepted(p => ({ ...p, terms: true }));
+                  if (activeLegal === 'privacy') setTermsAccepted(p => ({ ...p, privacy: true }));
                   setActiveLegal(null);
-                }} 
+                }}
                 style={{ width: '100%', padding: '14px', background: 'var(--primary)', border: 'none', borderRadius: 'var(--radius-md)', color: 'var(--black)', fontWeight: 800, cursor: 'pointer', transition: 'var(--transition)', boxShadow: '0 8px 24px var(--primary-glow)' }}
               >
                 I Accept

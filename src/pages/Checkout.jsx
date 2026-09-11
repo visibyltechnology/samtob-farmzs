@@ -13,11 +13,6 @@ import './Cart.css';
 
 const steps = ['Delivery', 'Processing', 'Payment', 'Review'];
 
-const DELIVERY_OPTIONS = [
-  { id: 'farm_pickup', label: 'Farm Pickup', desc: 'Come pick up at the farm — always FREE', fee: 0, badge: 'FREE' },
-  { id: 'ibadan', label: 'Within Ibadan Delivery', desc: 'We deliver to your doorstep in Ibadan', fee: 5000, badge: '₦5,000' },
-  { id: 'outside_ibadan', label: 'Outside Ibadan', desc: 'Contact us on WhatsApp for delivery arrangement', fee: null, badge: 'Contact Us' },
-];
 
 const PROCESSING_OPTIONS = [
   { id: 'live', label: 'Live Chicken', desc: 'Bird as-is, no processing', icon: '🐔', fee: 0 },
@@ -453,7 +448,7 @@ export default function Checkout() {
 
                   {/* Delivery Option Selector */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    {DELIVERY_OPTIONS.map(opt => (
+                    {deliveryOptions.map(opt => (
                       <div key={opt.id} onClick={() => setDeliveryOption(opt.id)}
                         style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 16px', border: `2px solid ${deliveryOption === opt.id ? 'var(--primary)' : 'var(--dark-border)'}`, borderRadius: 'var(--radius-md)', cursor: 'pointer', background: deliveryOption === opt.id ? 'var(--primary-light)' : 'var(--dark)', transition: 'all 0.2s' }}
                       >

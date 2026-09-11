@@ -1,4 +1,4 @@
-﻿/* =============================================
+/* =============================================
    SAMTOB Farms — Healthy Chickens · Fresh Future
    Farm-Fresh Dark Green Theme
    ============================================= */
@@ -29,6 +29,8 @@
   --gray-2: #6a8a6a;
   --success: #4CAF50;
   --danger: #ef4444;
+  --warning: #FF9800;
+  --info: #29b6f6;
 
   /* Text */
   --text-main: #e8f5e9;

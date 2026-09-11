@@ -7,6 +7,7 @@ import { formatCurrency } from '../utils/helpers';
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { uploadImage } from '../utils/cloudinaryService';
+import { sendOrderConfirmation } from '../utils/emailService';
 import './Cart.css';
 
 const steps = ['Delivery', 'Processing', 'Payment', 'Review'];
@@ -114,10 +115,13 @@ export default function Checkout() {
     if (!authLoading) {
       if (cart.length === 0 && !placed) {
         navigate('/cart');
+      } else if (hasInstallmentItems && !user && !placed) {
+        showToast('Installment plans require an account to track your progress. Please log in or sign up.', 'error');
+        navigate('/login');
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authLoading, cart, navigate, placed]);
+  }, [authLoading, cart, navigate, placed, hasInstallmentItems, user]);
 
   const handleReceiptChange = (e) => {
     const file = e.target.files?.[0];
@@ -224,7 +228,10 @@ export default function Checkout() {
         createdAt: new Date(),
       };
 
-      await addDoc(collection(db, 'orders'), orderData);
+      const docRef = await addDoc(collection(db, 'orders'), orderData);
+      
+      // Fire and forget email notification
+      sendOrderConfirmation({ id: docRef.id, ...orderData, hasInstallmentItems });
 
       setFinalTotal(grandTotal);
       clearCart();
@@ -369,6 +376,18 @@ export default function Checkout() {
           <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '32px', fontWeight: 900, color: 'var(--success)', marginBottom: '12px' }}>Order Placed!</h1>
           <p style={{ color: 'var(--gray-1)', fontSize: '16px', marginBottom: '8px' }}>Thank you for your purchase. We are currently verifying your payment receipt.</p>
           <p style={{ color: 'var(--gray-1)', fontSize: '14px', marginBottom: '24px' }}>You will receive an email notification once your order is confirmed and processing.</p>
+          
+          {hasInstallmentItems && (
+            <div style={{ background: 'rgba(255,152,0,0.1)', border: '1px solid var(--warning)', borderRadius: 'var(--radius-md)', padding: '20px', marginBottom: '24px', textAlign: 'left' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--warning)', fontWeight: 800, marginBottom: '8px' }}>
+                <CheckCircle size={18} /> Installment Plan Activated
+              </div>
+              <p style={{ fontSize: '14px', color: 'var(--white)', lineHeight: '1.6', margin: 0 }}>
+                Your first deposit has been received! Please log in to your <strong>Customer Dashboard</strong> to track your progress, see your upcoming weekly/monthly payment amounts, and upload future receipts.
+              </p>
+            </div>
+          )}
+          
           <p style={{ color: 'var(--primary)', fontWeight: 700, fontSize: '20px', marginBottom: '32px' }}>Order Total: {formatCurrency(finalTotal)}</p>
           <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
             <Link to="/profile" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'var(--primary)', color: 'var(--black)', padding: '14px 28px', borderRadius: 'var(--radius-md)', fontWeight: 800 }}>Track Order <ChevronRight size={16} /></Link>

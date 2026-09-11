@@ -5,7 +5,7 @@ import {
   Package, PlusCircle, LogOut, Users, ClipboardList,
   LayoutDashboard, Menu, X, Loader2, Tag, Briefcase,
   Settings, MapPin, Home, CalendarClock, ChevronRight,
-  Leaf, CreditCard
+  Leaf, CreditCard, Truck
 } from 'lucide-react';
 
 const NAV_GROUPS = [
@@ -36,6 +36,7 @@ const NAV_GROUPS = [
     links: [
       { to: '/admin/users', icon: <Users size={17} />, label: 'Customers' },
       { to: '/admin/locations', icon: <MapPin size={17} />, label: 'Locations' },
+      { to: '/admin/settings', icon: <Truck size={17} />, label: 'Delivery Settings' },
     ]
   },
 ];

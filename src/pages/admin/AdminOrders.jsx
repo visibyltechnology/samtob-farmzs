@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { collection, onSnapshot, doc, updateDoc, query, orderBy } from 'firebase/firestore';
 import { db } from '../../firebase';
+import { createNotification } from '../../utils/notificationService';
 import {
   ClipboardList, Package, CheckCircle, Clock, AlertCircle,
   Search, ChevronDown, ChevronUp, Loader2, Truck
@@ -49,6 +50,31 @@ function OrderCard({ order }) {
     try {
       await updateDoc(doc(db, 'orders', order.id), { status: newStatus });
       showToast(`Order status updated to ${newStatus}`);
+      // Fire in-app notification for key status changes
+      if (order.userId && order.userId !== 'guest') {
+        if (newStatus === 'In Transit') {
+          createNotification(order.userId, {
+            type: 'out_for_delivery',
+            title: '🚚 Your Order is On Its Way!',
+            message: `Order #${order.id.slice(0, 8).toUpperCase()} is now in transit and heading your way.`,
+            orderId: order.id,
+          });
+        } else if (newStatus === 'Delivered') {
+          createNotification(order.userId, {
+            type: 'delivered',
+            title: '✅ Order Delivered!',
+            message: `Order #${order.id.slice(0, 8).toUpperCase()} has been marked as delivered. Thank you for shopping with us!`,
+            orderId: order.id,
+          });
+        } else if (newStatus === 'Processing') {
+          createNotification(order.userId, {
+            type: 'order_confirmed',
+            title: '⚙️ Order is Being Processed',
+            message: `Your payment for order #${order.id.slice(0, 8).toUpperCase()} has been confirmed and we are now preparing your order.`,
+            orderId: order.id,
+          });
+        }
+      }
     } catch (e) {
       showToast('Failed to update status.', 'error');
     } finally {
@@ -68,6 +94,14 @@ function OrderCard({ order }) {
           initialPaymentStatus: 'Rejected',
           initialPaymentRejectReason: reason.trim(),
         });
+        if (order.userId && order.userId !== 'guest') {
+          createNotification(order.userId, {
+            type: 'receipt_rejected',
+            title: '❌ Deposit Receipt Rejected',
+            message: `Your deposit receipt for order #${order.id.slice(0, 8).toUpperCase()} was rejected. Reason: ${reason.trim()}. Please re-upload.`,
+            orderId: order.id,
+          });
+        }
         showToast('Initial payment rejected. Customer will be notified.');
       } catch (e) {
         showToast('Failed to reject payment.', 'error');
@@ -91,8 +125,16 @@ function OrderCard({ order }) {
       await updateDoc(doc(db, 'orders', order.id), {
         initialPaymentStatus: 'Approved',
         initialPaymentRejectReason: null,
-        depositAmount: actualAmount, // overwrite with confirmed actual amount
+        depositAmount: actualAmount,
       });
+      if (order.userId && order.userId !== 'guest') {
+        createNotification(order.userId, {
+          type: 'receipt_approved',
+          title: '✅ Deposit Payment Approved!',
+          message: `Your deposit of ${fmt(actualAmount)} for order #${order.id.slice(0, 8).toUpperCase()} has been verified. Your order is now being processed.`,
+          orderId: order.id,
+        });
+      }
       const diff = actualAmount - (order.depositAmount || 0);
       if (diff > 0) {
         showToast(`Approved! ₦${Math.ceil(diff).toLocaleString('en-NG')} overpayment subtracted from future balance.`);
@@ -128,6 +170,14 @@ function OrderCard({ order }) {
         installmentReceipts: updatedReceipts,
         installmentsPaid: newPaid
       });
+      if (order.userId && order.userId !== 'guest') {
+        createNotification(order.userId, {
+          type: 'receipt_approved',
+          title: '✅ Installment Payment Approved!',
+          message: `Your payment of ${fmt(recAmt)} for order #${order.id.slice(0, 8).toUpperCase()} has been verified. ${newPaid} of ${order.installmentsTotal} payments done.`,
+          orderId: order.id,
+        });
+      }
       showToast('Installment payment approved!');
     } catch (e) {
       showToast('Failed to approve payment.', 'error');
@@ -145,6 +195,14 @@ function OrderCard({ order }) {
       const updatedReceipts = [...(order.installmentReceipts || [])];
       updatedReceipts[rIdx] = { ...updatedReceipts[rIdx], status: 'Rejected', rejectReason: reason.trim() };
       await updateDoc(doc(db, 'orders', order.id), { installmentReceipts: updatedReceipts });
+      if (order.userId && order.userId !== 'guest') {
+        createNotification(order.userId, {
+          type: 'receipt_rejected',
+          title: '❌ Payment Receipt Rejected',
+          message: `Your installment receipt for order #${order.id.slice(0, 8).toUpperCase()} was rejected. Reason: ${reason.trim()}. Please re-upload a new receipt.`,
+          orderId: order.id,
+        });
+      }
       showToast('Receipt rejected. Customer can re-upload.');
     } catch (e) {
       showToast('Failed to reject receipt.', 'error');

@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { User, Package, Heart, MapPin, Bell, Settings, LogOut, ChevronRight, ShoppingCart, Star, ShieldCheck, Camera, Loader2, Upload, Clock } from 'lucide-react';
+import { User, Package, Heart, MapPin, Bell, Settings, LogOut, ChevronRight, ShoppingCart, Star, ShieldCheck, Camera, Loader2, Upload, Clock, CheckCircle } from 'lucide-react';
 import { uploadImage } from '../utils/cloudinaryService';
 import { useApp } from '../context/AppContext';
 import { db } from '../firebase';
-import { doc, updateDoc, collection, query, where, orderBy, getDocs } from 'firebase/firestore';
+import { doc, updateDoc, collection, query, where, orderBy, getDocs, onSnapshot, limit } from 'firebase/firestore';
 import { formatCurrency } from '../utils/helpers';
 
 const STATUS_COLORS = {
@@ -42,9 +42,12 @@ export default function Profile() {
   const [isUploading, setIsUploading] = useState(false);
   const [activePaymentModal, setActivePaymentModal] = useState(null);
   const [paymentAmountInput, setPaymentAmountInput] = useState('');
+  const [advanceWeeks, setAdvanceWeeks] = useState(1); // how many weeks to pay at once
   const fileInputRef = useRef(null);
   const [orders, setOrders] = useState([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [notifLoading, setNotifLoading] = useState(false);
 
   // Settings form state — pre-filled from the logged-in user
   const [settingsForm, setSettingsForm] = useState({
@@ -97,6 +100,22 @@ export default function Profile() {
       }
     };
     fetchOrders();
+  }, [user]);
+
+  // Fetch real notifications from Firestore
+  useEffect(() => {
+    if (!user?.uid) return;
+    setNotifLoading(true);
+    const notifQuery = query(
+      collection(db, 'users', user.uid, 'notifications'),
+      orderBy('createdAt', 'desc'),
+      limit(30)
+    );
+    const unsub = onSnapshot(notifQuery, (snap) => {
+      setNotifications(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      setNotifLoading(false);
+    }, () => setNotifLoading(false));
+    return () => unsub();
   }, [user]);
 
   // If not logged in and done loading auth, redirect to login
@@ -426,7 +445,11 @@ export default function Profile() {
                                   <div>
                                     {activePaymentModal !== order.id ? (
                                       <button 
-                                        onClick={() => { setActivePaymentModal(order.id); setPaymentAmountInput(order.recurringAmount?.toString()); }}
+                                        onClick={() => {
+                                          setAdvanceWeeks(1);
+                                          setPaymentAmountInput(order.recurringAmount?.toString());
+                                          setActivePaymentModal(order.id);
+                                        }}
                                         style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'var(--warning)', color: 'var(--black)', padding: '6px 12px', borderRadius: '4px', fontSize: '12px', fontWeight: 700, cursor: 'pointer', border: 'none' }}
                                       >
                                         <Upload size={14} /> Make Next Payment
@@ -450,9 +473,25 @@ export default function Profile() {
                                               <span style={{ fontWeight: 900, fontSize: '15px', color: 'var(--warning)', letterSpacing: '1.5px', fontFamily: 'monospace' }}>0005998212</span>
                                             </div>
                                             <div style={{ marginTop: '4px', fontSize: '11px', color: 'var(--gray-1)', textAlign: 'center', borderTop: '1px solid var(--dark-border)', paddingTop: '6px', lineHeight: '1.5' }}>
-                                              Transfer your weekly amount of <strong style={{ color: 'var(--white)' }}>{formatCurrency(order.recurringAmount)}</strong>, or pay in advance for multiple weeks (e.g. monthly). Enter the exact amount paid and upload your receipt below.
+                                              Wema Bank &bull; Samtob p&c Ltd &bull; <strong style={{ color: 'var(--warning)', fontFamily: 'monospace', letterSpacing: '1px' }}>0127186331</strong>
                                             </div>
                                           </div>
+                                        </div>
+
+                                        {/* Advance payment quick-pick */}
+                                        <div style={{ marginBottom: '10px' }}>
+                                          <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--white)', marginBottom: '6px' }}>How many weeks to pay now?</div>
+                                          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                                            {[1, 2, 3, 4].map(w => (
+                                              <button key={w} onClick={() => { setAdvanceWeeks(w); setPaymentAmountInput((order.recurringAmount * w).toString()); }}
+                                                style={{ padding: '6px 14px', borderRadius: '4px', border: `2px solid ${advanceWeeks === w ? 'var(--warning)' : 'var(--dark-border)'}`, background: advanceWeeks === w ? 'rgba(255,152,0,0.15)' : 'var(--dark)', color: advanceWeeks === w ? 'var(--warning)' : 'var(--gray-1)', fontWeight: 700, cursor: 'pointer', fontSize: '12px' }}>
+                                                {w === 1 ? '1 Week' : w === 4 ? '4 Wks (Monthly)' : `${w} Weeks`}
+                                              </button>
+                                            ))}
+                                          </div>
+                                          {advanceWeeks > 1 && (
+                                            <div style={{ fontSize: '11px', color: 'var(--gray-2)', marginTop: '5px' }}>Paying {advanceWeeks} weeks at once = {formatCurrency(order.recurringAmount * advanceWeeks)}</div>
+                                          )}
                                         </div>
                                         
                                         <div style={{ fontSize: '12px', fontWeight: 700, marginBottom: '6px', color: 'var(--white)' }}>Enter Amount Paid (₦)</div>
@@ -596,23 +635,59 @@ export default function Profile() {
 
           {activeTab === 'notifications' && (
             <div>
-              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 800, marginBottom: '20px' }}>Notifications</h2>
-              {[
-                { icon: ShoppingCart, title: 'Your order #TEP-002 is in transit', time: '2 hours ago', read: false },
-                { icon: Star, title: 'Rate your recent purchase: Samsung Galaxy S24 Ultra', time: '1 day ago', read: false },
-                { icon: ShieldCheck, title: 'Your email address has been verified', time: '4 days ago', read: true },
-              ].map((notif, i) => (
-                <div key={i} style={{ background: notif.read ? 'var(--dark-card)' : 'rgba(255,94,0,0.05)', border: `1px solid ${notif.read ? 'var(--dark-border)' : 'rgba(255,94,0,0.2)'}`, borderRadius: 'var(--radius-md)', padding: '16px 20px', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '16px' }}>
-                  <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'rgba(255,94,0,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <notif.icon size={20} color="var(--primary)" />
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <p style={{ fontSize: '14px', fontWeight: notif.read ? 400 : 600, color: notif.read ? 'var(--gray-1)' : 'var(--white)', marginBottom: '4px' }}>{notif.title}</p>
-                    <span style={{ fontSize: '12px', color: 'var(--gray-2)' }}>{notif.time}</span>
-                  </div>
-                  {!notif.read && <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--primary)', flexShrink: 0 }}></div>}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 800, margin: 0 }}>Notifications</h2>
+                {notifications.some(n => !n.read) && (
+                  <button
+                    onClick={async () => {
+                      notifications.filter(n => !n.read).forEach(async (n) => {
+                        await updateDoc(doc(db, 'users', user.uid, 'notifications', n.id), { read: true });
+                      });
+                    }}
+                    style={{ fontSize: '12px', fontWeight: 700, color: 'var(--primary)', background: 'none', border: 'none', cursor: 'pointer' }}
+                  >
+                    Mark all as read
+                  </button>
+                )}
+              </div>
+              {notifLoading ? (
+                <div style={{ textAlign: 'center', padding: '40px' }}><Loader2 className="spinner" size={32} color="var(--primary)" /></div>
+              ) : notifications.length === 0 ? (
+                <div style={{ background: 'var(--dark-card)', border: '1px solid var(--dark-border)', borderRadius: 'var(--radius-md)', padding: '48px', textAlign: 'center' }}>
+                  <Bell size={40} color="var(--gray-2)" style={{ margin: '0 auto 16px' }} />
+                  <p style={{ color: 'var(--gray-1)', fontWeight: 600 }}>No notifications yet</p>
+                  <p style={{ color: 'var(--gray-2)', fontSize: '13px' }}>Order updates, payment confirmations and delivery alerts will appear here.</p>
                 </div>
-              ))}
+              ) : (
+                notifications.map((notif) => {
+                  const iconMap = {
+                    order_confirmed: ShoppingCart,
+                    receipt_approved: CheckCircle,
+                    receipt_rejected: ShieldCheck,
+                    out_for_delivery: Clock,
+                    delivered: Star,
+                  };
+                  const IconCmp = iconMap[notif.type] || Bell;
+                  const timeAgo = notif.createdAt?.toDate ? notif.createdAt.toDate().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'Just now';
+                  return (
+                    <div
+                      key={notif.id}
+                      onClick={() => !notif.read && updateDoc(doc(db, 'users', user.uid, 'notifications', notif.id), { read: true })}
+                      style={{ background: notif.read ? 'var(--dark-card)' : 'rgba(0,230,118,0.05)', border: `1px solid ${notif.read ? 'var(--dark-border)' : 'rgba(0,230,118,0.25)'}`, borderRadius: 'var(--radius-md)', padding: '16px 20px', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '16px', cursor: notif.read ? 'default' : 'pointer', transition: 'all 0.2s' }}
+                    >
+                      <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: notif.read ? 'rgba(255,255,255,0.05)' : 'rgba(0,230,118,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <IconCmp size={20} color={notif.read ? 'var(--gray-2)' : 'var(--primary)'} />
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <p style={{ fontSize: '14px', fontWeight: notif.read ? 400 : 700, color: notif.read ? 'var(--gray-1)' : 'var(--white)', marginBottom: '4px' }}>{notif.title}</p>
+                        <p style={{ fontSize: '12px', color: 'var(--gray-2)', marginBottom: '4px', lineHeight: 1.4 }}>{notif.message}</p>
+                        <span style={{ fontSize: '11px', color: 'var(--gray-2)' }}>{timeAgo}</span>
+                      </div>
+                      {!notif.read && <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--primary)', flexShrink: 0 }} />}
+                    </div>
+                  );
+                })
+              )}
             </div>
           )}
         </div>

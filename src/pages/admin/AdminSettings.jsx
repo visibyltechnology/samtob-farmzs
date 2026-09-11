@@ -11,6 +11,15 @@ export default function AdminSettings() {
     ibadan: 2000,
     outsideIbadanDesc: 'Contact us on WhatsApp for delivery arrangement',
   });
+  const [heroSettings, setHeroSettings] = useState({
+    badge: 'Limited Season Offer — Book Now!',
+    titlePrefix: 'Join the',
+    words: 'December Rush',
+    titleSuffix: 'Installment Plan',
+    subtitle: 'Book your Christmas chickens early and pay in small weekly installments. Hormone-free birds raised on our farm — delivered to your door in Ibadan. Farm pickup always free.',
+    priceRibbon: '₦1,500/wk',
+    enabled: true
+  });
 
   const showToast = (msg, type = 'success') => {
     setToast({ show: true, msg, type });
@@ -20,8 +29,12 @@ export default function AdminSettings() {
   useEffect(() => {
     (async () => {
       try {
-        const snap = await getDoc(doc(db, 'settings', 'delivery_fees'));
-        if (snap.exists()) setFees(f => ({ ...f, ...snap.data() }));
+        const [snapDelivery, snapHero] = await Promise.all([
+          getDoc(doc(db, 'settings', 'delivery_fees')),
+          getDoc(doc(db, 'settings', 'hero_banner'))
+        ]);
+        if (snapDelivery.exists()) setFees(f => ({ ...f, ...snapDelivery.data() }));
+        if (snapHero.exists()) setHeroSettings(h => ({ ...h, ...snapHero.data() }));
       } catch { /* use defaults */ }
       finally { setLoading(false); }
     })();
@@ -30,8 +43,11 @@ export default function AdminSettings() {
   const save = async () => {
     setSaving(true);
     try {
-      await setDoc(doc(db, 'settings', 'delivery_fees'), { ...fees, updatedAt: new Date() }, { merge: true });
-      showToast('Delivery settings saved!');
+      await Promise.all([
+        setDoc(doc(db, 'settings', 'delivery_fees'), { ...fees, updatedAt: new Date() }, { merge: true }),
+        setDoc(doc(db, 'settings', 'hero_banner'), { ...heroSettings, updatedAt: new Date() }, { merge: true })
+      ]);
+      showToast('Settings saved successfully!');
     } catch { showToast('Save failed', 'error'); }
     finally { setSaving(false); }
   };
@@ -113,6 +129,43 @@ export default function AdminSettings() {
           style={inp}
           placeholder="e.g. Contact us on WhatsApp for delivery arrangement"
         />
+      </div>
+
+      <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 800, margin: '40px 0 20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        🖼️ Homepage Hero Banner Settings
+      </h2>
+
+      <div style={card}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+          <div>
+            <div style={{ fontWeight: 800, fontSize: '15px' }}>Enable Hero Banner</div>
+            <div style={{ fontSize: '12px', color: 'var(--gray-1)' }}>Turn the banner on or off</div>
+          </div>
+          <input 
+            type="checkbox" 
+            checked={heroSettings.enabled}
+            onChange={e => setHeroSettings(h => ({ ...h, enabled: e.target.checked }))}
+            style={{ width: '24px', height: '24px', cursor: 'pointer' }}
+          />
+        </div>
+
+        <label style={lbl}>Banner Badge (Small text at the top)</label>
+        <input type="text" value={heroSettings.badge} onChange={e => setHeroSettings(h => ({ ...h, badge: e.target.value }))} style={{ ...inp, marginBottom: '16px' }} />
+
+        <label style={lbl}>Title Prefix</label>
+        <input type="text" value={heroSettings.titlePrefix} onChange={e => setHeroSettings(h => ({ ...h, titlePrefix: e.target.value }))} style={{ ...inp, marginBottom: '16px' }} />
+
+        <label style={lbl}>Animated Words (Separated by space)</label>
+        <input type="text" value={heroSettings.words} onChange={e => setHeroSettings(h => ({ ...h, words: e.target.value }))} style={{ ...inp, marginBottom: '16px' }} />
+
+        <label style={lbl}>Title Suffix</label>
+        <input type="text" value={heroSettings.titleSuffix} onChange={e => setHeroSettings(h => ({ ...h, titleSuffix: e.target.value }))} style={{ ...inp, marginBottom: '16px' }} />
+
+        <label style={lbl}>Subtitle / Description</label>
+        <textarea rows="3" value={heroSettings.subtitle} onChange={e => setHeroSettings(h => ({ ...h, subtitle: e.target.value }))} style={{ ...inp, marginBottom: '16px', resize: 'vertical' }} />
+
+        <label style={lbl}>Starting Price Ribbon Text</label>
+        <input type="text" value={heroSettings.priceRibbon} onChange={e => setHeroSettings(h => ({ ...h, priceRibbon: e.target.value }))} style={{ ...inp, marginBottom: '16px' }} />
       </div>
     </div>
   );

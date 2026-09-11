@@ -2,6 +2,8 @@ import React, { useRef, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingBag, ChevronDown, Truck, Home, Star, ArrowRight } from 'lucide-react';
 import { useLenis } from '@studio-freight/react-lenis';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { db } from '../../firebase';
 import './Hero.css';
 
 function useCountUp(target, duration = 1500, start = false) {
@@ -20,11 +22,29 @@ function useCountUp(target, duration = 1500, start = false) {
   return count;
 }
 
-const WORDS = ['December', 'Rush'];
 
 export default function Hero() {
   const heroRef = useRef(null);
   const bgRef = useRef(null);
+  
+  const [heroSettings, setHeroSettings] = useState({
+    badge: 'Limited Season Offer — Book Now!',
+    titlePrefix: 'Join the',
+    words: 'December Rush',
+    titleSuffix: 'Installment Plan',
+    subtitle: 'Book your Christmas chickens early and pay in small weekly installments. Hormone-free birds raised on our farm — delivered to your door in Ibadan. Farm pickup always free.',
+    priceRibbon: '₦1,500/wk',
+    enabled: true
+  });
+
+  useEffect(() => {
+    const unsub = onSnapshot(doc(db, 'settings', 'hero_banner'), (docSnap) => {
+      if (docSnap.exists()) {
+        setHeroSettings(prev => ({ ...prev, ...docSnap.data() }));
+      }
+    });
+    return () => unsub();
+  }, []);
 
   useLenis(({ scroll }) => {
     if (bgRef.current) bgRef.current.style.transform = 'translate3d(0,' + (scroll * 0.35) + 'px,0)';
@@ -34,6 +54,8 @@ export default function Hero() {
     const s = document.getElementById('how-it-works');
     if (s) s.scrollIntoView({ behavior: 'smooth' });
   };
+
+  if (!heroSettings.enabled) return null;
 
   return (
     <section className="hero-section" ref={heroRef}>
@@ -64,19 +86,19 @@ export default function Hero() {
           <div className="hero-badge txt-reveal" style={{ animationDelay: '0.1s' }}>
             <span className="badge-pulse" />
             <Star size={12} fill="currentColor" />
-            <span>Limited Season Offer — Book Now!</span>
+            <span>{heroSettings.badge}</span>
           </div>
 
           {/* Title */}
           <h1 className="hero-title">
             <span className="hero-tag-line line-slide-up" style={{ animationDelay: '0.3s' }}>
-              Join the
+              {heroSettings.titlePrefix}
             </span>
 
             <span className="hero-rush-row">
-              {WORDS.map((word, wi) => (
+              {heroSettings.words.split(' ').map((word, wi) => (
                 <span
-                  key={word}
+                  key={wi + word}
                   className="rush-word december-rush-animate word-pop"
                   style={{ animationDelay: wi === 0 ? '0.6s' : '0.8s' }}
                 >
@@ -86,15 +108,15 @@ export default function Hero() {
             </span>
 
             <span className="hero-sub-line line-slide-right" style={{ animationDelay: '1.0s' }}>
-              <span className="underline-draw">Installment Plan</span>
+              <span className="underline-draw">{heroSettings.titleSuffix}</span>
             </span>
           </h1>
 
           {/* Subtitle — word-by-word */}
           <p className="hero-subtitle words-fade-in">
-            {['Book your Christmas chickens early and', 'pay in small weekly installments.', 'Hormone-free birds raised on our farm —', 'delivered to your door in Ibadan.', 'Farm pickup always free.'].map((chunk, i) => (
+            {heroSettings.subtitle.split('. ').map((chunk, i, arr) => (
               <span key={i} className="sub-word" style={{ animationDelay: `${1.2 + (i * 0.15)}s` }}>
-                {chunk}{' '}
+                {chunk}{i < arr.length - 1 ? '. ' : ''}
               </span>
             ))}
           </p>
@@ -135,7 +157,10 @@ export default function Hero() {
             </div>
             <div className="hero-price-ribbon">
               <div className="ribbon-label">Starting from</div>
-              <div className="ribbon-price">₦1,500<span>/wk</span></div>
+              <div className="ribbon-price">
+                {heroSettings.priceRibbon.split('/')[0]}
+                {heroSettings.priceRibbon.includes('/') && <span>/{heroSettings.priceRibbon.split('/')[1]}</span>}
+              </div>
             </div>
           </div>
 

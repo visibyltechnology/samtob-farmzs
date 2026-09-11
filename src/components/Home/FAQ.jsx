@@ -87,6 +87,7 @@ export default function FAQ() {
   {
     question: "Does the payment plan cover all chickens?",
     answer: "Yes, the 12-week installment plan applies to all four weight categories, from 3.8kg up to 5.5kg."
+  }
   ];
 
   const [openIndex, setOpenIndex] = useState(0);

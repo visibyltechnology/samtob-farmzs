@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
-import { Save, Truck, Loader2 } from 'lucide-react';
+import { Save, Truck, Loader2, Image as ImageIcon, UploadCloud } from 'lucide-react';
+import { uploadImage } from '../../utils/cloudinaryService';
 
 export default function AdminSettings() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [toast, setToast] = useState({ show: false, msg: '', type: 'success' });
   const [fees, setFees] = useState({
     ibadan: 5000,
@@ -54,6 +56,21 @@ export default function AdminSettings() {
       showToast('Settings saved successfully!');
     } catch { showToast('Save failed', 'error'); }
     finally { setSaving(false); }
+  };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingImage(true);
+    try {
+      const url = await uploadImage(file);
+      setHeroSettings(prev => ({ ...prev, image: url }));
+      showToast('Image uploaded successfully!');
+    } catch (err) {
+      showToast('Failed to upload image', 'error');
+    } finally {
+      setUploadingImage(false);
+    }
   };
 
   const inp = { width: '100%', background: 'var(--dark)', border: '1.5px solid var(--dark-border)', borderRadius: 'var(--radius-sm)', padding: '10px 14px', fontSize: '14px', color: 'var(--white)', outline: 'none', boxSizing: 'border-box' };
@@ -169,10 +186,30 @@ export default function AdminSettings() {
         <textarea rows="3" value={heroSettings.subtitle} onChange={e => setHeroSettings(h => ({ ...h, subtitle: e.target.value }))} style={{ ...inp, marginBottom: '16px', resize: 'vertical' }} />
 
         <label style={lbl}>Starting Price Ribbon Text</label>
-        <input type="text" value={heroSettings.priceRibbon} onChange={e => setHeroSettings(h => ({ ...h, priceRibbon: e.target.value }))} style={{ ...inp, marginBottom: '16px' }} />
+        <input type="text" value={heroSettings.priceRibbon} onChange={e => setHeroSettings(h => ({ ...h, priceRibbon: e.target.value }))} style={{ ...inp, marginBottom: '24px' }} />
 
-        <label style={lbl}>Hero Image URL</label>
-        <input type="text" value={heroSettings.image} onChange={e => setHeroSettings(h => ({ ...h, image: e.target.value }))} placeholder="/products/live_chicken.jpg or https://..." style={{ ...inp, marginBottom: '16px' }} />
+        <div style={{ marginBottom: '24px', background: '#111', padding: '16px', borderRadius: '12px', border: '1px solid #333' }}>
+          <label style={{ ...lbl, color: '#fff', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <ImageIcon size={16} color="var(--primary)" /> Hero Background Image
+          </label>
+          <p style={{ fontSize: '12px', color: '#999', marginBottom: '16px', marginTop: '-4px' }}>Upload a high quality image for the hero section background.</p>
+          
+          {heroSettings.image && (
+            <div style={{ width: '100%', height: '200px', borderRadius: '8px', overflow: 'hidden', marginBottom: '16px', position: 'relative', border: '1px solid #444' }}>
+              <img src={heroSettings.image} alt="Hero Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            </div>
+          )}
+
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            <label style={{ cursor: uploadingImage ? 'not-allowed' : 'pointer', background: 'var(--primary)', color: '#000', padding: '10px 16px', borderRadius: '8px', fontWeight: 800, fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              {uploadingImage ? <><Loader2 size={16} className="spinner" /> Uploading...</> : <><UploadCloud size={16} /> Upload New Image</>}
+              <input type="file" accept="image/*" onChange={handleImageUpload} style={{ display: 'none' }} disabled={uploadingImage} />
+            </label>
+            <span style={{ fontSize: '12px', color: '#666' }}>or enter URL below</span>
+          </div>
+          
+          <input type="text" value={heroSettings.image} onChange={e => setHeroSettings(h => ({ ...h, image: e.target.value }))} placeholder="/products/live_chicken.jpg or https://..." style={{ ...inp, marginTop: '12px' }} />
+        </div>
 
         <label style={lbl}>Floating Emojis (Comma Separated)</label>
         <input type="text" value={heroSettings.emojis} onChange={e => setHeroSettings(h => ({ ...h, emojis: e.target.value }))} placeholder="🐔,🌿,🍗,🌾,🥚" style={{ ...inp, marginBottom: '16px' }} />

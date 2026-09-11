@@ -248,34 +248,57 @@ export default function ProductDetails() {
             )}
           </div>
 
-          {/* ─── PAYMENT PLAN SELECTOR — only shown when December Rush is active ─── */}
-          {!rushLoading && rushEnabled && (
-            <div className="pd-variants" style={{ marginTop: '24px' }}>
-              <div className="variant-title">
-                Payment Plan: <span style={{ color: 'var(--white)' }}>{paymentPlan === 'full' ? 'Pay in Full' : `December Rush — ${validDuration} Weeks`}</span>
+          {/* ─── PAYMENT PLAN SELECTOR — controlled by December Rush admin toggle ─── */}
+          {!rushLoading && (
+            rushEnabled ? (
+              <div className="pd-variants" style={{ marginTop: '24px' }}>
+                <div className="variant-title">
+                  Payment Plan: <span style={{ color: 'var(--white)' }}>{paymentPlan === 'full' ? 'Pay in Full' : `December Rush — ${validDuration} Weeks`}</span>
+                </div>
+                <div className="variant-options">
+                  <button
+                    className={`variant-btn ${paymentPlan === 'full' ? 'active' : ''}`}
+                    onClick={() => setPaymentPlan('full')}
+                  >
+                    Pay in Full
+                  </button>
+                  <button
+                    className={`variant-btn ${paymentPlan === 'installment' ? 'active' : ''}`}
+                    onClick={() => setPaymentPlan('installment')}
+                    style={{
+                      borderColor: paymentPlan === 'installment' ? '#F9A825' : 'var(--dark-border)',
+                      color: paymentPlan === 'installment' ? '#F9A825' : 'inherit',
+                      background: paymentPlan === 'installment' ? 'rgba(249,168,37,0.08)' : 'var(--dark)',
+                      display: 'flex', alignItems: 'center', gap: '6px'
+                    }}
+                  >
+                    <CalendarClock size={14} />
+                    December Rush Installment
+                  </button>
+                </div>
               </div>
-              <div className="variant-options">
-                <button
-                  className={`variant-btn ${paymentPlan === 'full' ? 'active' : ''}`}
-                  onClick={() => setPaymentPlan('full')}
-                >
-                  Pay in Full
-                </button>
-                <button
-                  className={`variant-btn ${paymentPlan === 'installment' ? 'active' : ''}`}
-                  onClick={() => setPaymentPlan('installment')}
-                  style={{
-                    borderColor: paymentPlan === 'installment' ? '#F9A825' : 'var(--dark-border)',
-                    color: paymentPlan === 'installment' ? '#F9A825' : 'inherit',
-                    background: paymentPlan === 'installment' ? 'rgba(249,168,37,0.08)' : 'var(--dark)',
-                    display: 'flex', alignItems: 'center', gap: '6px'
-                  }}
-                >
-                  <CalendarClock size={14} />
-                  December Rush Installment
-                </button>
+            ) : (
+              <div style={{
+                marginTop: '24px',
+                background: 'rgba(249,168,37,0.06)',
+                border: '1px solid rgba(249,168,37,0.25)',
+                borderRadius: 'var(--radius-md)',
+                padding: '16px 20px',
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '12px'
+              }}>
+                <div style={{ fontSize: '24px', lineHeight: 1, flexShrink: 0 }}>🎄</div>
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: '14px', color: '#F9A825', marginBottom: '4px' }}>
+                    December Rush Installment — Coming Soon
+                  </div>
+                  <div style={{ fontSize: '13px', color: 'var(--gray-1)', lineHeight: 1.6 }}>
+                    Our Christmas installment plan is not yet open. Check back soon to book your chicken and pay in weekly installments.
+                  </div>
+                </div>
               </div>
-            </div>
+            )
           )}
 
           {/* Duration selector — only if installment selected */}

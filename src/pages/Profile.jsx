@@ -395,15 +395,15 @@ export default function Profile() {
                             <div style={{ marginTop: '12px', background: 'rgba(255,152,0,0.05)', border: '1px solid var(--warning)', borderRadius: 'var(--radius-sm)', padding: '12px' }}>
                               <div style={{ fontSize: '11px', fontWeight: 800, color: 'var(--warning)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>Installment Plan — {order.installmentsTotal || '?'} Weeks</div>
                               
-                              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '12px', color: 'var(--gray-1)', marginBottom: '12px' }}>
-                                <span>Deposit: <strong style={{ color: 'var(--white)' }}>{formatCurrency(order.depositAmount)}</strong></span>
-                                <span>Recurring: <strong style={{ color: 'var(--white)' }}>{formatCurrency(order.recurringAmount)}</strong></span>
+                              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', fontSize: '13px', color: 'var(--gray-1)', marginBottom: '12px' }}>
+                                <div style={{ flex: '1 1 45%' }}>Deposit: <strong style={{ color: 'var(--white)' }}>{formatCurrency(order.depositAmount)}</strong></div>
+                                <div style={{ flex: '1 1 45%' }}>Recurring: <strong style={{ color: 'var(--white)' }}>{formatCurrency(order.recurringAmount)}</strong></div>
                               </div>
                               
-                              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', fontSize: '12px', color: 'var(--gray-1)', marginBottom: '12px', background: 'rgba(255,255,255,0.03)', padding: '10px', borderRadius: '4px' }}>
-                                <div>Total: <br/><strong style={{ color: 'var(--white)' }}>{formatCurrency(order.total || order.totalAmount)}</strong></div>
-                                <div>Paid: <br/><strong style={{ color: 'var(--success)' }}>{formatCurrency(paidSoFar)}</strong></div>
-                                <div>Balance: <br/><strong style={{ color: 'var(--danger)' }}>{formatCurrency(remainingBalance)}</strong></div>
+                              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', fontSize: '13px', color: 'var(--gray-1)', marginBottom: '12px', background: 'rgba(255,255,255,0.03)', padding: '12px', borderRadius: '6px' }}>
+                                <div style={{ flex: '1 1 30%', minWidth: '80px' }}>Total: <br/><strong style={{ color: 'var(--white)', fontSize: '15px' }}>{formatCurrency(order.total || order.totalAmount)}</strong></div>
+                                <div style={{ flex: '1 1 30%', minWidth: '80px' }}>Paid: <br/><strong style={{ color: 'var(--success)', fontSize: '15px' }}>{formatCurrency(paidSoFar)}</strong></div>
+                                <div style={{ flex: '1 1 30%', minWidth: '80px' }}>Balance: <br/><strong style={{ color: 'var(--danger)', fontSize: '15px' }}>{formatCurrency(remainingBalance)}</strong></div>
                               </div>
                               
                               {dueInfo && (
@@ -460,21 +460,22 @@ export default function Profile() {
                                         {/* Bank Account Details */}
                                         <div style={{ background: 'rgba(255,152,0,0.07)', border: '1px solid var(--warning)', borderRadius: '4px', padding: '12px', marginBottom: '12px' }}>
                                           <div style={{ fontSize: '11px', fontWeight: 800, color: 'var(--warning)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '8px' }}>Transfer to this account first</div>
-                                          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
-                                              <span style={{ color: 'var(--gray-1)' }}>Bank Name</span>
-                                              <span style={{ fontWeight: 700, color: 'var(--white)' }}>JaizBank</span>
+                                          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                            <div>
+                                              <div style={{ fontSize: '11px', color: 'var(--gray-1)' }}>Bank Name</div>
+                                              <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--white)' }}>JaizBank</div>
                                             </div>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
-                                              <span style={{ color: 'var(--gray-1)' }}>Account Name</span>
-                                              <span style={{ fontWeight: 700, color: 'var(--white)' }}>Akilapa &amp; Sons Auto Workshop</span>
+                                            <div>
+                                              <div style={{ fontSize: '11px', color: 'var(--gray-1)' }}>Account Name</div>
+                                              <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--white)', wordBreak: 'break-word' }}>Akilapa &amp; Sons Auto Workshop</div>
                                             </div>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '12px' }}>
-                                              <span style={{ color: 'var(--gray-1)' }}>Account Number</span>
-                                              <span style={{ fontWeight: 900, fontSize: '15px', color: 'var(--warning)', letterSpacing: '1.5px', fontFamily: 'monospace' }}>0005998212</span>
+                                            <div>
+                                              <div style={{ fontSize: '11px', color: 'var(--gray-1)' }}>Account Number</div>
+                                              <div style={{ fontWeight: 900, fontSize: '16px', color: 'var(--warning)', letterSpacing: '1.5px', fontFamily: 'monospace' }}>0005998212</div>
                                             </div>
-                                            <div style={{ marginTop: '4px', fontSize: '11px', color: 'var(--gray-1)', textAlign: 'center', borderTop: '1px solid var(--dark-border)', paddingTop: '6px', lineHeight: '1.5' }}>
-                                              Wema Bank &bull; Samtob p&c Ltd &bull; <strong style={{ color: 'var(--warning)', fontFamily: 'monospace', letterSpacing: '1px' }}>0127186331</strong>
+                                            
+                                            <div style={{ marginTop: '6px', fontSize: '12px', color: 'var(--gray-1)', textAlign: 'center', borderTop: '1px solid var(--dark-border)', paddingTop: '10px', lineHeight: '1.5' }}>
+                                              Wema Bank &bull; Samtob p&c Ltd &bull; <br/><strong style={{ color: 'var(--warning)', fontFamily: 'monospace', letterSpacing: '1px', fontSize: '14px' }}>0127186331</strong>
                                             </div>
                                           </div>
                                         </div>

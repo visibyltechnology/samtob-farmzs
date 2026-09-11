@@ -290,11 +290,8 @@ export default function ProductDetails() {
               }}>
                 <div style={{ fontSize: '24px', lineHeight: 1, flexShrink: 0 }}>🎄</div>
                 <div>
-                  <div style={{ fontWeight: 800, fontSize: '14px', color: '#F9A825', marginBottom: '4px' }}>
-                    December Rush Installment — Coming Soon
-                  </div>
-                  <div style={{ fontSize: '13px', color: 'var(--gray-1)', lineHeight: 1.6 }}>
-                    Our Christmas installment plan is not yet open. Check back soon to book your chicken and pay in weekly installments.
+                  <div style={{ fontWeight: 800, fontSize: '14px', color: '#F9A825', margin: 0 }}>
+                    This installment close notice is bcos December Rush is Toogled off in Admin panel
                   </div>
                 </div>
               </div>

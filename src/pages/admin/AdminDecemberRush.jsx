@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { Save, Plus, Trash2, CalendarClock, Loader2, ToggleLeft, ToggleRight } from 'lucide-react';

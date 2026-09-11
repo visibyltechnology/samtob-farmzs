@@ -232,14 +232,10 @@ export default function Checkout() {
         status: 'Pending Verification',
         receiptUrl: receiptUrl,
         createdAt: new Date(),
-        // Installment fields (only set when payMethod === 'installment')
-        ...(isInstallmentPayment ? {
+        // Installment (December Rush) fields are set when item.isInstallment is true
+        ...(hasInstallmentItems ? {
           isInstallmentOrder: true,
-          depositAmount: installmentFirstDeposit,
-          recurringAmount: installmentWeeklyAmt,
-          installmentsTotal: installmentDuration,
           installmentsPaid: 0,
-          initialPaymentStatus: 'Pending',
           installmentReceipts: [],
         } : {}),
       };

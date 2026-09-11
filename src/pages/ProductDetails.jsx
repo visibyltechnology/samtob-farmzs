@@ -248,8 +248,8 @@ export default function ProductDetails() {
             )}
           </div>
 
-          {/* ─── PAYMENT PLAN SELECTOR ─── */}
-          {!rushLoading && (
+          {/* ─── PAYMENT PLAN SELECTOR — only shown when December Rush is active ─── */}
+          {!rushLoading && rushEnabled && (
             <div className="pd-variants" style={{ marginTop: '24px' }}>
               <div className="variant-title">
                 Payment Plan: <span style={{ color: 'var(--white)' }}>{paymentPlan === 'full' ? 'Pay in Full' : `December Rush — ${validDuration} Weeks`}</span>
@@ -261,27 +261,20 @@ export default function ProductDetails() {
                 >
                   Pay in Full
                 </button>
-                {rushEnabled && (
-                  <button
-                    className={`variant-btn ${paymentPlan === 'installment' ? 'active' : ''}`}
-                    onClick={() => setPaymentPlan('installment')}
-                    style={{
-                      borderColor: paymentPlan === 'installment' ? '#F9A825' : 'var(--dark-border)',
-                      color: paymentPlan === 'installment' ? '#F9A825' : 'inherit',
-                      background: paymentPlan === 'installment' ? 'rgba(249,168,37,0.08)' : 'var(--dark)',
-                      display: 'flex', alignItems: 'center', gap: '6px'
-                    }}
-                  >
-                    <CalendarClock size={14} />
-                    December Rush Installment
-                  </button>
-                )}
+                <button
+                  className={`variant-btn ${paymentPlan === 'installment' ? 'active' : ''}`}
+                  onClick={() => setPaymentPlan('installment')}
+                  style={{
+                    borderColor: paymentPlan === 'installment' ? '#F9A825' : 'var(--dark-border)',
+                    color: paymentPlan === 'installment' ? '#F9A825' : 'inherit',
+                    background: paymentPlan === 'installment' ? 'rgba(249,168,37,0.08)' : 'var(--dark)',
+                    display: 'flex', alignItems: 'center', gap: '6px'
+                  }}
+                >
+                  <CalendarClock size={14} />
+                  December Rush Installment
+                </button>
               </div>
-              {!rushEnabled && (
-                <p style={{ fontSize: '12px', color: 'var(--gray-2)', marginTop: '8px', display: 'flex', gap: '6px', alignItems: 'center' }}>
-                  <Info size={13} /> Installment plan is currently closed. Check back soon!
-                </p>
-              )}
             </div>
           )}
 

@@ -38,6 +38,7 @@ export default function Hero() {
     priceRibbon: '₦1,500/wk',
     enabled: true,
     image: '/products/live_chicken.jpg',
+    bgImage: 'https://images.unsplash.com/photo-1548550023-2bf3c49b338c?auto=format&fit=crop&q=80&w=2000',
     emojis: '🐔,🌿,🍗,🌾,🥚',
     trustChips: '✅ No Hormones,✅ Farm Raised,✅ Same-Day Processing,✅ Ibadan Delivery',
     imgTag: 'Farm Fresh • Hormone-Free'
@@ -65,7 +66,11 @@ export default function Hero() {
 
   return (
     <section className="hero-section" ref={heroRef}>
-      <div className="hero-bg" ref={bgRef} />
+      <div 
+        className="hero-bg" 
+        ref={bgRef} 
+        style={{ backgroundImage: `url('${heroSettings.bgImage || heroSettings.image}')` }}
+      />
       <div className="hero-overlay" />
 
       {/* Particles */}

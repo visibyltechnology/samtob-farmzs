@@ -8,6 +8,7 @@ export default function AdminSettings() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadingBg, setUploadingBg] = useState(false);
   const [toast, setToast] = useState({ show: false, msg: '', type: 'success' });
   const [fees, setFees] = useState({
     ibadan: 5000,
@@ -22,6 +23,7 @@ export default function AdminSettings() {
     priceRibbon: '₦1,500/wk',
     enabled: true,
     image: '/products/live_chicken.jpg',
+    bgImage: 'https://images.unsplash.com/photo-1548550023-2bf3c49b338c?auto=format&fit=crop&q=80&w=2000',
     emojis: '🐔,🌿,🍗,🌾,🥚',
     trustChips: '✅ No Hormones,✅ Farm Raised,✅ Same-Day Processing,✅ Ibadan Delivery',
     imgTag: 'Farm Fresh • Hormone-Free'
@@ -58,18 +60,25 @@ export default function AdminSettings() {
     finally { setSaving(false); }
   };
 
-  const handleImageUpload = async (e) => {
+  const handleImageUpload = async (e, type) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setUploadingImage(true);
+    
+    if (type === 'main') setUploadingImage(true);
+    else setUploadingBg(true);
+
     try {
       const url = await uploadImage(file);
-      setHeroSettings(prev => ({ ...prev, image: url }));
+      setHeroSettings(prev => ({ 
+        ...prev, 
+        [type === 'main' ? 'image' : 'bgImage']: url 
+      }));
       showToast('Image uploaded successfully!');
     } catch (err) {
       showToast('Failed to upload image', 'error');
     } finally {
-      setUploadingImage(false);
+      if (type === 'main') setUploadingImage(false);
+      else setUploadingBg(false);
     }
   };
 
@@ -190,9 +199,9 @@ export default function AdminSettings() {
 
         <div style={{ marginBottom: '24px', background: '#111', padding: '16px', borderRadius: '12px', border: '1px solid #333' }}>
           <label style={{ ...lbl, color: '#fff', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <ImageIcon size={16} color="var(--primary)" /> Hero Background Image
+            <ImageIcon size={16} color="var(--primary)" /> Hero Product Image (Foreground)
           </label>
-          <p style={{ fontSize: '12px', color: '#999', marginBottom: '16px', marginTop: '-4px' }}>Upload a high quality image for the hero section background.</p>
+          <p style={{ fontSize: '12px', color: '#999', marginBottom: '16px', marginTop: '-4px' }}>Upload the main product image shown on the right side.</p>
           
           {heroSettings.image && (
             <div style={{ width: '100%', height: '200px', borderRadius: '8px', overflow: 'hidden', marginBottom: '16px', position: 'relative', border: '1px solid #444' }}>
@@ -202,13 +211,36 @@ export default function AdminSettings() {
 
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
             <label style={{ cursor: uploadingImage ? 'not-allowed' : 'pointer', background: 'var(--primary)', color: '#000', padding: '10px 16px', borderRadius: '8px', fontWeight: 800, fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              {uploadingImage ? <><Loader2 size={16} className="spinner" /> Uploading...</> : <><UploadCloud size={16} /> Upload New Image</>}
-              <input type="file" accept="image/*" onChange={handleImageUpload} style={{ display: 'none' }} disabled={uploadingImage} />
+              {uploadingImage ? <><Loader2 size={16} className="spinner" /> Uploading...</> : <><UploadCloud size={16} /> Upload Foreground Image</>}
+              <input type="file" accept="image/*" onChange={e => handleImageUpload(e, 'main')} style={{ display: 'none' }} disabled={uploadingImage} />
             </label>
             <span style={{ fontSize: '12px', color: '#666' }}>or enter URL below</span>
           </div>
           
           <input type="text" value={heroSettings.image} onChange={e => setHeroSettings(h => ({ ...h, image: e.target.value }))} placeholder="/products/live_chicken.jpg or https://..." style={{ ...inp, marginTop: '12px' }} />
+        </div>
+
+        <div style={{ marginBottom: '24px', background: '#111', padding: '16px', borderRadius: '12px', border: '1px solid #333' }}>
+          <label style={{ ...lbl, color: '#fff', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <ImageIcon size={16} color="var(--primary)" /> Hero Background Image (Darkened)
+          </label>
+          <p style={{ fontSize: '12px', color: '#999', marginBottom: '16px', marginTop: '-4px' }}>Upload a high quality image for the cinematic background.</p>
+          
+          {heroSettings.bgImage && (
+            <div style={{ width: '100%', height: '200px', borderRadius: '8px', overflow: 'hidden', marginBottom: '16px', position: 'relative', border: '1px solid #444' }}>
+              <img src={heroSettings.bgImage} alt="Background Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            </div>
+          )}
+
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            <label style={{ cursor: uploadingBg ? 'not-allowed' : 'pointer', background: 'var(--primary)', color: '#000', padding: '10px 16px', borderRadius: '8px', fontWeight: 800, fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              {uploadingBg ? <><Loader2 size={16} className="spinner" /> Uploading...</> : <><UploadCloud size={16} /> Upload Background Image</>}
+              <input type="file" accept="image/*" onChange={e => handleImageUpload(e, 'bg')} style={{ display: 'none' }} disabled={uploadingBg} />
+            </label>
+            <span style={{ fontSize: '12px', color: '#666' }}>or enter URL below</span>
+          </div>
+          
+          <input type="text" value={heroSettings.bgImage} onChange={e => setHeroSettings(h => ({ ...h, bgImage: e.target.value }))} placeholder="https://..." style={{ ...inp, marginTop: '12px' }} />
         </div>
 
         <label style={lbl}>Floating Emojis (Comma Separated)</label>

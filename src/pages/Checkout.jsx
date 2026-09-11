@@ -61,7 +61,7 @@ export default function Checkout() {
   const [finalTotal, setFinalTotal] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [installmentDuration, setInstallmentDuration] = useState(4); // weeks
+
   const INSTALLMENT_DEPOSIT_PCT = 0.30;
   
   const deliveryOptions = [
@@ -113,11 +113,7 @@ export default function Checkout() {
   const selectedProcessing = PROCESSING_OPTIONS.find(p => p.id === processingOption) || PROCESSING_OPTIONS[0];
   const processingFee = (selectedProcessing.fee || 0) * totalQty;
   const subTotal = cartTotal + deliveryFee + processingFee;
-  const isInstallmentPayment = formData.payMethod === 'installment';
-  const installmentWeeklyAmt = Math.floor(subTotal / installmentDuration);
-  const installmentFirstDeposit = subTotal - (installmentWeeklyAmt * (installmentDuration - 1));
-  const installmentRemaining = subTotal - installmentFirstDeposit;
-  const grandTotal = isInstallmentPayment ? installmentFirstDeposit : subTotal;
+  const grandTotal = subTotal;
   const hasInstallmentItems = cart.some(item => item.isInstallment);
 
   useEffect(() => {
@@ -144,7 +140,7 @@ export default function Checkout() {
   };
 
   const handlePlaceOrderClick = () => {
-    if ((formData.payMethod === 'bank_transfer' || formData.payMethod === 'installment') && !receiptFile) {
+    if (formData.payMethod === 'bank_transfer' && !receiptFile) {
       setError('Please upload your payment receipt before placing the order.');
       return;
     }
@@ -540,7 +536,6 @@ export default function Checkout() {
                   <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '10px' }}><CreditCard size={20} color="var(--primary)" /> Payment Method</h3>
                   {[
                     { id: 'bank_transfer', label: 'Direct Bank Transfer', icon: CreditCard, desc: 'Transfer to Samtob p&c Ltd · Wema Bank' },
-                    { id: 'installment', label: 'Installment Payment', icon: CalendarDays, desc: 'Payments split evenly, delivery after full payment' },
                     ...(user?.isAdmin ? [{ id: 'admin_cash', label: 'Admin POS / Cash', icon: Zap, desc: 'Direct order placement (Admin only)' }] : []),
                   ].map(method => (
                     <div key={method.id} onClick={() => setFormData(p => ({ ...p, payMethod: method.id }))}
@@ -558,32 +553,6 @@ export default function Checkout() {
                       </div>
                     </div>
                   ))}
-
-                  {/* Installment duration selector */}
-                  {formData.payMethod === 'installment' && (
-                    <div style={{ background: 'rgba(249,168,37,0.08)', border: '1px solid rgba(249,168,37,0.4)', borderRadius: 'var(--radius-md)', padding: '16px', marginTop: '4px' }}>
-                      <div style={{ fontWeight: 800, color: '#F9A825', fontSize: '14px', marginBottom: '12px' }}>📅 Choose Your Payment Duration</div>
-                      <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '16px' }}>
-                        {[2, 3, 4, 8, 12].map(w => (
-                          <button key={w} onClick={() => setInstallmentDuration(w)}
-                            style={{ padding: '8px 18px', borderRadius: 'var(--radius-sm)', border: `2px solid ${installmentDuration === w ? '#F9A825' : 'var(--dark-border)'}`, background: installmentDuration === w ? 'rgba(249,168,37,0.15)' : 'var(--dark)', color: installmentDuration === w ? '#F9A825' : 'var(--gray-1)', fontWeight: 800, cursor: 'pointer', fontSize: '13px' }}>
-                            {w === 4 ? '4 Wks' : w === 8 ? '8 Wks' : w === 12 ? '12 Wks (Monthly)' : `${w} Wks`}
-                          </button>
-                        ))}
-                      </div>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', fontSize: '13px' }}>
-                        <div style={{ background: 'var(--dark)', borderRadius: 'var(--radius-sm)', padding: '12px' }}>
-                          <div style={{ color: 'var(--gray-1)', marginBottom: '4px', fontSize: '11px', textTransform: 'uppercase', fontWeight: 700 }}>Pay Today (Part 1 of {installmentDuration})</div>
-                          <div style={{ fontWeight: 900, fontSize: '18px', color: '#F9A825' }}>{formatCurrency(installmentFirstDeposit)}</div>
-                        </div>
-                        <div style={{ background: 'var(--dark)', borderRadius: 'var(--radius-sm)', padding: '12px' }}>
-                          <div style={{ color: 'var(--gray-1)', marginBottom: '4px', fontSize: '11px', textTransform: 'uppercase', fontWeight: 700 }}>Then Recurring</div>
-                          <div style={{ fontWeight: 900, fontSize: '18px', color: 'var(--primary)' }}>{formatCurrency(installmentWeeklyAmt)}<span style={{ fontSize: '12px', fontWeight: 400 }}>/wk × {installmentDuration - 1}</span></div>
-                        </div>
-                      </div>
-                      <div style={{ fontSize: '12px', color: 'var(--gray-2)', marginTop: '10px' }}>Full order total: {formatCurrency(subTotal)} — Log in to your dashboard to make future payments.</div>
-                    </div>
-                  )}
 
                   <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
                     <button onClick={() => setStep(1)} style={{ flex: 1, background: 'var(--dark)', border: '1px solid var(--dark-border)', color: 'var(--white)', padding: '14px', borderRadius: 'var(--radius-md)', fontWeight: 700, cursor: 'pointer' }}>Back</button>

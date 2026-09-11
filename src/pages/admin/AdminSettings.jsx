@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { createPortal } from 'react-dom';
+import { doc, onSnapshot, setDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { Save, Truck, Loader2, AlertTriangle, X } from 'lucide-react';
 
@@ -9,7 +10,7 @@ export default function AdminSettings() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [toast, setToast] = useState({ show: false, msg: '', type: 'success' });
   const [fees, setFees] = useState({
-    ibadan: 2000,
+    ibadan: 5000,
     outsideIbadanDesc: 'Contact us on WhatsApp for delivery arrangement',
   });
   const [heroSettings, setHeroSettings] = useState({
@@ -27,18 +28,20 @@ export default function AdminSettings() {
     setTimeout(() => setToast(t => ({ ...t, show: false })), 3500);
   };
 
+  // Use onSnapshot so values always reflect what's in Firestore
   useEffect(() => {
-    (async () => {
-      try {
-        const [snapDelivery, snapHero] = await Promise.all([
-          getDoc(doc(db, 'settings', 'delivery_fees')),
-          getDoc(doc(db, 'settings', 'hero_banner'))
-        ]);
-        if (snapDelivery.exists()) setFees(f => ({ ...f, ...snapDelivery.data() }));
-        if (snapHero.exists()) setHeroSettings(h => ({ ...h, ...snapHero.data() }));
-      } catch { /* use defaults */ }
-      finally { setLoading(false); }
-    })();
+    let unsubDelivery, unsubHero;
+    const load = async () => {
+      unsubDelivery = onSnapshot(doc(db, 'settings', 'delivery_fees'), (snap) => {
+        if (snap.exists()) setFees(f => ({ ...f, ...snap.data() }));
+        setLoading(false);
+      }, () => setLoading(false));
+      unsubHero = onSnapshot(doc(db, 'settings', 'hero_banner'), (snap) => {
+        if (snap.exists()) setHeroSettings(h => ({ ...h, ...snap.data() }));
+      });
+    };
+    load();
+    return () => { unsubDelivery?.(); unsubHero?.(); };
   }, []);
 
   const save = async () => {
@@ -80,36 +83,37 @@ export default function AdminSettings() {
         </button>
       </div>
 
-      {/* Confirmation Modal */}
-      {showConfirm && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', zIndex: 9998, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-          <div style={{ background: 'var(--dark-card)', border: '1px solid var(--dark-border)', borderRadius: 'var(--radius-lg)', padding: '32px', maxWidth: '440px', width: '100%', position: 'relative' }}>
-            <button onClick={() => setShowConfirm(false)} style={{ position: 'absolute', top: '16px', right: '16px', background: 'none', border: 'none', color: 'var(--gray-1)', cursor: 'pointer' }}><X size={20} /></button>
+      {showConfirm && createPortal(
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.80)', zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+          <div style={{ background: '#1a1a1a', border: '1px solid #333', borderRadius: '16px', padding: '32px', maxWidth: '440px', width: '100%', position: 'relative', boxShadow: '0 24px 80px rgba(0,0,0,0.6)' }}>
+            <button onClick={() => setShowConfirm(false)} style={{ position: 'absolute', top: '16px', right: '16px', background: 'none', border: 'none', color: '#999', cursor: 'pointer' }}><X size={20} /></button>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-              <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(249,168,37,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(249,168,37,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 <AlertTriangle size={24} color="#F9A825" />
               </div>
               <div>
-                <div style={{ fontWeight: 800, fontSize: '16px' }}>Confirm Settings Update</div>
-                <div style={{ fontSize: '13px', color: 'var(--gray-1)', marginTop: '2px' }}>These changes will be visible to all customers immediately.</div>
+                <div style={{ fontWeight: 800, fontSize: '16px', color: '#fff' }}>Confirm Settings Update</div>
+                <div style={{ fontSize: '13px', color: '#999', marginTop: '2px' }}>These changes go live for all customers immediately.</div>
               </div>
             </div>
-            <div style={{ background: 'var(--black)', border: '1px solid var(--dark-border)', borderRadius: 'var(--radius-sm)', padding: '16px', marginBottom: '24px', display: 'grid', gap: '10px', fontSize: '13px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--gray-1)' }}>Ibadan Delivery Fee</span>
-                <strong style={{ color: 'var(--primary)' }}>₦{Number(fees.ibadan).toLocaleString('en-NG')}</strong>
+            <div style={{ background: '#111', border: '1px solid #333', borderRadius: '10px', padding: '16px', marginBottom: '24px', display: 'grid', gap: '12px', fontSize: '13px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ color: '#999' }}>Ibadan Delivery Fee</span>
+                <strong style={{ color: 'var(--primary)', fontSize: '16px' }}>₦{Number(fees.ibadan).toLocaleString('en-NG')}</strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--gray-1)' }}>Outside Ibadan Message</span>
-                <span style={{ color: 'var(--white)', maxWidth: '200px', textAlign: 'right', fontSize: '12px' }}>{fees.outsideIbadanDesc}</span>
+              <div style={{ height: '1px', background: '#333' }} />
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px' }}>
+                <span style={{ color: '#999', flexShrink: 0 }}>Outside Ibadan</span>
+                <span style={{ color: '#eee', textAlign: 'right', fontSize: '12px' }}>{fees.outsideIbadanDesc}</span>
               </div>
             </div>
             <div style={{ display: 'flex', gap: '12px' }}>
-              <button onClick={() => setShowConfirm(false)} style={{ flex: 1, padding: '12px', background: 'var(--dark)', border: '1px solid var(--dark-border)', borderRadius: 'var(--radius-sm)', color: 'var(--white)', fontWeight: 700, cursor: 'pointer' }}>Cancel</button>
-              <button onClick={save} style={{ flex: 2, padding: '12px', background: 'var(--primary)', color: 'var(--black)', borderRadius: 'var(--radius-sm)', fontWeight: 800, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}><Save size={16} /> Confirm & Save</button>
+              <button onClick={() => setShowConfirm(false)} style={{ flex: 1, padding: '13px', background: '#222', border: '1px solid #444', borderRadius: '10px', color: '#fff', fontWeight: 700, cursor: 'pointer', fontSize: '14px' }}>Cancel</button>
+              <button onClick={save} style={{ flex: 2, padding: '13px', background: 'var(--primary)', color: '#000', borderRadius: '10px', fontWeight: 800, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '14px' }}><Save size={16} /> Confirm &amp; Save</button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Farm Pickup */}

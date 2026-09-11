@@ -1,47 +1,50 @@
-﻿import React from 'react';
+import React from 'react';
 import { Leaf, Zap, Shield, MapPin, Heart, Clock } from 'lucide-react';
+import { useApp } from '../../context/AppContext';
 import './WhyChooseUs.css';
 
-const features = [
-  {
-    icon: <Leaf size={14} />,
-    title: '100% Farm Raised',
-    desc: 'Our chickens are raised on our own farm with no artificial hormones, antibiotics, or additives. Pure, natural poultry.',
-    color: 'green',
-  },
-  {
-    icon: <Shield size={14} />,
-    title: 'Quality Guaranteed',
-    desc: 'Every bird is inspected before dispatch. We stand behind the freshness and quality of everything we sell.',
-    color: 'gold',
-  },
-  {
-    icon: <Zap size={14} />,
-    title: 'Same-Day Processing',
-    desc: 'Order slaughtered, dressed, or frozen — processing is done same day so your chicken arrives in perfect condition.',
-    color: 'green',
-  },
-  {
-    icon: <MapPin size={14} />,
-    title: 'Ibadan Delivery',
-    desc: 'We deliver within Ibadan for just ₦5,000. Outside Ibadan? Reach us on WhatsApp and we\'ll sort out the logistics.',
-    color: 'gold',
-  },
-  {
-    icon: <Heart size={14} />,
-    title: 'Farm Pickup Free',
-    desc: 'Want to come pick up your order yourself? Farm pickup is always completely FREE — no hidden charges.',
-    color: 'green',
-  },
-  {
-    icon: <Clock size={14} />,
-    title: 'Easy Bank Transfer',
-    desc: 'Simple payment — transfer to Samtob p&c Ltd · 0127186331 · Wema Bank, upload receipt, order confirmed.',
-    color: 'gold',
-  },
-];
-
 export default function WhyChooseUs() {
+  const { siteSettings } = useApp();
+  const ibadanFee = Number(siteSettings?.ibadan ?? 5000).toLocaleString('en-NG');
+
+  const features = [
+    {
+      icon: <Leaf size={14} />,
+      title: '100% Farm Raised',
+      desc: 'Our chickens are raised on our own farm with no artificial hormones, antibiotics, or additives. Pure, natural poultry.',
+      color: 'green',
+    },
+    {
+      icon: <Shield size={14} />,
+      title: 'Quality Guaranteed',
+      desc: 'Every bird is inspected before dispatch. We stand behind the freshness and quality of everything we sell.',
+      color: 'gold',
+    },
+    {
+      icon: <Zap size={14} />,
+      title: 'Same-Day Processing',
+      desc: 'Order slaughtered, dressed, or frozen — processing is done same day so your chicken arrives in perfect condition.',
+      color: 'green',
+    },
+    {
+      icon: <MapPin size={14} />,
+      title: 'Ibadan Delivery',
+      desc: `We deliver within Ibadan for just ₦${ibadanFee}. Outside Ibadan? Reach us on WhatsApp and we'll sort out the logistics.`,
+      color: 'gold',
+    },
+    {
+      icon: <Heart size={14} />,
+      title: 'Farm Pickup Free',
+      desc: 'Want to come pick up your order yourself? Farm pickup is always completely FREE — no hidden charges.',
+      color: 'green',
+    },
+    {
+      icon: <Clock size={14} />,
+      title: 'Easy Bank Transfer',
+      desc: 'Simple payment — transfer to Samtob p&c Ltd · 0127186331 · Wema Bank, upload receipt, order confirmed.',
+      color: 'gold',
+    },
+  ];
   return (
     <section className="why-section section-padding">
       <div className="container">

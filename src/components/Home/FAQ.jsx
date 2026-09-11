@@ -1,8 +1,13 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
+import { useApp } from '../../context/AppContext';
 import './FAQ.css';
 
-const faqs = [
+export default function FAQ() {
+  const { siteSettings } = useApp();
+  const ibadanFee = Number(siteSettings?.ibadan ?? 5000).toLocaleString('en-NG');
+
+  const faqs = [
   {
     question: "What is the December Rush?",
     answer: "The December Rush is a special plan that lets you book your Christmas chickens early and pay in small weekly installments for 12 weeks."
@@ -29,7 +34,7 @@ const faqs = [
   },
   {
     question: "Do you offer delivery for chickens?",
-    answer: "Yes, we deliver within Ibadan for a flat fee of <strong>₦5,000</strong>. Delivery outside Ibadan depends on your specific location (limited to South West Nigeria for now)."
+    answer: `Yes, we deliver within Ibadan for a flat fee of <strong>₦${ibadanFee}</strong>. Delivery outside Ibadan depends on your specific location (limited to South West Nigeria for now).`
   },
   {
     question: "How do I pay for my chicken booking?",
@@ -64,8 +69,8 @@ const faqs = [
     answer: "Yes, our chickens are specifically raised to be a high-protein, cost-effective alternative to cow meat for large gatherings. So you can confidently book ahead of your next event or book to meet your organization's needs."
   },
   {
-    question: "Is the ₦5,000 delivery fee the same for all of Ibadan?",
-    answer: "Yes, we charge a flat fee of ₦5,000 for any delivery within Ibadan."
+    question: `Is the ₦${ibadanFee} delivery fee the same for all of Ibadan?`,
+    answer: `Yes, we charge a flat fee of ₦${ibadanFee} for any delivery within Ibadan.`
   },
   {
     question: "Which bank account should I use for chicken payments?",
@@ -82,10 +87,8 @@ const faqs = [
   {
     question: "Does the payment plan cover all chickens?",
     answer: "Yes, the 12-week installment plan applies to all four weight categories, from 3.8kg up to 5.5kg."
-  }
-];
+  ];
 
-export default function FAQ() {
   const [openIndex, setOpenIndex] = useState(0);
 
   const toggleFAQ = (index) => {

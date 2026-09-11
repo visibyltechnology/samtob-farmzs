@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
-import { Save, Truck, Loader2 } from 'lucide-react';
+import { Save, Truck, Loader2, AlertTriangle, X } from 'lucide-react';
 
 export default function AdminSettings() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [toast, setToast] = useState({ show: false, msg: '', type: 'success' });
   const [fees, setFees] = useState({
     ibadan: 2000,
@@ -41,6 +42,7 @@ export default function AdminSettings() {
   }, []);
 
   const save = async () => {
+    setShowConfirm(false);
     setSaving(true);
     try {
       await Promise.all([
@@ -73,10 +75,42 @@ export default function AdminSettings() {
           </h1>
           <p style={{ color: 'var(--gray-1)', fontSize: '13px', marginTop: '4px' }}>Manage delivery zones, fees and descriptions shown to customers at checkout.</p>
         </div>
-        <button onClick={save} disabled={saving} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--primary)', color: 'var(--black)', padding: '12px 24px', borderRadius: 'var(--radius-sm)', fontWeight: 800, fontSize: '14px', border: 'none', cursor: saving ? 'not-allowed' : 'pointer', boxShadow: '0 4px 16px var(--primary-glow)' }}>
+        <button onClick={() => setShowConfirm(true)} disabled={saving} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--primary)', color: 'var(--black)', padding: '12px 24px', borderRadius: 'var(--radius-sm)', fontWeight: 800, fontSize: '14px', border: 'none', cursor: saving ? 'not-allowed' : 'pointer', boxShadow: '0 4px 16px var(--primary-glow)' }}>
           {saving ? <><Loader2 className="spinner" size={18} /> Saving...</> : <><Save size={18} /> Save Settings</>}
         </button>
       </div>
+
+      {/* Confirmation Modal */}
+      {showConfirm && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', zIndex: 9998, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+          <div style={{ background: 'var(--dark-card)', border: '1px solid var(--dark-border)', borderRadius: 'var(--radius-lg)', padding: '32px', maxWidth: '440px', width: '100%', position: 'relative' }}>
+            <button onClick={() => setShowConfirm(false)} style={{ position: 'absolute', top: '16px', right: '16px', background: 'none', border: 'none', color: 'var(--gray-1)', cursor: 'pointer' }}><X size={20} /></button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+              <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(249,168,37,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <AlertTriangle size={24} color="#F9A825" />
+              </div>
+              <div>
+                <div style={{ fontWeight: 800, fontSize: '16px' }}>Confirm Settings Update</div>
+                <div style={{ fontSize: '13px', color: 'var(--gray-1)', marginTop: '2px' }}>These changes will be visible to all customers immediately.</div>
+              </div>
+            </div>
+            <div style={{ background: 'var(--black)', border: '1px solid var(--dark-border)', borderRadius: 'var(--radius-sm)', padding: '16px', marginBottom: '24px', display: 'grid', gap: '10px', fontSize: '13px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: 'var(--gray-1)' }}>Ibadan Delivery Fee</span>
+                <strong style={{ color: 'var(--primary)' }}>₦{Number(fees.ibadan).toLocaleString('en-NG')}</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: 'var(--gray-1)' }}>Outside Ibadan Message</span>
+                <span style={{ color: 'var(--white)', maxWidth: '200px', textAlign: 'right', fontSize: '12px' }}>{fees.outsideIbadanDesc}</span>
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button onClick={() => setShowConfirm(false)} style={{ flex: 1, padding: '12px', background: 'var(--dark)', border: '1px solid var(--dark-border)', borderRadius: 'var(--radius-sm)', color: 'var(--white)', fontWeight: 700, cursor: 'pointer' }}>Cancel</button>
+              <button onClick={save} style={{ flex: 2, padding: '12px', background: 'var(--primary)', color: 'var(--black)', borderRadius: 'var(--radius-sm)', fontWeight: 800, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}><Save size={16} /> Confirm & Save</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Farm Pickup */}
       <div style={card}>

@@ -504,14 +504,14 @@ export default function Profile() {
                                           <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--white)', marginBottom: '6px' }}>How many weeks to pay now?</div>
                                           <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                                             {[1, 2, 3, 4].map(w => (
-                                              <button key={w} onClick={() => { setAdvanceWeeks(w); setPaymentAmountInput((order.recurringAmount * w).toString()); }}
+                                              <button key={w} onClick={() => { setAdvanceWeeks(w); setPaymentAmountInput((derivedRecurring * w).toString()); }}
                                                 style={{ padding: '6px 14px', borderRadius: '4px', border: `2px solid ${advanceWeeks === w ? 'var(--warning)' : 'var(--dark-border)'}`, background: advanceWeeks === w ? 'rgba(255,152,0,0.15)' : 'var(--dark)', color: advanceWeeks === w ? 'var(--warning)' : 'var(--gray-1)', fontWeight: 700, cursor: 'pointer', fontSize: '12px' }}>
                                                 {w === 1 ? '1 Week' : w === 4 ? '4 Wks (Monthly)' : `${w} Weeks`}
                                               </button>
                                             ))}
                                           </div>
                                           {advanceWeeks > 1 && (
-                                            <div style={{ fontSize: '11px', color: 'var(--gray-2)', marginTop: '5px' }}>Paying {advanceWeeks} weeks at once = {formatCurrency(order.recurringAmount * advanceWeeks)}</div>
+                                            <div style={{ fontSize: '11px', color: 'var(--gray-2)', marginTop: '5px' }}>Paying {advanceWeeks} weeks at once = {formatCurrency(derivedRecurring * advanceWeeks)}</div>
                                           )}
                                         </div>
                                         

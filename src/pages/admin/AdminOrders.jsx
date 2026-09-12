@@ -256,12 +256,6 @@ function OrderCard({ order }) {
 
   const date = order.createdAt?.toDate?.()?.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) || '—';
 
-  const customPaid = (order.installmentReceipts || [])
-    .filter(r => r.status === 'Approved')
-    .reduce((sum, r) => sum + (Number(r.amount) || order.recurringAmount || 0), 0);
-  const paidSoFar = (order.initialPaymentStatus !== 'Rejected' ? (order.depositAmount || 0) : 0) + customPaid;
-  const remainingBalance = Math.max(0, (order.total || order.totalAmount || 0) - paidSoFar);
-  const dueInfo = getNextDueDateInfo(order);
 
   return (
     <div style={{ background: 'var(--dark-card)', border: '1px solid var(--dark-border)', borderRadius: 'var(--radius-md)', overflow: 'hidden', transition: 'var(--transition)' }}>

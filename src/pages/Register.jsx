@@ -42,12 +42,18 @@ export default function Register() {
       // 1. Create Firebase Auth account
       const cred = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
 
-      // 2. Send Firebase verification email with proper redirect
-      const actionCodeSettings = {
-        url: `${window.location.origin}/login?verify=1`,
-        handleCodeInApp: false,
-      };
-      await sendEmailVerification(cred.user, actionCodeSettings);
+      // 2. Send Firebase verification email
+      try {
+        const actionCodeSettings = {
+          url: `${window.location.origin}/login?verify=1`,
+          handleCodeInApp: false,
+        };
+        await sendEmailVerification(cred.user, actionCodeSettings);
+      } catch (verifyErr) {
+        console.warn('Failed to send verification with redirect URL. Falling back to default verification email.', verifyErr);
+        // Fallback for mobile testing on local IPs where the continue URL is not whitelisted
+        await sendEmailVerification(cred.user);
+      }
 
       // 3. Save profile to Firestore
       await setDoc(doc(db, 'users', cred.user.uid), {

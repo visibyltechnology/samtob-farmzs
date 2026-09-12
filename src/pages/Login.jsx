@@ -12,6 +12,8 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [resendSuccess, setResendSuccess] = useState(false);
+  const [unverifiedUser, setUnverifiedUser] = useState(null);
   
   const { user } = useApp();
   const navigate = useNavigate();
@@ -32,9 +34,30 @@ export default function Login() {
     }
   }, [user, isLoggingIn, navigate, location.search]);
 
+  const handleResendVerification = async () => {
+    if (!unverifiedUser) return;
+    try {
+      setLoading(true);
+      try {
+        await sendEmailVerification(unverifiedUser, { url: `${window.location.origin}/login?verify=1`, handleCodeInApp: false });
+      } catch (err) {
+        // Fallback for mobile IP testing
+        await sendEmailVerification(unverifiedUser);
+      }
+      setResendSuccess(true);
+      setError('');
+    } catch (err) {
+      setError('Failed to resend email. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
+    setResendSuccess(false);
+    setUnverifiedUser(null);
     setLoading(true);
     
     try {
@@ -42,6 +65,7 @@ export default function Login() {
 
       // Enforce email verification
       if (!cred.user.emailVerified) {
+        setUnverifiedUser(cred.user);
         setError('Please verify your email before logging in. Check your inbox for the verification link.');
         setLoading(false);
         return;
@@ -118,9 +142,16 @@ export default function Login() {
                 <span>{error}</span>
                 {error.includes('verify your email') && (
                   <button type="button" onClick={handleResendVerification} style={{ background: 'none', border: 'none', color: '#F9A825', cursor: 'pointer', padding: 0, fontSize: '13px', fontWeight: 700, textAlign: 'left', textDecoration: 'underline' }}>
-                    Resend verification email
+                    {loading ? 'Sending...' : 'Resend verification email'}
                   </button>
                 )}
+              </div>
+            )}
+            
+            {resendSuccess && (
+              <div style={{ background: 'rgba(76,175,80,0.1)', border: '1px solid var(--primary)', color: 'var(--primary)', fontSize: '13px', padding: '12px 16px', borderRadius: 'var(--radius-sm)', marginBottom: '20px', display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+                <MailCheck size={18} style={{ flexShrink: 0, marginTop: '1px' }} />
+                <span>Verification email sent successfully! Please check your inbox.</span>
               </div>
             )}
 

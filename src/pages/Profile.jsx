@@ -375,13 +375,29 @@ export default function Profile() {
                     const date = order.createdAt?.toDate?.()?.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) || '—';
                     const s = STATUS_COLORS[order.status] || STATUS_COLORS['Pending'];
                     const shortId = order.id?.slice(0, 8).toUpperCase();
+                    const isInst = order.payMethod === 'installment' || order.isInstallmentOrder;
+                    const instItems = (order.items || []).filter(i => i.isInstallment && i.installmentDetails);
+                    const derivedDeposit = isInst && instItems.length > 0 ? instItems.reduce((acc, i) => acc + i.installmentDetails.firstPayment, 0) : (order.depositAmount || 0);
+                    const derivedRecurring = isInst && instItems.length > 0 ? instItems.reduce((acc, i) => acc + i.installmentDetails.weeklyPayment, 0) : (order.recurringAmount || 0);
+                    const planGrandTotal = isInst && instItems.length > 0 ? instItems.reduce((acc, i) => acc + i.installmentDetails.total, 0) + (order.deliveryFee || 0) : (order.total || order.totalAmount);
+                    const derivedDuration = isInst && instItems.length > 0 ? Math.max(...instItems.map(i => i.installmentDetails.duration)) : (order.installmentsTotal || 1);
                     
                     const customPaid = (order.installmentReceipts || [])
                       .filter(r => r.status === 'Approved')
-                      .reduce((sum, r) => sum + (Number(r.amount) || order.recurringAmount || 0), 0);
-                    const paidSoFar = (order.initialPaymentStatus !== 'Rejected' ? (order.depositAmount || 0) : 0) + customPaid;
-                    const remainingBalance = Math.max(0, (order.total || order.totalAmount || 0) - paidSoFar);
-                    const dueInfo = getNextDueDateInfo(order);
+                      .reduce((sum, r) => sum + (Number(r.amount) || derivedRecurring || 0), 0);
+                    const paidSoFar = (order.initialPaymentStatus !== 'Rejected' ? derivedDeposit : 0) + customPaid;
+                    const remainingBalance = Math.max(0, planGrandTotal - paidSoFar);
+                    
+                    // compute due info directly
+                    let dueInfo = null;
+                    if (isInst && order.createdAt && (order.installmentsPaid || 0) < derivedDuration) {
+                      const createdDate = order.createdAt.toDate ? order.createdAt.toDate() : new Date(order.createdAt);
+                      const daysToAdd = ((order.installmentsPaid || 0) + 1) * 7; // December Rush is always weekly
+                      const dueDate = new Date(createdDate);
+                      dueDate.setDate(dueDate.getDate() + daysToAdd);
+                      const diffDays = Math.ceil((dueDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+                      dueInfo = { dueDate, diffDays };
+                    }
                     
                     return (
                       <div key={order.id} style={{ background: 'var(--dark-card)', border: '1px solid var(--dark-border)', borderRadius: 'var(--radius-md)', padding: '20px', display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap', transition: 'var(--transition)' }}>
@@ -391,24 +407,24 @@ export default function Profile() {
                         <div style={{ flex: '1 1 200px', minWidth: 0 }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '8px', marginBottom: '6px' }}>
                             <h3 style={{ fontSize: '15px', fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{itemName}{itemCount > 1 ? ` +${itemCount - 1} more` : ''}</h3>
-                            <span style={{ fontSize: '16px', fontWeight: 800, color: 'var(--primary)', fontFamily: 'var(--font-display)', flexShrink: 0 }}>{formatCurrency(order.total || order.totalAmount)}</span>
+                            <span style={{ fontSize: '16px', fontWeight: 800, color: 'var(--primary)', fontFamily: 'var(--font-display)', flexShrink: 0 }}>{formatCurrency(isInst ? planGrandTotal : (order.total || order.totalAmount))}</span>
                           </div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
                             <span style={{ fontSize: '12px', color: 'var(--gray-1)' }}>#{shortId} · {date}</span>
                             <span style={{ fontSize: '12px', fontWeight: 700, color: s.color, background: s.bg, padding: '3px 10px', borderRadius: '20px' }}>{order.status || 'Pending'}</span>
                           </div>
                           
-                          {(order.payMethod === 'installment' || order.isInstallmentOrder) && (
+                          {isInst && (
                             <div style={{ marginTop: '12px', background: 'rgba(255,152,0,0.05)', border: '1px solid var(--warning)', borderRadius: 'var(--radius-sm)', padding: '12px' }}>
-                              <div style={{ fontSize: '11px', fontWeight: 800, color: 'var(--warning)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>Installment Plan — {order.installmentsTotal || '?'} Weeks</div>
+                              <div style={{ fontSize: '11px', fontWeight: 800, color: 'var(--warning)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>Installment Plan — {derivedDuration} Weeks</div>
                               
                               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', fontSize: '13px', color: 'var(--gray-1)', marginBottom: '12px' }}>
-                                <div style={{ flex: '1 1 45%' }}>Deposit: <strong style={{ color: 'var(--white)' }}>{formatCurrency(order.depositAmount)}</strong></div>
-                                <div style={{ flex: '1 1 45%' }}>Recurring: <strong style={{ color: 'var(--white)' }}>{formatCurrency(order.recurringAmount)}</strong></div>
+                                <div style={{ flex: '1 1 45%' }}>Deposit: <strong style={{ color: 'var(--white)' }}>{formatCurrency(derivedDeposit)}</strong></div>
+                                <div style={{ flex: '1 1 45%' }}>Recurring: <strong style={{ color: 'var(--white)' }}>{formatCurrency(derivedRecurring)}/wk</strong></div>
                               </div>
                               
                               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', fontSize: '13px', color: 'var(--gray-1)', marginBottom: '12px', background: 'rgba(255,255,255,0.03)', padding: '12px', borderRadius: '6px' }}>
-                                <div style={{ flex: '1 1 30%', minWidth: '80px' }}>Total: <br/><strong style={{ color: 'var(--white)', fontSize: '15px' }}>{formatCurrency(order.total || order.totalAmount)}</strong></div>
+                                <div style={{ flex: '1 1 30%', minWidth: '80px' }}>Total: <br/><strong style={{ color: 'var(--white)', fontSize: '15px' }}>{formatCurrency(planGrandTotal)}</strong></div>
                                 <div style={{ flex: '1 1 30%', minWidth: '80px' }}>Paid: <br/><strong style={{ color: 'var(--success)', fontSize: '15px' }}>{formatCurrency(paidSoFar)}</strong></div>
                                 <div style={{ flex: '1 1 30%', minWidth: '80px' }}>Balance: <br/><strong style={{ color: 'var(--danger)', fontSize: '15px' }}>{formatCurrency(remainingBalance)}</strong></div>
                               </div>
@@ -442,20 +458,20 @@ export default function Profile() {
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                                   <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--white)' }}>Progress</span>
                                   <span style={{ fontSize: '12px', color: 'var(--warning)', fontWeight: 700 }}>
-                                    {order.installmentsPaid || 0} of {order.installmentsTotal || 1} Payments
+                                    {order.installmentsPaid || 0} of {derivedDuration} Payments
                                   </span>
                                 </div>
                                 <div style={{ height: '6px', background: 'var(--dark)', borderRadius: '4px', overflow: 'hidden', marginBottom: '12px' }}>
-                                  <div style={{ width: `${Math.min(100, ((order.installmentsPaid || 0) / (order.installmentsTotal || 1)) * 100)}%`, height: '100%', background: 'var(--warning)' }}></div>
+                                  <div style={{ width: `${Math.min(100, ((order.installmentsPaid || 0) / derivedDuration) * 100)}%`, height: '100%', background: 'var(--warning)' }}></div>
                                 </div>
                                 
-                                {(order.installmentsPaid || 0) < (order.installmentsTotal || 1) && remainingBalance > 0 && (
+                                {(order.installmentsPaid || 0) < derivedDuration && remainingBalance > 0 && (
                                   <div>
                                     {activePaymentModal !== order.id ? (
                                       <button 
                                         onClick={() => {
                                           setAdvanceWeeks(1);
-                                          setPaymentAmountInput(order.recurringAmount?.toString());
+                                          setPaymentAmountInput(derivedRecurring.toString());
                                           setActivePaymentModal(order.id);
                                         }}
                                         style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'var(--warning)', color: 'var(--black)', padding: '6px 12px', borderRadius: '4px', fontSize: '12px', fontWeight: 700, cursor: 'pointer', border: 'none' }}
@@ -470,19 +486,15 @@ export default function Profile() {
                                           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                                             <div>
                                               <div style={{ fontSize: '11px', color: 'var(--gray-1)' }}>Bank Name</div>
-                                              <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--white)' }}>JaizBank</div>
+                                              <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--white)' }}>Wema Bank</div>
                                             </div>
                                             <div>
                                               <div style={{ fontSize: '11px', color: 'var(--gray-1)' }}>Account Name</div>
-                                              <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--white)', wordBreak: 'break-word' }}>Akilapa &amp; Sons Auto Workshop</div>
+                                              <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--white)', wordBreak: 'break-word' }}>Samtob p&c Ltd</div>
                                             </div>
                                             <div>
                                               <div style={{ fontSize: '11px', color: 'var(--gray-1)' }}>Account Number</div>
-                                              <div style={{ fontWeight: 900, fontSize: '16px', color: 'var(--warning)', letterSpacing: '1.5px', fontFamily: 'monospace' }}>0005998212</div>
-                                            </div>
-                                            
-                                            <div style={{ marginTop: '6px', fontSize: '12px', color: 'var(--gray-1)', textAlign: 'center', borderTop: '1px solid var(--dark-border)', paddingTop: '10px', lineHeight: '1.5' }}>
-                                              Wema Bank &bull; Samtob p&c Ltd &bull; <br/><strong style={{ color: 'var(--warning)', fontFamily: 'monospace', letterSpacing: '1px', fontSize: '14px' }}>0127186331</strong>
+                                              <div style={{ fontWeight: 900, fontSize: '16px', color: 'var(--warning)', letterSpacing: '1.5px', fontFamily: 'monospace' }}>0127186331</div>
                                             </div>
                                           </div>
                                         </div>

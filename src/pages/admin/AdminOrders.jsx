@@ -22,28 +22,37 @@ const STATUS_OPTIONS = ['Pending', 'Pending Verification', 'Processing', 'In Tra
 
 const fmt = n => '₦' + Math.ceil(n || 0).toLocaleString('en-NG');
 
-const getNextDueDateInfo = (order) => {
-  if (!order.createdAt || (order.installmentsPaid || 0) >= (order.installmentsTotal || 1)) return null;
-  const createdDate = order.createdAt.toDate ? order.createdAt.toDate() : new Date(order.createdAt);
-  
-  const intervalDays = order.installmentInterval === 'weekly' ? 7 : 30;
-  const daysToAdd = ((order.installmentsPaid || 0) + 1) * intervalDays;
-  
-  const dueDate = new Date(createdDate);
-  dueDate.setDate(dueDate.getDate() + daysToAdd);
-  
-  const now = new Date();
-  const diffTime = dueDate.getTime() - now.getTime();
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  
-  return { dueDate, diffDays };
-};
+const fmt = n => '₦' + Math.ceil(n || 0).toLocaleString('en-NG');
 
 function OrderCard({ order }) {
   const { showToast } = useApp();
   const [expanded, setExpanded] = useState(false);
   const [updating, setUpdating] = useState(false);
   const s = STATUS_COLORS[order.status] || STATUS_COLORS['Pending'];
+
+  const isInst = order.payMethod === 'installment' || order.isInstallmentOrder;
+  const instItems = (order.items || order.cartItems || []).filter(i => i.isInstallment && i.installmentDetails);
+  
+  const derivedDeposit = order.depositAmount ?? (isInst && instItems.length > 0 ? instItems.reduce((acc, i) => acc + i.installmentDetails.firstPayment, 0) : 0);
+  const derivedRecurring = isInst && instItems.length > 0 ? instItems.reduce((acc, i) => acc + i.installmentDetails.weeklyPayment, 0) : (order.recurringAmount || 0);
+  const planGrandTotal = isInst && instItems.length > 0 ? instItems.reduce((acc, i) => acc + i.installmentDetails.total, 0) + (order.deliveryFee || 0) : (order.total || order.totalAmount);
+  const derivedDuration = isInst && instItems.length > 0 ? Math.max(...instItems.map(i => i.installmentDetails.duration)) : (order.installmentsTotal || 1);
+
+  const customPaid = (order.installmentReceipts || [])
+    .filter(r => r.status === 'Approved')
+    .reduce((sum, r) => sum + (Number(r.amount) || derivedRecurring || 0), 0);
+  const paidSoFar = (order.initialPaymentStatus !== 'Rejected' ? derivedDeposit : 0) + customPaid;
+  const remainingBalance = Math.max(0, planGrandTotal - paidSoFar);
+
+  let dueInfo = null;
+  if (isInst && order.createdAt && (order.installmentsPaid || 0) < derivedDuration) {
+    const createdDate = order.createdAt.toDate ? order.createdAt.toDate() : new Date(order.createdAt);
+    const daysToAdd = ((order.installmentsPaid || 0) + 1) * 7;
+    const dueDate = new Date(createdDate);
+    dueDate.setDate(dueDate.getDate() + daysToAdd);
+    const diffDays = Math.ceil((dueDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+    dueInfo = { dueDate, diffDays };
+  }
 
   const handleStatusChange = async (newStatus) => {
     setUpdating(true);

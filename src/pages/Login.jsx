@@ -93,13 +93,6 @@ export default function Login() {
     }
   };
 
-  const handleResendVerification = async () => {
-    try {
-      const cred = await signInWithEmailAndPassword(auth, email, password).catch(() => null);
-      if (cred?.user) await sendEmailVerification(cred.user);
-      setError('Verification email resent! Check your inbox.');
-    } catch { setError('Could not resend. Check your email/password first.'); }
-  };
 
   return (
     <main style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 20px', background: 'radial-gradient(ellipse at top, #0a1f0a 0%, var(--black) 60%)' }}>

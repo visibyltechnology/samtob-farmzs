@@ -22,8 +22,6 @@ const STATUS_OPTIONS = ['Pending', 'Pending Verification', 'Processing', 'In Tra
 
 const fmt = n => '₦' + Math.ceil(n || 0).toLocaleString('en-NG');
 
-const fmt = n => '₦' + Math.ceil(n || 0).toLocaleString('en-NG');
-
 function OrderCard({ order }) {
   const { showToast } = useApp();
   const [expanded, setExpanded] = useState(false);

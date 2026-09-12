@@ -613,13 +613,13 @@ export default function Checkout() {
                     )}
                   </div>
 
-                  {(formData.payMethod === 'bank_transfer' || formData.payMethod === 'installment') && (
+                  {formData.payMethod === 'bank_transfer' && (
                     <div style={{ background: 'var(--dark)', border: '1px solid rgba(76,175,80,0.3)', borderRadius: 'var(--radius-md)', padding: '20px', marginBottom: '8px' }}>
                       <h4 style={{ fontSize: '15px', fontWeight: 800, color: 'var(--primary)', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <CreditCard size={18} /> {isInstallmentPayment ? 'Pay Initial Installment' : 'Transfer to This Account'}
+                        <CreditCard size={18} /> Transfer to This Account
                       </h4>
                       <p style={{ fontSize: '13px', color: 'var(--gray-1)', marginBottom: '16px' }}>
-                        Transfer <strong style={{ color: '#F9A825' }}>{formatCurrency(grandTotal)}</strong> {isInstallmentPayment ? `(Payment 1 of ${installmentDuration})` : ''} to the account below, then upload your receipt.
+                        Transfer <strong style={{ color: '#F9A825' }}>{formatCurrency(grandTotal)}</strong> to the account below, then upload your receipt.
                       </p>
 
                       <div style={{ background: 'var(--black)', padding: '16px', borderRadius: 'var(--radius-sm)', display: 'grid', gap: '12px', border: '1px solid rgba(249,168,37,0.2)', marginBottom: '20px' }}>

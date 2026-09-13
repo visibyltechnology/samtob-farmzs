@@ -70,13 +70,13 @@ export default function HowItWorks() {
             Start Your Order
           </Link>
           <a
-            href="https://wa.me/2347055310766"
+            href="https://chat.whatsapp.com/IusfVtpSpkQ96S8tHFJgmK"
             target="_blank"
             rel="noopener noreferrer"
             className="btn-outline"
             style={{ fontSize: '1.05rem', padding: '0.9rem 2.5rem' }}
           >
-            💬 Chat on WhatsApp
+            💬 Join WhatsApp Group
           </a>
         </div>
       </div>

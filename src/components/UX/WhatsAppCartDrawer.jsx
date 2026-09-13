@@ -6,7 +6,7 @@ import { useApp } from '../../context/AppContext';
 import { useModal } from '../../context/ModalContext';
 import './WhatsAppCartDrawer.css';
 
-const WHATSAPP_NUMBER = '2348035647729';
+const WHATSAPP_NUMBER = '2347055310766';
 
 export default function WhatsAppCartDrawer({ isOpen, onClose }) {
   const { cart, updateCartQty, removeFromCart, cartTotal } = useApp();

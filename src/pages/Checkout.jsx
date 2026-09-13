@@ -486,7 +486,7 @@ export default function Checkout() {
 
                   {deliveryOption === 'outside_ibadan' && (
                     <div style={{ background: 'rgba(249,168,37,0.07)', border: '1px solid rgba(249,168,37,0.2)', borderRadius: 'var(--radius-md)', padding: '14px 16px', fontSize: '13px', color: '#F9A825' }}>
-                      ⚠️ For deliveries outside Ibadan, please contact us on WhatsApp first: <a href="https://wa.me/2347055310766" target="_blank" rel="noopener noreferrer" style={{ color: '#F9A825', fontWeight: 700, textDecoration: 'underline' }}>+234 705 531 0766</a> to confirm delivery cost before completing your order.
+                      ⚠️ For deliveries outside Ibadan, please contact us via our WhatsApp Group first: <a href="https://chat.whatsapp.com/IusfVtpSpkQ96S8tHFJgmK" target="_blank" rel="noopener noreferrer" style={{ color: '#F9A825', fontWeight: 700, textDecoration: 'underline' }}>Join WhatsApp Group</a> to confirm delivery cost before completing your order.
                     </div>
                   )}
 

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { collection, onSnapshot, doc, updateDoc, query, orderBy } from 'firebase/firestore';
+import { collection, onSnapshot, doc, updateDoc, deleteDoc, query, orderBy } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { createNotification } from '../../utils/notificationService';
 import {
   ClipboardList, Package, CheckCircle, Clock, AlertCircle,
-  Search, ChevronDown, ChevronUp, Loader2, Truck
+  Search, ChevronDown, ChevronUp, Loader2, Truck, Trash2
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
@@ -26,6 +26,7 @@ function OrderCard({ order }) {
   const { showToast } = useApp();
   const [expanded, setExpanded] = useState(false);
   const [updating, setUpdating] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const s = STATUS_COLORS[order.status] || STATUS_COLORS['Pending'];
 
   const isInst = order.payMethod === 'installment' || order.isInstallmentOrder;
@@ -254,8 +255,23 @@ function OrderCard({ order }) {
     }
   };
 
-  const date = order.createdAt?.toDate?.()?.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) || '—';
+  const handleDeleteOrder = async () => {
+    const confirmed = window.confirm(
+      `⚠️ DELETE order #${order.id.slice(0, 8).toUpperCase()}?\n\nThis will permanently remove the order from the database and cannot be undone.\n\nType OK to confirm.`
+    );
+    if (!confirmed) return;
+    setDeleting(true);
+    try {
+      await deleteDoc(doc(db, 'orders', order.id));
+      showToast(`Order #${order.id.slice(0, 8).toUpperCase()} deleted.`);
+    } catch (e) {
+      showToast('Failed to delete order.', 'error');
+      setDeleting(false);
+    }
+  };
 
+
+  const date = order.createdAt?.toDate?.()?.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) || '—';
 
   return (
     <div style={{ background: 'var(--dark-card)', border: '1px solid var(--dark-border)', borderRadius: 'var(--radius-md)', overflow: 'hidden', transition: 'var(--transition)' }}>
@@ -452,6 +468,18 @@ function OrderCard({ order }) {
             )}
 
             {updating && <div style={{ fontSize: '12px', color: 'var(--primary)', marginTop: '8px' }}>Updating…</div>}
+
+            {/* Delete Order */}
+            <div style={{ marginTop: '16px', borderTop: '1px solid var(--dark-border)', paddingTop: '16px' }}>
+              <button
+                onClick={handleDeleteOrder}
+                disabled={deleting || updating}
+                style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,61,0,0.1)', color: 'var(--danger)', border: '1px solid var(--danger)', padding: '8px 16px', borderRadius: 'var(--radius-sm)', fontSize: '12px', fontWeight: 700, cursor: (deleting || updating) ? 'not-allowed' : 'pointer', opacity: (deleting || updating) ? 0.6 : 1 }}
+              >
+                <Trash2 size={14} />
+                {deleting ? 'Deleting…' : 'Delete Order (Wrongly Placed)'}
+              </button>
+            </div>
           </div>
         </div>
       )}

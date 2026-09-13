@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+﻿import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { User, Package, Heart, MapPin, Bell, Settings, LogOut, ChevronRight, ShoppingCart, Star, ShieldCheck, Camera, Loader2, Upload, Clock, CheckCircle } from 'lucide-react';
 import { uploadImage } from '../utils/cloudinaryService';
@@ -57,7 +57,7 @@ export default function Profile() {
   const [notifications, setNotifications] = useState([]);
   const [notifLoading, setNotifLoading] = useState(false);
 
-  // Settings form state — pre-filled from the logged-in user
+  // Settings form state â€” pre-filled from the logged-in user
   const [settingsForm, setSettingsForm] = useState({
     firstName: '',
     lastName: '',
@@ -231,7 +231,7 @@ export default function Profile() {
         firstName: settingsForm.firstName,
         lastName: settingsForm.lastName,
         phone: settingsForm.phone,
-        // email is managed by Firebase Auth — don't allow edit here
+        // email is managed by Firebase Auth â€” don't allow edit here
       });
       setSettingsSaved(true);
       showToast('Account settings saved successfully!');
@@ -372,7 +372,7 @@ export default function Profile() {
                     const itemImg = firstItem?.imgUrl || firstItem?.image || firstItem?.images?.[0] || null;
                     const itemName = firstItem?.name || 'Order';
                     const itemCount = (order.items?.length || 1);
-                    const date = order.createdAt?.toDate?.()?.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) || '—';
+                    const date = order.createdAt?.toDate?.()?.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) || 'â€”';
                     const s = STATUS_COLORS[order.status] || STATUS_COLORS['Pending'];
                     const shortId = order.id?.slice(0, 8).toUpperCase();
                     const isInst = order.payMethod === 'installment' || order.isInstallmentOrder;
@@ -410,13 +410,13 @@ export default function Profile() {
                             <span style={{ fontSize: '16px', fontWeight: 800, color: 'var(--primary)', fontFamily: 'var(--font-display)', flexShrink: 0 }}>{formatCurrency(isInst ? planGrandTotal : (order.total || order.totalAmount))}</span>
                           </div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-                            <span style={{ fontSize: '12px', color: 'var(--gray-1)' }}>#{shortId} · {date}</span>
+                            <span style={{ fontSize: '12px', color: 'var(--gray-1)' }}>#{shortId} Â· {date}</span>
                             <span style={{ fontSize: '12px', fontWeight: 700, color: s.color, background: s.bg, padding: '3px 10px', borderRadius: '20px' }}>{order.status || 'Pending'}</span>
                           </div>
                           
                           {isInst && (
                             <div style={{ marginTop: '12px', background: 'rgba(255,152,0,0.05)', border: '1px solid var(--warning)', borderRadius: 'var(--radius-sm)', padding: '12px' }}>
-                              <div style={{ fontSize: '11px', fontWeight: 800, color: 'var(--warning)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>Installment Plan — {derivedDuration} Weeks</div>
+                              <div style={{ fontSize: '11px', fontWeight: 800, color: 'var(--warning)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>Installment Plan â€” {derivedDuration} Weeks</div>
                               
                               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', fontSize: '13px', color: 'var(--gray-1)', marginBottom: '12px' }}>
                                 <div style={{ flex: '1 1 45%' }}>Deposit: <strong style={{ color: 'var(--white)' }}>{formatCurrency(derivedDeposit)}</strong></div>
@@ -443,7 +443,7 @@ export default function Profile() {
                                 {/* Initial payment rejection notice */}
                                 {order.initialPaymentStatus === 'Rejected' && (
                                   <div style={{ marginBottom: '12px', padding: '10px 12px', background: 'rgba(255,23,68,0.1)', border: '1px solid var(--danger)', borderRadius: '4px' }}>
-                                    <div style={{ fontSize: '12px', fontWeight: 800, color: 'var(--danger)', marginBottom: '4px' }}>⚠️ Deposit Payment Rejected</div>
+                                    <div style={{ fontSize: '12px', fontWeight: 800, color: 'var(--danger)', marginBottom: '4px' }}>âš ï¸ Deposit Payment Rejected</div>
                                     {order.initialPaymentRejectReason && (
                                       <div style={{ fontSize: '12px', color: 'var(--gray-1)', marginBottom: '8px' }}>Reason: <strong style={{ color: 'var(--white)' }}>{order.initialPaymentRejectReason}</strong></div>
                                     )}
@@ -465,9 +465,17 @@ export default function Profile() {
                                   <div style={{ width: `${Math.min(100, ((order.installmentsPaid || 0) / derivedDuration) * 100)}%`, height: '100%', background: 'var(--warning)' }}></div>
                                 </div>
                                 
-                                {(order.installmentsPaid || 0) < derivedDuration && remainingBalance > 0 && (
+                                {(order.installmentsPaid || 0) < derivedDuration && remainingBalance > 0 && (() => {
+                                   const hasPendingReceipt = (order.installmentReceipts || []).some(r => r.status === 'Pending Verification')
+                                     || order.initialPaymentStatus === 'Pending'
+                                     || (!order.initialPaymentStatus && order.receiptUrl);
+                                   return (
                                   <div>
-                                    {activePaymentModal !== order.id ? (
+                                    {hasPendingReceipt ? (
+                                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(255,152,0,0.1)', border: '1px solid var(--warning)', borderRadius: '4px', padding: '8px 14px', fontSize: '12px', color: 'var(--warning)', fontWeight: 700 }}>
+                                        <Clock size={14} /> Awaiting admin approval of your previous receipt before you can make the next payment.
+                                      </div>
+                                    ) : activePaymentModal !== order.id ? (
                                       <button 
                                         onClick={() => {
                                           setAdvanceWeeks(1);
@@ -515,7 +523,7 @@ export default function Profile() {
                                           )}
                                         </div>
                                         
-                                        <div style={{ fontSize: '12px', fontWeight: 700, marginBottom: '6px', color: 'var(--white)' }}>Enter Amount Paid (₦)</div>
+                                        <div style={{ fontSize: '12px', fontWeight: 700, marginBottom: '6px', color: 'var(--white)' }}>Enter Amount Paid (â‚¦)</div>
                                         <input type="number" value={paymentAmountInput} onChange={e => setPaymentAmountInput(e.target.value)} placeholder="e.g. 30000" style={{ width: '100%', padding: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--dark-border)', color: 'var(--white)', borderRadius: '4px', marginBottom: '10px', boxSizing: 'border-box' }} />
                                         
                                         <input 
@@ -534,7 +542,9 @@ export default function Profile() {
                                       </div>
                                     )}
                                   </div>
-                                )}
+                                   );
+                                 })()
+                                }
                                 
                                 {order.installmentReceipts?.length > 0 && (
                                   <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -549,7 +559,7 @@ export default function Profile() {
                                             {rec.rejectReason && (
                                               <div style={{ fontSize: '11px', color: 'var(--danger)', marginBottom: '6px' }}>Reason: <strong>{rec.rejectReason}</strong></div>
                                             )}
-                                            <input type="number" id={`reupload-amt-${order.id}-${rIdx}`} placeholder="Enter amount paid (₦)" defaultValue={rec.amount} style={{ width: '100%', padding: '6px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--dark-border)', color: 'var(--white)', borderRadius: '4px', marginBottom: '6px', boxSizing: 'border-box', fontSize: '12px' }} />
+                                            <input type="number" id={`reupload-amt-${order.id}-${rIdx}`} placeholder="Enter amount paid (â‚¦)" defaultValue={rec.amount} style={{ width: '100%', padding: '6px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--dark-border)', color: 'var(--white)', borderRadius: '4px', marginBottom: '6px', boxSizing: 'border-box', fontSize: '12px' }} />
                                             <input type="file" id={`reupload-rec-${order.id}-${rIdx}`} style={{ display: 'none' }} accept="image/*"
                                               onChange={(e) => {
                                                 const amtInput = document.getElementById(`reupload-amt-${order.id}-${rIdx}`);
@@ -622,7 +632,7 @@ export default function Profile() {
               <form onSubmit={handleSettingsSave} style={{ background: 'var(--dark-card)', border: '1px solid var(--dark-border)', borderRadius: 'var(--radius-md)', padding: '28px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 {settingsSaved && (
                   <div style={{ background: 'rgba(0,230,118,0.1)', border: '1px solid var(--success)', color: 'var(--success)', padding: '12px 16px', borderRadius: 'var(--radius-sm)', fontSize: '13px', fontWeight: 600 }}>
-                    ✓ Changes saved successfully!
+                    âœ“ Changes saved successfully!
                   </div>
                 )}
                 <div className="responsive-grid-2" style={{ gap: '16px' }}>

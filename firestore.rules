@@ -1,0 +1,117 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helper Functions ──────────────────────────────────────────────────────
+
+    // Check if the user is logged in
+    function isLoggedIn() {
+      return request.auth != null;
+    }
+
+    // Check if the request is from the currently authenticated user
+    function isOwner(userId) {
+      return isLoggedIn() && request.auth.uid == userId;
+    }
+
+    // Check if the logged-in user is an admin by reading their Firestore document
+    function isAdmin() {
+      return isLoggedIn() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+
+    // ── Products ──────────────────────────────────────────────────────────────
+    // - Anyone can read products (public storefront)
+    // - Only admins can create, update, or delete products
+
+    match /products/{productId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ── Users ─────────────────────────────────────────────────────────────────
+    // - A user can read and update their own document
+    // - Only admins can read all user documents
+    // - A new user document is created during OTP verification (isAdmin defaults false)
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isLoggedIn() && isOwner(userId);
+      allow update: if isOwner(userId) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ── Orders ────────────────────────────────────────────────────────────────
+    // - Logged-in users can create orders
+    // - Users can only read their own orders
+    // - Admins can read and update all orders (e.g. change status)
+
+    match /orders/{orderId} {
+      allow create: if isLoggedIn();
+      allow read: if isLoggedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ── Site Settings ─────────────────────────────────────────────────────────
+    // - Anyone can read site settings (used for homepage banners, contact info etc.)
+    // - Only admins can write settings
+
+    match /settings/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ── Categories ────────────────────────────────────────────────────────────
+    // - Anyone can read categories (used in shop filters)
+    // - Only admins can write
+
+    match /categories/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ── Brands ────────────────────────────────────────────────────────────────
+    // - Anyone can read brands
+    // - Only admins can write
+
+    match /brands/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ── Locations ─────────────────────────────────────────────────────────────
+    // - Anyone can read locations (for delivery zone display)
+    // - Only admins can write
+
+    match /locations/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ── Subscriptions ─────────────────────────────────────────────────────────
+    // - Users can create and read their own subscription
+    // - Admins can manage all subscriptions
+
+    match /subscriptions/{subId} {
+      allow create: if isLoggedIn();
+      allow read: if isLoggedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow update, delete: if isAdmin();
+    }
+
+    // ── Reviews ───────────────────────────────────────────────────────────────
+    // - Anyone can read reviews
+    // - Logged-in users can create reviews
+    // - Users can update/delete only their own reviews
+    // - Admins can delete any review
+
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create: if isLoggedIn();
+      allow update: if isLoggedIn() && resource.data.userId == request.auth.uid;
+      allow delete: if isLoggedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+    }
+
+  }
+}

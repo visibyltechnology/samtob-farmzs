@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "https://willow-creek-hub.vercel.app/$1"
+    }
+  ]
+}
